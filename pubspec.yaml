@@ -11,7 +11,7 @@ dependencies:
   args: ^2.4.0
   yaml: ^3.1.1
   resource_portable: ^3.0.2
-  path: ^1.8.3
+  path: ^1.8.2
   file: ^6.1.4
   archive: ^3.3.7
   platform: ^3.1.0
