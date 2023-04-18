@@ -19,8 +19,8 @@ dependencies:
   meta: ^1.9.1
   intl: ">=0.15.0 <1.0.0"
   tool_mobile:
-    # git: https://github.com/DrBu7cher/tool_mobile.git
-    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
+    git: https://github.com/DrBu7cher/tool_mobile.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
 
 dev_dependencies:
   test: ^1.24.1
@@ -28,11 +28,11 @@ dev_dependencies:
   mockito: ^5.4.0
   quiver: ^3.2.1
   fake_process_manager:
-    # git: https://github.com/DrBu7cher/tool_base_test.git
-    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
+    git: https://github.com/DrBu7cher/tool_base_test.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
   tool_base_test:
-    # git: https://github.com/DrBu7cher/tool_base_test.git
-    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main
+    git: https://github.com/DrBu7cher/tool_base_test.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main
   collection: ^1.17.1
 
 executables:
