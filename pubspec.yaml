@@ -28,7 +28,7 @@ dev_dependencies:
   mockito: ^5.4.0
   quiver: ^3.2.1
   fake_process_manager:
-    git: https://github.com/DrBu7cher/tool_base_test.git
+    git: https://github.com/DrBu7cher/fake_process_manager.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
   tool_base_test:
     git: https://github.com/DrBu7cher/tool_base_test.git
