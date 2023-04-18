@@ -8,11 +8,11 @@ environment:
   sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
-  args: ^2.4.0
-  yaml: ^3.1.1
-  resource_portable: ^3.0.2
-  path: ^1.8.2
-  file: ^6.1.4
+  args: ">=2.4.0"
+  yaml: ">=3.1.0"
+  resource_portable: ">=3.0.0"
+  path: ">=1.8.2"
+  file: ">=6.1.0"
   archive: ">=3.3.0"
   platform: ">=3.1.0"
   process: ">=4.2.0"
