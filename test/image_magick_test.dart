@@ -80,30 +80,34 @@ main() {
     });
 
     testUsingContext('is installed on macOS/linux', () async {
-      fakeProcessManager.calls = [Call('convert -version', ProcessResult(0, 0, '', ''))];
+      fakeProcessManager.calls = [
+        Call('convert -version', ProcessResult(0, 0, '', ''))
+      ];
       final isInstalled = await isImageMagicInstalled();
       expect(isInstalled, isTrue);
       fakeProcessManager.verifyCalls();
     }, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-        ..operatingSystem = 'macos',
+          .copyWith(operatingSystem: 'macos'),
     });
 
     testUsingContext('is installed on windows', () async {
-      fakeProcessManager.calls = [Call('magick -version', ProcessResult(0, 0, '', ''))];
+      fakeProcessManager.calls = [
+        Call('magick -version', ProcessResult(0, 0, '', ''))
+      ];
       final isInstalled = await isImageMagicInstalled();
       expect(isInstalled, isTrue);
       fakeProcessManager.verifyCalls();
     }, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-        ..operatingSystem = 'windows',
+          .copyWith(operatingSystem: 'windows'),
     });
 
     testUsingContext('is not installed on windows', () async {
       fakeProcessManager.calls = [
-        Call('magick -version', null, sideEffects: ()=> throw 'exception')
+        Call('magick -version', null, sideEffects: () => throw 'exception')
       ];
       final isInstalled = await isImageMagicInstalled();
       expect(isInstalled, isFalse);
@@ -111,8 +115,7 @@ main() {
     }, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-        ..operatingSystem = 'windows',
+          .copyWith(operatingSystem: 'windows'),
     });
   });
-
 }

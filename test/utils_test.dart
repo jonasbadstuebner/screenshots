@@ -63,10 +63,11 @@ main() {
       }, overrides: <Type, Generator>{
         FileSystem: () => mockFileSystem,
         ProcessManager: () => fakeProcessManager,
-        Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-          ..environment = {
-            'HOME': ''
-          },    });
+        Platform: () =>
+            FakePlatform.fromPlatform(const LocalPlatform()).copyWith(
+              environment: {'HOME': ''},
+            )
+      });
     });
 
     group('not in context', () {

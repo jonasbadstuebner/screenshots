@@ -92,7 +92,7 @@ main() {
       testUsingContext('start/stop', () async {
         DaemonClient daemonClient = DaemonClient();
 
-        fakePlatform.operatingSystem = 'linux';
+        fakePlatform = fakePlatform.copyWith(operatingSystem: 'linux');
         List<int> getLine(int i) {
           final lines = <List<int>>[
             utf8.encode('Starting device daemon...\n'),
@@ -127,7 +127,7 @@ main() {
           () async {
         final daemonClient = DaemonClient();
 
-        fakePlatform.operatingSystem = 'linux';
+        fakePlatform = fakePlatform.copyWith(operatingSystem: 'linux');
 
         // responses from daemon (called sequentially)
         List<int> getLine(int i) {
@@ -200,7 +200,7 @@ main() {
       testUsingContext('real devices (iPhone and Android)', () async {
         final daemonClient = DaemonClient();
 
-        fakePlatform.operatingSystem = 'macos';
+        fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
 
         // responses from daemon (called sequentially)
         List<int> getLine(int i) {
@@ -275,10 +275,10 @@ main() {
       });
 
       testUsingContext('bad android emulator hack', () async {
-        fakePlatform.environment = {
-          'CI': 'true',
-        };
-        fakePlatform.operatingSystem = 'linux';
+        fakePlatform = fakePlatform.copyWith(
+          environment: {'CI': 'true'},
+          operatingSystem: 'linux',
+        );
         final id = 'device id';
         final name = 'device name';
         final emulator = false;
@@ -307,9 +307,9 @@ main() {
           final lines = <List<int>>[
             utf8.encode('Starting device daemon...\n'),
             utf8.encode('[${jsonEncode({
-              "event": "daemon.connected",
-              "params": {"version": "0.0.0", "pid": 12345}
-            })}]\n'),
+                  "event": "daemon.connected",
+                  "params": {"version": "0.0.0", "pid": 12345}
+                })}]\n'),
             utf8.encode('[{"id":0}]\n'),
             utf8.encode('[${jsonEncode(bogusRealAndroidDevice)}]\n'),
             utf8.encode('[{"id":2}]\n'),
@@ -373,10 +373,12 @@ main() {
     });
   });
 
-  group('devices', (){
-    test('equality', (){
-      DaemonEmulator emulator1 = loadDaemonEmulator(jsonDecode(kEmulatorsJson)[0]);
-      DaemonEmulator emulator2 = loadDaemonEmulator(jsonDecode(kEmulatorsJson)[0]);
+  group('devices', () {
+    test('equality', () {
+      DaemonEmulator emulator1 =
+          loadDaemonEmulator(jsonDecode(kEmulatorsJson)[0]);
+      DaemonEmulator emulator2 =
+          loadDaemonEmulator(jsonDecode(kEmulatorsJson)[0]);
       expect(emulator1, equals(emulator2));
       emulator2 = loadDaemonEmulator(jsonDecode(kEmulatorsJson)[1]);
       expect(emulator1, isNot(equals(emulator2)));

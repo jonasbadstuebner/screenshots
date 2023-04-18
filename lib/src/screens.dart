@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:resource/resource.dart';
+import 'package:resource_portable/resource_portable.dart';
 import 'globals.dart';
 import 'utils.dart' as utils;
 

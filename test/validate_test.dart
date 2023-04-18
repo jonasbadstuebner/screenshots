@@ -16,9 +16,8 @@ main() {
 
     setUp(() {
       fakeProcessManager = FakeProcessManager();
-      fakePlatform = FakePlatform.fromPlatform(const LocalPlatform())
-        ..operatingSystem = 'linux'
-        ..environment['CI'] = 'false';
+      fakePlatform = FakePlatform.fromPlatform(const LocalPlatform()).copyWith(
+          operatingSystem: 'linux', environment: const {'CI': 'false'});
     });
 
     final callListIosDevices = Call(
@@ -51,7 +50,7 @@ main() {
             ''));
 
     testUsingContext('pass on iOS with \'availability\'', () async {
-      fakePlatform.operatingSystem = 'macos';
+      fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
       final configStr = '''
           tests:
             - example/test_driver/main.dart
@@ -129,29 +128,29 @@ main() {
       fakeProcessManager.calls = [callListIosDevices];
 
       final isValid =
-      await isValidConfig(config, screens, allDevices, allEmulators);
+          await isValidConfig(config, screens, allDevices, allEmulators);
       expect(isValid, isTrue);
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
 //      Logger: () => VerboseLogger(StdoutLogger()),
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-        ..operatingSystem = 'macos',
+          .copyWith(operatingSystem: 'macos'),
     });
 
     testUsingContext('getIosSimulators', () async {
       fakeProcessManager.calls = [callListIosDevices];
       final Map simulators = getIosSimulators();
-      final isSimulatorFound= isSimulatorInstalled(simulators, 'iPhone X');
+      final isSimulatorFound = isSimulatorInstalled(simulators, 'iPhone X');
       expect(isSimulatorFound, isTrue);
       fakeProcessManager.verifyCalls();
-   }, skip: false, overrides: <Type, Generator>{
+    }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
 //      Logger: () => VerboseLogger(StdoutLogger()),
     });
 
     testUsingContext('fail', () async {
-      fakePlatform.operatingSystem = 'macos';
+      fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
       final BufferLogger logger = context.get<Logger>();
       final configStr = '''
           tests:
@@ -208,12 +207,28 @@ main() {
       expect(logger.statusText, contains('Installed emulators'));
       expect(logger.statusText, contains('Installed simulators'));
 
-      expect(logger.errorText, contains('File \'example/test_driver/main.dartx\' not found.'));
-      expect(logger.errorText, contains('No device attached or emulator installed for device \'Unknown android phone\''));
-      expect(logger.errorText, contains('Screen not available for device \'Android Device (with no screen)\''));
-      expect(logger.errorText, contains('Screen not available for device \'iOS Device (with no screen)\''));
-      expect(logger.errorText, contains('No device attached or emulator installed for device \'Unknown android phone\''));
-      expect(logger.errorText, isNot(contains('No device attached or simulator installed for device \'Bad ios phone\'')));
+      expect(logger.errorText,
+          contains('File \'example/test_driver/main.dartx\' not found.'));
+      expect(
+          logger.errorText,
+          contains(
+              'No device attached or emulator installed for device \'Unknown android phone\''));
+      expect(
+          logger.errorText,
+          contains(
+              'Screen not available for device \'Android Device (with no screen)\''));
+      expect(
+          logger.errorText,
+          contains(
+              'Screen not available for device \'iOS Device (with no screen)\''));
+      expect(
+          logger.errorText,
+          contains(
+              'No device attached or emulator installed for device \'Unknown android phone\''));
+      expect(
+          logger.errorText,
+          isNot(contains(
+              'No device attached or simulator installed for device \'Bad ios phone\'')));
       fakeProcessManager.verifyCalls();
 
 //       fakePlatform.operatingSystem = 'linux';
@@ -236,7 +251,7 @@ main() {
     });
 
     testUsingContext('show device guide', () async {
-      fakePlatform.operatingSystem = 'macos';
+      fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
       final BufferLogger logger = context.get<Logger>();
       final screens = Screens();
       await screens.init();

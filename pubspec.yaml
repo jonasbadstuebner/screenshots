@@ -1,39 +1,39 @@
 name: screenshots
 description: Auto-generation of screenshots for Apple and Play Stores using emulators, simulators and real devices. Includes support for multiple locales and framing. Compatible with fastlane.
-version: 2.1.1
-homepage: https://github.com/mmcc007/screenshots
-author: Maurice McCabe <mmcc007@gmail.com>
+version: 2.2.0
+homepage: https://github.com/DrBu7cher/screenshots
+publish_to: none
 
 environment:
-  sdk: '>=2.2.2 <3.0.0'
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
-  args: ^1.5.1
-  yaml: ^2.1.15
-  resource: ^2.1.5
-  path: ^1.6.2
-  file: ^5.0.7
-  archive: ^2.0.9
-  platform: ^2.2.0
-  process: ^3.0.9
-  meta: ^1.1.6
+  args: ^2.4.0
+  yaml: ^3.1.1
+  resource_portable: ^3.0.2
+  path: ^1.8.3
+  file: ^6.1.4
+  archive: ^3.3.7
+  platform: ^3.1.0
+  process: ^4.2.4
+  meta: ^1.9.1
   intl: ">=0.15.0 <1.0.0"
-  tool_mobile: ^1.9.5
-#  tool_mobile:
-#    path: ../tool_mobile
+  tool_mobile:
+    # git: https://github.com/DrBu7cher/tool_mobile.git
+    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
 
 dev_dependencies:
-  test: ^1.5.1+1
-  test_api: ^0.2.5
-  mockito: ^4.1.0
-  pedantic: ^1.8.0+1
-  quiver: '>=2.0.0 <3.0.0'
-  fake_process_manager: ^0.1.0
-#    path: ../fake_process_manager
+  test: ^1.24.1
+  test_api: ^0.5.1
+  mockito: ^5.4.0
+  quiver: ^3.2.1
+  fake_process_manager:
+    # git: https://github.com/DrBu7cher/tool_base_test.git
+    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
   tool_base_test:
-    git: https://github.com/mmcc007/tool_base_test.git
-#    path: ../tool_base_test
-  collection: any
+    # git: https://github.com/DrBu7cher/tool_base_test.git
+    path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main
+  collection: ^1.17.1
 
 executables:
   screenshots: main

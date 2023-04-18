@@ -39,7 +39,8 @@ main() {
     Call('chmod u+x /tmp/screenshots/resources/script/sim_orientation.scpt',
         null),
   ];
-  final runAndroidTestCall = Call('flutter -d emulator-5554 drive example/test_driver/main.dart',
+  final runAndroidTestCall = Call(
+      'flutter -d emulator-5554 drive example/test_driver/main.dart',
       ProcessResult(0, 0, 'drive output', ''));
 
   final installedDaemonEmulator = loadDaemonEmulator({
@@ -100,7 +101,8 @@ main() {
           frame: false
       ''';
         String adbPath = initAdbPath();
-        final androidUSLocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+        final androidUSLocaleCall = Call(
+            '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
         final List<Call> calls = [
@@ -115,7 +117,8 @@ main() {
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
         final BufferLogger logger = context.get<Logger>();
-        expect(logger.statusText, isNot(contains('Starting $configAndroidDeviceName...')));
+        expect(logger.statusText,
+            isNot(contains('Starting $configAndroidDeviceName...')));
         expect(logger.statusText, isNot(contains('Changing locale')));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
         fakeProcessManager.verifyCalls();
@@ -145,7 +148,8 @@ main() {
           frame: true
       ''';
         String adbPath = initAdbPath();
-        final androidUSLocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+        final androidUSLocaleCall = Call(
+            '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
         final List<Call> calls = [
@@ -163,7 +167,8 @@ main() {
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
         final BufferLogger logger = context.get<Logger>();
-        expect(logger.statusText, contains('Setting orientation to LandscapeRight'));
+        expect(logger.statusText,
+            contains('Setting orientation to LandscapeRight'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
         fakeProcessManager.verifyCalls();
         verify(mockDaemonClient.devices).called(2);
@@ -199,7 +204,8 @@ main() {
       ''';
         String adbPath = initAdbPath();
         final deviceId = 'emulator-5554';
-        final androidUSLocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+        final androidUSLocaleCall = Call(
+            '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
         final List<Call> calls = [
@@ -221,7 +227,8 @@ main() {
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
         final BufferLogger logger = context.get<Logger>();
-        expect(logger.statusText, contains('Starting $configAndroidDeviceName...'));
+        expect(logger.statusText,
+            contains('Starting $configAndroidDeviceName...'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
         fakeProcessManager.verifyCalls();
         verify(mockDaemonClient.devices).called(1);
@@ -301,9 +308,11 @@ main() {
             'plutil -convert json -o - //Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences/.GlobalPreferences.plist',
             ProcessResult(0, 0, '{"AppleLocale":"$locale2"}', ''));
         String adbPath = initAdbPath();
-        final androidEnUSLocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+        final androidEnUSLocaleCall = Call(
+            '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, '$locale1', ''));
-        final androidFrCALocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+        final androidFrCALocaleCall = Call(
+            '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, '$locale2', ''));
         final List<Call> calls = [
           callListIosDevices,
@@ -346,7 +355,9 @@ main() {
                   '')),
           Call('$adbPath -s $deviceId emu kill', null),
           callListIosDevices,
-          Call('plutil -convert binary1 //Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences/.GlobalPreferences.plist', null),
+          Call(
+              'plutil -convert binary1 //Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences/.GlobalPreferences.plist',
+              null),
           callPlutilEnUS,
           Call('xcrun simctl boot $simulatorID', null),
           callPlutilEnUS,
@@ -421,8 +432,13 @@ main() {
         when(mockDaemonClient.waitForEvent(EventType.deviceRemoved))
             .thenAnswer((_) => Future.value({'id': runningEmulatorDeviceId}));
 
-        memoryFileSystem.file('example/test_driver/main.dart').createSync(recursive: true);
-        memoryFileSystem.directory('/Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences').createSync(recursive: true);
+        memoryFileSystem
+            .file('example/test_driver/main.dart')
+            .createSync(recursive: true);
+        memoryFileSystem
+            .directory(
+                '/Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences')
+            .createSync(recursive: true);
 
         final screenshots = Screenshots(configStr: configStr);
         final result = await screenshots.run();
@@ -430,16 +446,34 @@ main() {
         final BufferLogger logger = context.get<Logger>();
         expect(logger.errorText, '');
 //        print(logger.statusText);
-        expect(logger.statusText, contains('Starting $configAndroidDeviceName...'));
+        expect(logger.statusText,
+            contains('Starting $configAndroidDeviceName...'));
         expect(logger.statusText, contains('Starting $configIosDeviceName...'));
-        expect(logger.statusText, contains('Setting orientation to $orientation1'));
-        expect(logger.statusText, contains('Setting orientation to $orientation2'));
+        expect(logger.statusText,
+            contains('Setting orientation to $orientation1'));
+        expect(logger.statusText,
+            contains('Setting orientation to $orientation2'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
-        expect(logger.statusText, contains('Changing locale from $locale1 to $locale2 on \'$configAndroidDeviceName\'...'));
-        expect(logger.statusText, contains('Changing locale from $locale2 to $locale1 on \'$configAndroidDeviceName\'...'));
-        expect(logger.statusText, contains('Changing locale from $locale1 to $locale2 on \'$configIosDeviceName\'...'));
-        expect(logger.statusText, contains('Changing locale from $locale2 to $locale1 on \'$configIosDeviceName\'...'));
-        expect(logger.statusText, contains('Restarting \'$configIosDeviceName\' due to locale change...'));
+        expect(
+            logger.statusText,
+            contains(
+                'Changing locale from $locale1 to $locale2 on \'$configAndroidDeviceName\'...'));
+        expect(
+            logger.statusText,
+            contains(
+                'Changing locale from $locale2 to $locale1 on \'$configAndroidDeviceName\'...'));
+        expect(
+            logger.statusText,
+            contains(
+                'Changing locale from $locale1 to $locale2 on \'$configIosDeviceName\'...'));
+        expect(
+            logger.statusText,
+            contains(
+                'Changing locale from $locale2 to $locale1 on \'$configIosDeviceName\'...'));
+        expect(
+            logger.statusText,
+            contains(
+                'Restarting \'$configIosDeviceName\' due to locale change...'));
         fakeProcessManager.verifyCalls();
         verify(mockDaemonClient.devices).called(7);
         verify(mockDaemonClient.emulators).called(1);
@@ -450,19 +484,18 @@ main() {
         DaemonClient: () => mockDaemonClient,
         ProcessManager: () => fakeProcessManager,
         Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-          ..environment = {
+                .copyWith(environment: {
 //            'CI': 'false',
 //            'HOME': LocalPlatform().environment['HOME']
-            'HOME': memoryFileSystem.currentDirectory.path
-          }
-          ..operatingSystem = 'macos',
+              'HOME': memoryFileSystem.currentDirectory.path
+            }, operatingSystem: 'macos'),
         Logger: () => BufferLogger(),
         FileSystem: () => memoryFileSystem,
       });
     });
   });
 
-  group('hack in CI', (){
+  group('hack in CI', () {
     final deviceId = 'emulator-5554';
     final runningEmulatorDaemonDevice = loadDaemonDevice({
       'id': deviceId,
@@ -500,7 +533,8 @@ main() {
           frame: false
       ''';
       String adbPath = initAdbPath();
-      final androidUSLocaleCall = Call('$adbPath -s $deviceId shell getprop persist.sys.locale',
+      final androidUSLocaleCall = Call(
+          '$adbPath -s $deviceId shell getprop persist.sys.locale',
           ProcessResult(0, 0, 'en-US', ''));
       final List<Call> calls = [
         ...unpackScriptsCalls,
@@ -508,12 +542,10 @@ main() {
         androidUSLocaleCall,
 //        Call('$adbPath -s emulator-5554 emu avd name',
 //            ProcessResult(0, 0, 'Nexus_6P_API_28', '')),
-        Call(
-            '$adbPath -s $deviceId shell settings put system user_rotation 0',
+        Call('$adbPath -s $deviceId shell settings put system user_rotation 0',
             null),
         runAndroidTestCall,
-        Call(
-            '$adbPath -s $deviceId shell settings put system user_rotation 1',
+        Call('$adbPath -s $deviceId shell settings put system user_rotation 1',
             null),
         runAndroidTestCall,
       ];
@@ -527,15 +559,20 @@ main() {
       verify(mockDaemonClient.emulators).called(1);
       final BufferLogger logger = context.get<Logger>();
       expect(logger.errorText, '');
-      expect(logger.statusText, isNot(contains('Warning: the locale of a real device cannot be changed.')));
-      expect(logger.statusText, isNot(contains('Starting $configAndroidDeviceName...')));
+      expect(
+          logger.statusText,
+          isNot(contains(
+              'Warning: the locale of a real device cannot be changed.')));
+      expect(logger.statusText,
+          isNot(contains('Starting $configAndroidDeviceName...')));
       expect(logger.statusText, contains('Setting orientation to Portrait'));
-      expect(logger.statusText, contains('Setting orientation to LandscapeRight'));
+      expect(
+          logger.statusText, contains('Setting orientation to LandscapeRight'));
     }, skip: false, overrides: <Type, Generator>{
       DaemonClient: () => mockDaemonClient,
       ProcessManager: () => fakeProcessManager,
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
-        ..environment = {'CI': 'true'},
+          .copyWith(environment: {'CI': 'true'}),
       Logger: () => BufferLogger(),
     });
   });
@@ -558,7 +595,10 @@ main() {
       ];
       changeAndroidLocale(deviceId, deviceLocale, testLocale);
       final BufferLogger logger = context.get<Logger>();
-      expect(logger.errorText, contains('Warning: locale will not be changed. Running in locale \'$deviceLocale\''));
+      expect(
+          logger.errorText,
+          contains(
+              'Warning: locale will not be changed. Running in locale \'$deviceLocale\''));
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
@@ -574,7 +614,7 @@ main() {
         'category': 'mobile',
         'platformType': 'android',
         'ephemeral': true,
-        'emulatorId':emulatorId,
+        'emulatorId': emulatorId,
       });
       final emulator = loadDaemonEmulator({
         'id': emulatorId,
@@ -582,16 +622,17 @@ main() {
         'category': 'mobile',
         'platformType': 'android'
       });
-      final deviceFound = findRunningDevice([runningEmulator], [emulator], configAndroidDeviceName);
+      final deviceFound = findRunningDevice(
+          [runningEmulator], [emulator], configAndroidDeviceName);
       expect(deviceFound, equals(runningEmulator));
     });
 
     testUsingContext('multiple tests (on iOS)', () async {
       final deviceName = 'device name';
-      final deviceId='deviceId';
-      final locale ='locale';
-      final test1='test_driver/main.dart';
-      final test2='test_driver/main2.dart';
+      final deviceId = 'deviceId';
+      final locale = 'locale';
+      final test1 = 'test_driver/main.dart';
+      final test2 = 'test_driver/main2.dart';
       final configStr = '''
         tests:
           - $test1
@@ -621,9 +662,12 @@ main() {
       expect(result, isNull);
       final BufferLogger logger = context.get<Logger>();
       expect(logger.errorText, '');
-      expect(logger.statusText, contains('Running $test1 on \'$deviceName\' in locale $locale...'));
-      expect(logger.statusText, contains('Running $test2 on \'$deviceName\' in locale $locale...'));
-      expect(logger.statusText, contains('Warning: \'$deviceName\' images will not be processed'));
+      expect(logger.statusText,
+          contains('Running $test1 on \'$deviceName\' in locale $locale...'));
+      expect(logger.statusText,
+          contains('Running $test2 on \'$deviceName\' in locale $locale...'));
+      expect(logger.statusText,
+          contains('Warning: \'$deviceName\' images will not be processed'));
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,

@@ -1,7 +1,7 @@
 import 'dart:async';
 //import 'dart:io';
 
-import 'package:resource/resource.dart';
+import 'package:resource_portable/resource_portable.dart';
 
 import 'utils.dart';
 
