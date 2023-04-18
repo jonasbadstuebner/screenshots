@@ -13,10 +13,10 @@ dependencies:
   resource_portable: ^3.0.2
   path: ^1.8.2
   file: ^6.1.4
-  archive: ^3.3.7
-  platform: ^3.1.0
-  process: ^4.2.4
-  meta: ^1.9.1
+  archive: ">=3.3.0"
+  platform: ">=3.1.0"
+  process: ">=4.2.0"
+  meta: ">=1.8.0"
   intl: ">=0.15.0 <1.0.0"
   tool_mobile:
     git: https://github.com/DrBu7cher/tool_mobile.git
