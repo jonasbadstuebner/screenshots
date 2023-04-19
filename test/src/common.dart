@@ -46,8 +46,8 @@ Map getDeviceProps(String deviceId) {
       .split('\n')
       .forEach((line) {
     final regExp = RegExp(r'\[(.*)\]: \[(.*)\]');
-    final key = regExp.firstMatch(line).group(1);
-    final val = regExp.firstMatch(line).group(2);
+    final key = regExp.firstMatch(line)!.group(1)!;
+    final val = regExp.firstMatch(line)!.group(2)!;
     props[key] = val;
   });
   return props;
@@ -70,7 +70,7 @@ class Poller {
   final Duration pollingInterval;
 
   bool _canceled = false;
-  Timer _timer;
+  Timer? _timer;
 
   Future<void> _handleCallback() async {
     if (_canceled) return;
@@ -123,7 +123,7 @@ Map diffMaps(Map orig, Map diff, {bool verbose = false}) {
 
 /// Returns a future that completes with a path suitable for ANDROID_HOME
 /// or with null, if ANDROID_HOME cannot be found.
-Future<String> findAndroidHome() async {
+Future<String?> findAndroidHome() async {
   final Iterable<String> hits = grep(
     'ANDROID_HOME = ',
     from: await cmd(<String>['flutter', 'doctor', '-v']),
@@ -133,7 +133,7 @@ Future<String> findAndroidHome() async {
 }
 
 /// Splits [from] into lines and selects those that contain [pattern].
-Iterable<String> grep(Pattern pattern, {@required String from}) {
+Iterable<String> grep(Pattern pattern, {required String from}) {
   return from.split('\n').where((String line) {
     return line.contains(pattern);
   });

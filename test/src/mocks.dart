@@ -11,7 +11,7 @@ import 'package:tool_mobile/tool_mobile.dart';
 class MockAndroidSdk extends Mock implements AndroidSdk {
   static Directory createSdkDirectory({
     bool withAndroidN = false,
-    String withNdkDir,
+    String? withNdkDir,
     int ndkVersion = 16,
     bool withNdkSysroot = false,
     bool withSdkManager = true,
@@ -88,7 +88,7 @@ Pkg.Revision = $ndkVersion.1.5063045
   }
 
   static void _createSdkFile(Directory dir, String filePath,
-      {String contents}) {
+      {String? contents}) {
     final File file = dir.childFile(filePath);
     file.createSync(recursive: true);
     if (contents != null) {
@@ -115,20 +115,21 @@ typedef ProcessFactory = Process Function(List<String> command);
 class MockProcessManager implements ProcessManager {
   ProcessFactory processFactory = (List<String> commands) => MockProcess();
   bool succeed = true;
-  List<String> commands;
+  List<String> commands = [];
 
   @override
-  bool canRun(dynamic command, {String workingDirectory}) => succeed;
+  bool canRun(dynamic command, {String? workingDirectory}) => succeed;
 
   @override
   Future<Process> start(
     List<dynamic> command, {
-    String workingDirectory,
-    Map<String, String> environment,
+    String? workingDirectory,
+    Map<String, String>? environment,
     bool includeParentEnvironment = true,
     bool runInShell = false,
     ProcessStartMode mode = ProcessStartMode.normal,
   }) {
+    command = command as List<String>;
     if (!succeed) {
       final String executable = command[0];
       final List<String> arguments =
@@ -146,14 +147,16 @@ class MockProcessManager implements ProcessManager {
 
 /// A process that exits successfully with no output and ignores all input.
 class MockProcess extends Mock implements Process {
+  late MemoryIOSink _stdin;
+
   MockProcess({
     this.pid = 1,
-    Future<int> exitCode,
-    Stream<List<int>> stdin,
+    Future<int>? exitCode,
+    MemoryIOSink? stdin,
     this.stdout = const Stream<List<int>>.empty(),
     this.stderr = const Stream<List<int>>.empty(),
   })  : exitCode = exitCode ?? Future<int>.value(0),
-        stdin = stdin ?? MemoryIOSink();
+        _stdin = stdin ?? MemoryIOSink();
 
   @override
   final int pid;
@@ -162,7 +165,7 @@ class MockProcess extends Mock implements Process {
   final Future<int> exitCode;
 
   @override
-  final io.IOSink stdin;
+  io.IOSink get stdin => _stdin;
 
   @override
   final Stream<List<int>> stdout;
@@ -198,13 +201,13 @@ class MemoryIOSink implements IOSink {
   }
 
   @override
-  void write(Object obj) {
-    add(encoding.encode('$obj'));
+  void write(Object? object) {
+    add(encoding.encode('$object'));
   }
 
   @override
-  void writeln([Object obj = '']) {
-    add(encoding.encode('$obj\n'));
+  void writeln([Object? object = ""]) {
+    add(encoding.encode('$object\n'));
   }
 
   @override
@@ -220,7 +223,7 @@ class MemoryIOSink implements IOSink {
   }
 
   @override
-  void addError(dynamic error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     throw UnimplementedError();
   }
 

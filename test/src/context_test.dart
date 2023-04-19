@@ -12,7 +12,7 @@ import 'package:tool_base/tool_base.dart';
 void main() {
   group('AppContext', () {
     group('global getter', () {
-      bool called;
+      late bool called;
 
       setUp(() {
         called = false;
@@ -88,7 +88,7 @@ void main() {
           () async {
         final Completer<void> outer = Completer<void>();
         final Completer<void> inner = Completer<void>();
-        String value;
+        String? value;
         await context.run<void>(
           body: () {
             outer.future.then<void>((_) {
@@ -108,10 +108,10 @@ void main() {
 
       test('caches generated override values', () async {
         int consultationCount = 0;
-        String value;
+        String? value;
         await context.run<void>(
           body: () async {
-            final StringBuffer buf = StringBuffer(context.get<String>());
+            final StringBuffer buf = StringBuffer(context.get<String>()!);
             buf.write(context.get<String>());
             await context.run<void>(body: () {
               buf.write(context.get<String>());
@@ -131,10 +131,10 @@ void main() {
 
       test('caches generated fallback values', () async {
         int consultationCount = 0;
-        String value;
+        String? value;
         await context.run(
           body: () async {
-            final StringBuffer buf = StringBuffer(context.get<String>());
+            final StringBuffer buf = StringBuffer(context.get<String>()!);
             buf.write(context.get<String>());
             await context.run<void>(body: () {
               buf.write(context.get<String>());
@@ -153,7 +153,7 @@ void main() {
       });
 
       test('returns null if generated value is null', () async {
-        final String value = await context.run<String>(
+        final String? value = await context.run<String?>(
           body: () => context.get<String>(),
           overrides: <Type, Generator>{
             String: () => null,
@@ -165,12 +165,12 @@ void main() {
       test('throws if generator has dependency cycle', () async {
         final Future<String> value = context.run<String>(
           body: () async {
-            return context.get<String>();
+            return context.get<String>()!;
           },
           fallbacks: <Type, Generator>{
-            int: () => int.parse(context.get<String>()),
+            int: () => int.parse(context.get<String>()!),
             String: () => '${context.get<double>()}',
-            double: () => context.get<int>() * 1.0,
+            double: () => context.get<int>()! * 1.0,
           },
         );
         try {
@@ -200,7 +200,7 @@ void main() {
       });
 
       group('fallbacks', () {
-        bool called;
+        bool? called;
 
         setUp(() {
           called = false;
@@ -212,7 +212,7 @@ void main() {
               return context.run<String>(
                 body: () {
                   called = true;
-                  return context.get<String>();
+                  return context.get<String>()!;
                 },
                 fallbacks: <Type, Generator>{
                   String: () => 'child',
@@ -231,7 +231,7 @@ void main() {
               return context.run<String>(
                 body: () {
                   called = true;
-                  return context.get<String>();
+                  return context.get<String>()!;
                 },
                 fallbacks: <Type, Generator>{
                   String: () {
@@ -253,7 +253,7 @@ void main() {
         test('may depend on one another', () async {
           final String value = await context.run<String>(
             body: () {
-              return context.get<String>();
+              return context.get<String>()!;
             },
             fallbacks: <Type, Generator>{
               int: () => 123,
@@ -270,7 +270,7 @@ void main() {
           final String value = await context.run<String>(
             body: () {
               return context.run<String>(
-                body: () => context.get<String>(),
+                body: () => context.get<String>()!,
                 overrides: <Type, Generator>{
                   String: () => 'child',
                 },

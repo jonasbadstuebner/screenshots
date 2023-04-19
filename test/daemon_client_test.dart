@@ -60,21 +60,18 @@ main() {
 
   group('daemon client', () {
     const streamPeriod = 150;
-    FakePlatform fakePlatform;
+    late FakePlatform fakePlatform;
 
     setUp(() {
       fakePlatform = FakePlatform.fromPlatform(const LocalPlatform());
     });
 
     group('mocked process', () {
-      MockProcessManager mockProcessManager;
-      Process mockProcess;
+      late FakeProcessManager mockProcessManager;
+      late Process mockProcess;
 
       setUp(() async {
-        mockProcessManager = MockProcessManager();
-        mockProcess = MockProcess();
-
-        when(mockProcessManager.start(any)).thenAnswer((Invocation invocation) {
+        mockProcessManager = FakeProcessManager(customStart: () {
           final MockStdIn mockStdIn = MockStdIn();
           when(mockProcess.stdin).thenReturn(mockStdIn);
 
@@ -85,6 +82,7 @@ main() {
               Future<int>.delayed(Duration.zero, () => 0));
           return Future<Process>.value(mockProcess);
         });
+        mockProcess = MockProcess();
       });
 
       tearDown(() {});
@@ -112,7 +110,6 @@ main() {
         await daemonClient.start;
         await daemonClient.stop;
 
-        verify(mockProcessManager.start(any)).called(1);
         verify(mockProcess.stdin).called(2);
         verify(mockProcess.stdout).called(1);
         verify(mockProcess.stderr).called(1);
@@ -172,7 +169,6 @@ main() {
         final exitCode = await daemonClient.stop;
         expect(exitCode, 0);
 
-        verify(mockProcessManager.start(any)).called(1);
         verify(mockProcess.stdin).called(5);
         verify(mockProcess.stdout).called(1);
         verify(mockProcess.stderr).called(1);
@@ -185,7 +181,7 @@ main() {
     });
 
     group('faked processes', () {
-      FakeProcessManager fakeProcessManager;
+      late FakeProcessManager fakeProcessManager;
       final List<String> stdinCaptured = <String>[];
 
       void _captureStdin(String item) {
@@ -260,8 +256,8 @@ main() {
     });
 
     group('in CI', () {
-      FakeProcessManager fakeProcessManager;
-      FakePlatform fakePlatform;
+      late FakeProcessManager fakeProcessManager;
+      late FakePlatform fakePlatform;
       final List<String> stdinCaptured = <String>[];
 
       void _captureStdin(String item) {

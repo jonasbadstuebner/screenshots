@@ -29,7 +29,7 @@ devices:
     final deviceNames = configInfo['devices']['android'];
     print('deviceNames=$deviceNames');
     for (final deviceName in deviceNames.keys) {
-      DaemonEmulator emulator = utils.findEmulator(emulators, deviceName);
+      DaemonEmulator? emulator = utils.findEmulator(emulators, deviceName);
 //      if (!foundIt(emulator)) {
 //        // find by emulatorId
 //        emulator = findEmulatorById(emulators, deviceName);
@@ -39,7 +39,7 @@ devices:
 //    expect(foundIt(findEmulator(emulators, 'Nexus 6P')), true);
 //    expect(foundIt(findEmulator(emulators, 'Nexus_6P_API_27')), false);
 //    expect(foundIt(findEmulator(emulators, 'Nexus 6P API 27')), false);
-  }, skip:     true  );
+  }, skip: true);
 }
 
 Map findEmulatorById(List emulators, String emulatorName) {

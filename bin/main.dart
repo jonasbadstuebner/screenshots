@@ -8,7 +8,7 @@ const usage =
 const sampleUsage = 'sample usage: screenshots';
 
 void main(List<String> arguments) async {
-  ArgResults argResults;
+  late ArgResults argResults;
 
   final configArg = 'config';
   final modeArg = 'mode';
@@ -124,7 +124,9 @@ void main(List<String> arguments) async {
     mode: argResults[modeArg],
     flavor: argResults[flavorArg],
     isBuild: argResults.wasParsed(buildArg)
-        ? argResults[buildArg] == 'true' ? true : false
+        ? argResults[buildArg] == 'true'
+            ? true
+            : false
         : null,
     isVerbose: argResults.wasParsed(verboseArg) ? true : false,
   );

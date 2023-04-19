@@ -21,7 +21,7 @@ main() {
   final emulatorId = 'NEXUS_6P_API_28';
   final List<String> stdinCaptured = <String>[];
 
-  Directory sdkDir;
+  Directory? sdkDir;
 
   void _captureStdin(String item) {
     stdinCaptured.add(item);
@@ -50,8 +50,8 @@ main() {
     'platformType': 'android'
   });
 
-  FakeProcessManager fakeProcessManager;
-  MockDaemonClient mockDaemonClient;
+  late FakeProcessManager fakeProcessManager;
+  late MockDaemonClient mockDaemonClient;
 
   setUp(() async {
     fakeProcessManager = FakeProcessManager(stdinResults: _captureStdin);
@@ -62,7 +62,7 @@ main() {
 
   tearDown(() {
     if (sdkDir != null) {
-      tryToDelete(sdkDir);
+      tryToDelete(sdkDir!);
       sdkDir = null;
     }
   });
@@ -116,7 +116,7 @@ main() {
         fakeProcessManager.calls = calls;
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>();
+        final BufferLogger logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             isNot(contains('Starting $configAndroidDeviceName...')));
         expect(logger.statusText, isNot(contains('Changing locale')));
@@ -166,7 +166,7 @@ main() {
         fakeProcessManager.calls = calls;
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>();
+        final BufferLogger logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             contains('Setting orientation to LandscapeRight'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
@@ -183,7 +183,7 @@ main() {
     });
 
     group('with no attached devices, no running emulators', () {
-      MemoryFileSystem memoryFileSystem;
+      late MemoryFileSystem memoryFileSystem;
 
       setUp(() async {
         memoryFileSystem = MemoryFileSystem();
@@ -226,7 +226,7 @@ main() {
 
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>();
+        final BufferLogger logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             contains('Starting $configAndroidDeviceName...'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
@@ -443,7 +443,7 @@ main() {
         final screenshots = Screenshots(configStr: configStr);
         final result = await screenshots.run();
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>();
+        final BufferLogger logger = context.get<Logger>() as BufferLogger;
         expect(logger.errorText, '');
 //        print(logger.statusText);
         expect(logger.statusText,
@@ -557,7 +557,7 @@ main() {
       fakeProcessManager.verifyCalls();
       verify(mockDaemonClient.devices).called(3);
       verify(mockDaemonClient.emulators).called(1);
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, '');
       expect(
           logger.statusText,
@@ -594,7 +594,7 @@ main() {
             null),
       ];
       changeAndroidLocale(deviceId, deviceLocale, testLocale);
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<Logger>() as BufferLogger;
       expect(
           logger.errorText,
           contains(
@@ -660,7 +660,7 @@ main() {
         deviceId,
       );
       expect(result, isNull);
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, '');
       expect(logger.statusText,
           contains('Running $test1 on \'$deviceName\' in locale $locale...'));

@@ -48,9 +48,9 @@ const Map<String, String> _osToPathStyle = <String, String>{
 /// could not be found.
 ///
 /// If [platform] is not specified, it will default to the current platform.
-String getExecutablePath(
+String? getExecutablePath(
   String command,
-  String workingDirectory, {
+  String? workingDirectory, {
   Platform platform = const LocalPlatform(),
   FileSystem fs = const LocalFileSystem(),
 }) {
@@ -65,7 +65,7 @@ String getExecutablePath(
 
   List<String> extensions = <String>[];
   if (platform.isWindows && context.extension(command).isEmpty) {
-    extensions = platform.environment['PATHEXT'].split(pathSeparator);
+    extensions = platform.environment['PATHEXT']!.split(pathSeparator);
   }
 
   List<String> candidates = <String>[];
@@ -73,10 +73,12 @@ String getExecutablePath(
     candidates = _getCandidatePaths(
         command, <String>[workingDirectory], extensions, context);
   } else {
-    List<String> searchPath = platform.environment['PATH'].split(pathSeparator);
+    List<String> searchPath =
+        platform.environment['PATH']!.split(pathSeparator);
     candidates = _getCandidatePaths(command, searchPath, extensions, context);
   }
-  return candidates.firstWhere((String path) => fs.file(path).existsSync(),
+  return candidates.map<String?>((e) => e).firstWhere(
+      (String? path) => fs.file(path).existsSync(),
       orElse: () => null);
 }
 
@@ -87,7 +89,7 @@ String getExecutablePath(
 /// `$searchPath\$command`.
 /// If [command] is an absolute path, it will just enumerate
 /// `$command.$ext`.
-Iterable<String> _getCandidatePaths(
+List<String> _getCandidatePaths(
   String command,
   List<String> searchPaths,
   List<String> extensions,

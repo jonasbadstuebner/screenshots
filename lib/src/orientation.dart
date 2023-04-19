@@ -11,7 +11,7 @@ enum Orientation { Portrait, LandscapeRight, PortraitUpsideDown, LandscapeLeft }
 /// Change orientation of a running emulator or simulator.
 /// (No known way of supporting real devices.)
 void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
-    {String deviceId, String scriptDir}) {
+    {String? deviceId, String? scriptDir}) {
   final androidOrientations = {
     'Portrait': '0',
     'LandscapeRight': '1',
@@ -30,15 +30,15 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
   switch (deviceType) {
     case DeviceType.android:
       cmd([
-        getAdbPath(androidSdk),
+        getAdbPath(androidSdk)!,
         '-s',
-        deviceId,
+        deviceId!,
         'shell',
         'settings',
         'put',
         'system',
         'user_rotation',
-        androidOrientations[_orientation]
+        androidOrientations[_orientation]!
       ]);
       break;
     case DeviceType.ios:
@@ -46,7 +46,7 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
       cmd([
         'osascript',
         '$scriptDir/$sim_orientation_script',
-        iosOrientations[_orientation]
+        iosOrientations[_orientation]!
       ]);
       break;
   }

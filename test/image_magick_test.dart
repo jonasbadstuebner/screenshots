@@ -15,16 +15,11 @@ class PlainMockProcessManager extends Mock implements ProcessManager {}
 
 main() {
   group('image magick', () {
-    ProcessManager mockProcessManager;
+    late ProcessManager mockProcessManager;
 
     setUp(() {
-      mockProcessManager = PlainMockProcessManager();
-      when(mockProcessManager.runSync(
-        any,
-        environment: anyNamed('environment'),
-        workingDirectory: anyNamed('workingDirectory'),
-        runInShell: anyNamed('runInShell'),
-      )).thenAnswer((Invocation invocation) => ProcessResult(0, 0, null, null));
+      mockProcessManager = FakeProcessManager(
+          customResultSync: () => ProcessResult(0, 0, null, null));
     });
 
     testUsingContext('overlay', () async {
@@ -73,7 +68,7 @@ main() {
   });
 
   group('main image magick', () {
-    FakeProcessManager fakeProcessManager;
+    late FakeProcessManager fakeProcessManager;
 
     setUp(() async {
       fakeProcessManager = FakeProcessManager();

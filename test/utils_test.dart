@@ -22,10 +22,10 @@ class FakeAndroidSDK extends Fake implements AndroidSdk {
 main() {
   group('utils', () {
     group('in context', () {
-      FakeAndroidSDK fakeAndroidSdk;
-      FileSystem mockFileSystem;
-      File mockFile;
-      FakeProcessManager fakeProcessManager;
+      late FakeAndroidSDK fakeAndroidSdk;
+      late FileSystem mockFileSystem;
+      late File mockFile;
+      late FakeProcessManager fakeProcessManager;
 
       setUp(() {
         fakeAndroidSdk = FakeAndroidSDK();
@@ -76,8 +76,8 @@ main() {
         final emulatorId = '$emulatorName API 123'.replaceAll(' ', '_');
         final expected = DaemonEmulator(
             emulatorId, '$emulatorName version', 'category', 'platformType');
-        expect(
-            findEmulator([expected], emulatorName).name, equals(expected.name));
+        expect(findEmulator([expected], emulatorName)?.name,
+            equals(expected.name));
       });
     });
   });

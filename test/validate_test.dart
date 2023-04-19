@@ -11,8 +11,8 @@ import 'src/context.dart';
 
 main() {
   group('validate', () {
-    FakeProcessManager fakeProcessManager;
-    FakePlatform fakePlatform;
+    late FakeProcessManager fakeProcessManager;
+    late FakePlatform fakePlatform;
 
     setUp(() {
       fakeProcessManager = FakeProcessManager();
@@ -151,7 +151,7 @@ main() {
 
     testUsingContext('fail', () async {
       fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<BufferLogger>()!;
       final configStr = '''
           tests:
             - example/test_driver/main.dartx
@@ -245,14 +245,14 @@ main() {
 //      expect(logger.errorText, contains('No device attached or emulator installed for device \'Unknown android phone\' in screenshots.yaml.'));
 //      expect(logger.errorText, isNot(contains('No device attached or simulator installed for device \'Bad ios phone\' in screenshots.yaml.')));
     }, skip: false, overrides: <Type, Generator>{
-      Logger: () => BufferLogger(),
+      BufferLogger: () => BufferLogger(),
       Platform: () => fakePlatform,
       ProcessManager: () => fakeProcessManager,
     });
 
     testUsingContext('show device guide', () async {
       fakePlatform = fakePlatform.copyWith(operatingSystem: 'macos');
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<BufferLogger>()!;
       final screens = Screens();
       await screens.init();
       final installedEmulator = loadDaemonEmulator({
@@ -298,7 +298,7 @@ main() {
       ];
       fakeProcessManager.calls = [callListIosDevices];
       expect(
-          () async => await deviceGuide(
+          () => deviceGuide(
               screens, allDevices, allEmulators, 'myScreenshots.yaml'),
           returnsNormally);
       expect(logger.statusText, contains('Device Guide'));
@@ -312,7 +312,7 @@ main() {
 //      print(logger.errorText);
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
-      Logger: () => BufferLogger(),
+      BufferLogger: () => BufferLogger(),
       Platform: () => fakePlatform,
       ProcessManager: () => fakeProcessManager,
     });

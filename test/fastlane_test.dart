@@ -12,7 +12,7 @@ import 'src/context.dart';
 main() {
   group('fastlane', () {
     final dirPath = 'test/$kTestScreenshotsDir';
-    MemoryFileSystem memoryFileSystem;
+    late MemoryFileSystem memoryFileSystem;
 
     setUp(() {
       // create test files
@@ -25,7 +25,8 @@ main() {
       for (final filePath in filePaths) {
         memoryFileSystem.file(filePath).createSync();
       }
-      expect(memoryFileSystem.directory(dirPath).listSync().length, filePaths.length);
+      expect(memoryFileSystem.directory(dirPath).listSync().length,
+          filePaths.length);
     });
 
     testUsingContext('prefix files and delete matching files', () async {
@@ -41,9 +42,7 @@ main() {
       // cleanup
       deleteMatchingFiles(dirPath, RegExp(prefix));
       expect(memoryFileSystem.directory(dirPath).listSync().length, 0);
-    }, overrides: {
-      FileSystem: () => memoryFileSystem
-    });
+    }, overrides: {FileSystem: () => memoryFileSystem});
 
     testUsingContext('clear fastlane dirs', () async {
       final configStr = '''
@@ -64,11 +63,13 @@ main() {
       for (final locale in config.locales) {
         for (final device in config.devices) {
           // create files
-          int i=0;
+          int i = 0;
           final path = getDirPath(device.deviceType, locale,
               getAndroidModelType(screens.getScreen(device.name), device.name));
           expect(memoryFileSystem.directory(path).existsSync(), isFalse);
-          memoryFileSystem.file('$path/${device.name}-$i.$kImageExtension').createSync(recursive: true);
+          memoryFileSystem
+              .file('$path/${device.name}-$i.$kImageExtension')
+              .createSync(recursive: true);
           expect(memoryFileSystem.directory(path).listSync().length, 1);
         }
       }

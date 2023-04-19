@@ -32,7 +32,7 @@ Future clearFastlaneDirs(
 /// Clear images destination.
 Future _clearFastlaneDir(Screens screens, String deviceName, String locale,
     DeviceType deviceType, RunMode runMode) async {
-  final Map screenProps = screens.getScreen(deviceName);
+  final Map? screenProps = screens.getScreen(deviceName);
   String androidModelType = getAndroidModelType(screenProps, deviceName);
 
   final dirPath = getDirPath(deviceType, locale, androidModelType);
@@ -74,7 +74,7 @@ String getDirPath(
 }
 
 /// Get android model type (phone or tablet screen size).
-String getAndroidModelType(Map screenProps, String deviceName) {
+String getAndroidModelType(Map? screenProps, String deviceName) {
   String androidDeviceType = kFastlanePhone;
   if (screenProps == null) {
     printStatus(

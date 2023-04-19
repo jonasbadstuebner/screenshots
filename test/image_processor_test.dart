@@ -35,7 +35,7 @@ main() {
     for (final String deviceName in devices.keys) {
       final screenshotName = devices[deviceName];
 //      print('deviceName=$deviceName, screenshotName=$screenshotName');
-      Map screen = screens.getScreen(deviceName);
+      Map screen = screens.getScreen(deviceName)!;
 
       final Map screenResources = screen['resources'];
       await resources.unpackImages(screenResources, '/tmp/screenshots');
@@ -69,15 +69,15 @@ main() {
     }
     for (var deviceName in devices.values) {
       await runInContext<void>(() async {
-        return cmd(['git', 'checkout', '$imageDir/$deviceName']);
+        cmd(['git', 'checkout', '$imageDir/$deviceName']);
       });
     }
   });
 
   group('image processor', () {
-    FakeProcessManager fakeProcessManager;
-    MemoryFileSystem memoryFileSystem;
-    MockImageMagick mockImageMagick;
+    late FakeProcessManager fakeProcessManager;
+    late MemoryFileSystem memoryFileSystem;
+    late MockImageMagick mockImageMagick;
 
     setUp(() async {
       memoryFileSystem = MemoryFileSystem();
@@ -152,15 +152,15 @@ main() {
       };
 
       when(mockImageMagick.compare(any, any)).thenReturn(false);
-      when(mockImageMagick.getDiffImagePath(any)).thenReturn(
-          'test/resources/diff file${ImageMagick.kDiffSuffix}.png');
+      when(mockImageMagick.getDiffImagePath(any))
+          .thenReturn('test/resources/diff file${ImageMagick.kDiffSuffix}.png');
 
       final failedCompare = await ImageProcessor.compareImages(
           deviceName, recordingDir, comparisonDir);
       expect(failedCompare, expected);
       // show diffs
       ImageProcessor.showFailedCompare(failedCompare);
-      final BufferLogger logger = context.get<Logger>();
+      final BufferLogger logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, contains('Comparison failed:'));
     }, overrides: <Type, Generator>{
 //      ProcessManager: () => fakeProcessManager,

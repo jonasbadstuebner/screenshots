@@ -107,11 +107,16 @@ class ImageMagick {
     return result == '1';
   }
 
-  bool compare(String comparisonImage, String recordedImage) {
+  bool compare(String? comparisonImage, String? recordedImage) {
     final diffImage = getDiffImagePath(comparisonImage);
 
-    int returnCode = _imageMagickCmd('compare',
-        <String>['-metric', 'mae', recordedImage, comparisonImage, diffImage]);
+    int returnCode = _imageMagickCmd('compare', <String>[
+      '-metric',
+      'mae',
+      recordedImage!,
+      comparisonImage!,
+      diffImage
+    ]);
 
     if (returnCode == 0) {
       // delete no-diff diff image created by image magick
@@ -121,8 +126,8 @@ class ImageMagick {
   }
 
   /// Append diff suffix [kDiffSuffix] to [imagePath].
-  String getDiffImagePath(String imagePath) {
-    final diffName = p.dirname(imagePath) +
+  String getDiffImagePath(String? imagePath) {
+    final diffName = p.dirname(imagePath!) +
         '/' +
         p.basenameWithoutExtension(imagePath) +
         kDiffSuffix +
@@ -163,12 +168,14 @@ class ImageMagick {
   }
 }
 
-
 /// Check Image Magick is installed.
 Future<bool> isImageMagicInstalled() async {
   try {
     return await runInContext<bool>(() {
-      return runCmd(platform.isWindows ? ['magick', '-version'] : ['convert', '-version']) == 0;
+      return runCmd(platform.isWindows
+              ? ['magick', '-version']
+              : ['convert', '-version']) ==
+          0;
     });
   } catch (e) {
     return false;

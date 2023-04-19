@@ -9,8 +9,8 @@ import 'utils.dart' as utils;
 
 /// Check emulators and simulators are installed, devices attached,
 /// matching screen is available and tests exist.
-Future<bool> isValidConfig(
-    Config config, Screens screens, List allDevices, List allEmulators) async {
+Future<bool> isValidConfig(Config config, Screens screens,
+    List<DaemonDevice> allDevices, List<DaemonEmulator> allEmulators) async {
   bool isValid = true;
   bool showDeviceGuide = false;
   final configPath = config.configPath;
@@ -23,7 +23,8 @@ Future<bool> isValidConfig(
     }
   }
 
-  final isDeviceAttached = (device) => device != null;
+  final bool Function(DaemonDevice?) isDeviceAttached =
+      (DaemonDevice? device) => device != null;
 
   // validate android device
   if (config.isRunTypeActive(DeviceType.android)) {
@@ -42,7 +43,8 @@ Future<bool> isValidConfig(
           !isEmulatorInstalled(allEmulators, configDevice.name)) {
         printError('No device attached or emulator installed for '
             'device \'${configDevice.name}\' in $configPath.');
-        printError('  Either remove \'${configDevice.name}\' from $configPath or '
+        printError(
+            '  Either remove \'${configDevice.name}\' from $configPath or '
             'attach/install the matching device/emulator');
         isValid = false;
         showDeviceGuide = true;
@@ -69,7 +71,8 @@ Future<bool> isValidConfig(
             !isSimulatorInstalled(simulators, configDevice.name)) {
           printError('No device attached or simulator installed for '
               'device \'${configDevice.name}\' in $configPath.');
-          printError('  Either remove \'${configDevice.name}\' from $configPath or '
+          printError(
+              '  Either remove \'${configDevice.name}\' from $configPath or '
               'attach/install the matching device/simulator');
           showDeviceGuide = true;
           isValid = false;
@@ -129,7 +132,7 @@ bool isValidTestPaths(String driverArgs) {
     final match = regExp.firstMatch(driverArgs);
     if (match != null) {
       matchFound = true;
-      final path = match.group(1);
+      final path = match.group(1)!;
       isInvalidPath = isInvalidPath || !pathExists(path);
     }
   }
@@ -137,7 +140,9 @@ bool isValidTestPaths(String driverArgs) {
   // if invalid path found during matching return, otherwise check default path
   return !(isInvalidPath
       ? isInvalidPath
-      : matchFound ? isInvalidPath : !pathExists(driverArgs));
+      : matchFound
+          ? isInvalidPath
+          : !pathExists(driverArgs));
 }
 
 /// Check if an emulator is installed.
@@ -231,7 +236,7 @@ void screenGuide(Screens screens) {
     printStatus('    $os:');
     for (String deviceName in screens.getSupportedDeviceNamesByOs(os)) {
       printStatus(
-          '      $deviceName (${screens.getScreen(deviceName)['size']})');
+          '      $deviceName (${screens.getScreen(deviceName)?['size']})');
     }
   }
 }
@@ -239,9 +244,10 @@ void screenGuide(Screens screens) {
 void _printAttachedDevices(List<DaemonDevice> devices) {
   for (final device in devices) {
 //    if (device.emulator == false) {
-      device.platform == 'ios'
-          ? printStatus('    ${device.iosModel} (${device.id})')
-          : printStatus('    ${device.emulator?'${device.emulatorId}':'${device.name}'} (${device.id})');
+    device.platform == 'ios'
+        ? printStatus('    ${device.iosModel} (${device.id})')
+        : printStatus(
+            '    ${device.emulator ? '${device.emulatorId}' : '${device.name}'} (${device.id})');
 //    }
   }
 }
@@ -260,8 +266,8 @@ void _printSimulators() {
           : thisSim.compareTo(otherSim));
   if (simulatorNames.isNotEmpty) {
     printStatus('\n  Installed simulators:');
-    simulatorNames.forEach((simulatorName) =>
-        printStatus('    $simulatorName'));
+    simulatorNames
+        .forEach((simulatorName) => printStatus('    $simulatorName'));
   }
 }
 

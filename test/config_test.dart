@@ -24,7 +24,7 @@ main() {
         expectedIosName,
         DeviceType.ios,
         expectedIosFrame,
-        [orientation],
+        [orientation!],
         true,
       );
       final expectedAndroidName = 'Nexus 6P';
@@ -84,7 +84,7 @@ main() {
         frame: true
         ''';
       Config config = Config(configStr: configStr);
-      expect(config.devices[0].orientations[0], Orientation.Portrait);
+      expect(config.devices[0].orientations![0], Orientation.Portrait);
       configStr = '''
         devices:
           android:
@@ -93,7 +93,7 @@ main() {
         frame: true
         ''';
       config = Config(configStr: configStr);
-      expect(config.devices[0].orientations[0], Orientation.Portrait);
+      expect(config.devices[0].orientations![0], Orientation.Portrait);
     });
 
     test('active run type', () {
@@ -169,9 +169,9 @@ main() {
       config = Config(configStr: configStr);
       final device = config.getDevice(deviceName);
       expect(
-          config.isFrameRequired(deviceName, device.orientations[0]), isTrue);
+          config.isFrameRequired(deviceName, device.orientations![0]), isTrue);
       expect(
-          config.isFrameRequired(deviceName, device.orientations[1]), isFalse);
+          config.isFrameRequired(deviceName, device.orientations![1]), isFalse);
     });
 
     test('store and retrieve environment', () async {
@@ -196,10 +196,10 @@ main() {
       // called by screenshots before test
       await config.storeEnv(
           screens,
-          env['device_name'],
-          env['locale'],
-          getEnumFromString(DeviceType.values, env['device_type']),
-          getEnumFromString(Orientation.values, orientation));
+          env['device_name']!,
+          env['locale']!,
+          getEnumFromString(DeviceType.values, env['device_type']!)!,
+          getEnumFromString(Orientation.values, orientation)!);
 
       // called by test
       // simulate no screenshots available

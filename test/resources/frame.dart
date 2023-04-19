@@ -16,7 +16,7 @@ const kFrameTestTmpDir = '/tmp/frame_test';
 const kRunMode = RunMode.normal;
 
 main(List<String> arguments) async {
-  ArgResults argResults;
+  late ArgResults argResults;
 
   final screenshotArg = 'screenshot';
   final deviceArg = 'device';
@@ -64,6 +64,11 @@ Future runFrame(String screenshotPath, String deviceName) async {
     exit(1);
   }
   final deviceType = screens.getDeviceType(deviceName);
+
+  if (deviceType == null) {
+    print('Error: deviceType not found for \'$deviceName\'');
+    exit(1);
+  }
 
   clearDirectory(kFrameTestTmpDir);
 
