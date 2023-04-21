@@ -18,8 +18,10 @@ const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
 // Note: should not have context dependencies as is also used in driver.
 // todo: yaml validation
 class ScreenshotsConfig {
-  ScreenshotsConfig({String? configPath, String? configStr})
-      : this.configPath = configPath ?? kConfigFileName,
+  ScreenshotsConfig({
+    String? configPath,
+    String? configStr,
+  })  : this.configPath = configPath ?? kConfigFileName,
         this._configStr = configStr {
     if (configStr != null) {
       // used by tests
