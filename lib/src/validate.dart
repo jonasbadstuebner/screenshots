@@ -9,7 +9,7 @@ import 'utils.dart' as utils;
 
 /// Check emulators and simulators are installed, devices attached,
 /// matching screen is available and tests exist.
-Future<bool> isValidConfig(Config config, Screens screens,
+Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
     List<DaemonDevice> allDevices, List<DaemonEmulator> allEmulators) async {
   bool isValid = true;
   bool showDeviceGuide = false;
@@ -188,8 +188,8 @@ bool isSimulatorInstalled(Map simulators, String deviceName) {
 }
 
 /// Generate a guide for matching configured devices to current environment.
-void deviceGuide(Screens screens, List<DaemonDevice> devices,
-    List<DaemonEmulator> emulators, String configPath) {
+void deviceGuide(Screens screens, List<DaemonDevice>? devices,
+    List<DaemonEmulator>? emulators, String configPath) {
   printStatus('\nDevice Guide:');
   if (devices != null && devices.isNotEmpty) {
     printStatus('\n  Attached devices/running emulators:');

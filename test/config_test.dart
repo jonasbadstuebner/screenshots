@@ -57,7 +57,7 @@ main() {
       recording: $expectedRecording
       archive: $expectedArchive
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
 
       expect(config.tests, [expectedTest]);
       expect(config.stagingDir, expectedStaging);
@@ -83,7 +83,7 @@ main() {
                 - Portrait
         frame: true
         ''';
-      Config config = Config(configStr: configStr);
+      ScreenshotsConfig config = ScreenshotsConfig(configStr: configStr);
       expect(config.devices[0].orientations![0], Orientation.Portrait);
       configStr = '''
         devices:
@@ -92,7 +92,7 @@ main() {
               orientation: Portrait
         frame: true
         ''';
-      config = Config(configStr: configStr);
+      config = ScreenshotsConfig(configStr: configStr);
       expect(config.devices[0].orientations![0], Orientation.Portrait);
     });
 
@@ -121,19 +121,19 @@ main() {
           android:
       ''';
 //      Map config = utils.parseYamlStr(configIosOnly);
-      Config config = Config(configStr: configIosOnly);
+      ScreenshotsConfig config = ScreenshotsConfig(configStr: configIosOnly);
       expect(config.isRunTypeActive(DeviceType.ios), isTrue);
       expect(config.isRunTypeActive(DeviceType.android), isFalse);
 
-      config = Config(configStr: configAndroidOnly);
+      config = ScreenshotsConfig(configStr: configAndroidOnly);
       expect(config.isRunTypeActive(DeviceType.ios), isFalse);
       expect(config.isRunTypeActive(DeviceType.android), isTrue);
 
-      config = Config(configStr: configBoth);
+      config = ScreenshotsConfig(configStr: configBoth);
       expect(config.isRunTypeActive(DeviceType.ios), isTrue);
       expect(config.isRunTypeActive(DeviceType.android), isTrue);
 
-      config = Config(configStr: configNeither);
+      config = ScreenshotsConfig(configStr: configNeither);
       expect(config.isRunTypeActive(DeviceType.ios), isFalse);
       expect(config.isRunTypeActive(DeviceType.android), isFalse);
     });
@@ -146,7 +146,7 @@ main() {
             $deviceName:
         frame: true
         ''';
-      Config config = Config(configStr: configStr);
+      ScreenshotsConfig config = ScreenshotsConfig(configStr: configStr);
       expect(config.isFrameRequired(deviceName, null), isTrue);
       configStr = '''
         devices:
@@ -155,7 +155,7 @@ main() {
               frame: false
         frame: true
         ''';
-      config = Config(configStr: configStr);
+      config = ScreenshotsConfig(configStr: configStr);
       expect(config.isFrameRequired(deviceName, null), isFalse);
       configStr = '''
         devices:
@@ -166,7 +166,7 @@ main() {
                 - LandscapeRight
         frame: true
         ''';
-      config = Config(configStr: configStr);
+      config = ScreenshotsConfig(configStr: configStr);
       final device = config.getDevice(deviceName);
       expect(
           config.isFrameRequired(deviceName, device.orientations![0]), isTrue);
@@ -180,7 +180,7 @@ main() {
       String configStr = '''
         staging: $tmpDir
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
       final screens = await Screens();
       await screens.init();
       final orientation = 'Portrait';
@@ -203,13 +203,13 @@ main() {
 
       // called by test
       // simulate no screenshots available
-      Config testConfig = Config(configStr: configStr);
+      ScreenshotsConfig testConfig = ScreenshotsConfig(configStr: configStr);
       expect(await testConfig.screenshotsEnv, {});
 
       // simulate screenshots available
       final configPath = '$tmpDir/screenshots.yaml';
       await io.File(configPath).writeAsString(configStr);
-      testConfig = Config(configPath: configPath);
+      testConfig = ScreenshotsConfig(configPath: configPath);
       expect(await testConfig.screenshotsEnv, env);
     });
   });

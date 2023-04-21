@@ -185,7 +185,7 @@ main() {
       final screens = Screens();
       await screens.init();
 
-      final config = Config(configPath: configPath);
+      final config = ScreenshotsConfig(configPath: configPath);
 
       // init
       final stagingDir = config.stagingDir;

@@ -20,7 +20,7 @@ class DaemonClient {
   int _messageId = 0;
   bool _connected = false;
   Completer? _waitForConnection;
-  Completer _waitForResponse = Completer<dynamic>();
+  Completer? _waitForResponse;
   Completer _waitForEvent = Completer<String>();
   List? _iosDevices; // contains model of device, used by screenshots
   StreamSubscription? _stdOutListener;
@@ -73,7 +73,7 @@ class DaemonClient {
     // wait for expected device-added-emulator event
     // Note: future does not complete if emulator already running
     final results = await Future.wait(
-        <Future>[_waitForResponse.future, _waitForEvent.future]);
+        <Future>[_waitForResponse!.future, _waitForEvent.future]);
     // process the response
     _processResponse(results[0], command);
     // process the event
@@ -154,7 +154,7 @@ class DaemonClient {
         if (line.contains('"result":') ||
             line.contains('"error":') ||
             line == '[{"id":${_messageId - 1}}]') {
-          _waitForResponse.complete(line);
+          _waitForResponse?.complete(line);
         } else {
           // get event
           if (line.contains('[{"event":')) {
@@ -189,7 +189,7 @@ class DaemonClient {
   Future<List> _sendCommandWaitResponse(Map<String, dynamic> command) async {
     _sendCommand(command);
 //    printTrace('waiting for response: $command');
-    final String response = await _waitForResponse.future;
+    final String response = await _waitForResponse!.future;
 //    printTrace('response: $response');
     return _processResponse(response, command);
   }
@@ -229,19 +229,24 @@ List getIosDevices() {
 }
 
 /// Wait for emulator or simulator to start
-Future waitForEmulatorToStart(
-    DaemonClient daemonClient, String deviceId) async {
+Future<String> waitForEmulatorToStart(DaemonClient daemonClient,
+    {String? deviceId, String? emulatorId}) async {
   bool started = false;
   while (!started) {
     printTrace(
         'waiting for emulator/simulator with device id \'$deviceId\' to start...');
     final devices = await daemonClient.devices;
     final device = devices.map<DaemonDevice?>((e) => e).firstWhere(
-        (device) => device!.id == deviceId && device.emulator,
+        (device) =>
+            (deviceId == null || device!.id == deviceId) &&
+            device!.emulator &&
+            (emulatorId == null || device.emulatorId == emulatorId),
         orElse: () => null);
     started = device != null;
+    if (started) deviceId = device.id;
     await Future.delayed(Duration(milliseconds: 1000));
   }
+  return deviceId!;
 }
 
 abstract class BaseDevice {

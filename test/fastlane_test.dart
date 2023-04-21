@@ -56,7 +56,7 @@ main() {
           - locale2
         frame: true
         ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
       final screens = Screens();
       await screens.init();
 

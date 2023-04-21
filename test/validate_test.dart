@@ -63,7 +63,7 @@ main() {
               iPhone X:
           frame: true
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
       final screens = Screens();
       await screens.init();
       final allEmulators = <DaemonEmulator>[];
@@ -119,7 +119,7 @@ main() {
               iPhone X:
           frame: true
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
       final screens = Screens();
       await screens.init();
       final allEmulators = <DaemonEmulator>[];
@@ -172,7 +172,7 @@ main() {
                 orientation: LandscapeRight
           frame: true
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
       final screens = Screens();
       await screens.init();
       final emulator = loadDaemonEmulator({

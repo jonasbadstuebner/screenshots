@@ -23,7 +23,8 @@ main() {
     final imageDir = 'test/resources';
     final Screens screens = Screens();
     await screens.init();
-    final Config config = Config(configPath: 'test/screenshots_test.yaml');
+    final ScreenshotsConfig config =
+        ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
 
     final Map devices = {
       'iPhone X': 'iphone_x_1.png',
@@ -102,7 +103,7 @@ main() {
               $deviceName:
           frame: true      
       ''';
-      final config = Config(configStr: configStr);
+      final config = ScreenshotsConfig(configStr: configStr);
 
       fakeProcessManager.calls = [
         Call(

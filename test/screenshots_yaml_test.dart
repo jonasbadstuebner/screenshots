@@ -79,7 +79,7 @@ void main() {
     expect(isValidTestPaths('--driver=$testPath --target=$mainPath '), isTrue);
     expect(isValidTestPaths('--driver $testPath --target $mainPath '), isTrue);
 
-    if (!    true  ) {
+    if (!true) {
       expect(isValidTestPaths(bogusPath), isFalse);
       expect(isValidTestPaths('--target=$bogusPath'), isFalse);
       expect(
@@ -92,7 +92,8 @@ void main() {
   test('validate config file', () async {
     final Screens screens = Screens();
     await screens.init();
-    final Config config = Config(configPath: 'test/screenshots_test.yaml');
+    final ScreenshotsConfig config =
+        ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
     final daemonClient = DaemonClient();
     await daemonClient.start;
     // for this test change directory
@@ -108,17 +109,17 @@ void main() {
         true);
     // allow other tests to continue
     Directory.current = origDir;
-  }, skip:     true  );
+  }, skip: true);
 
   test('clear all destination directories on init', () async {
     final Screens screens = Screens();
     await screens.init();
-    final config = Config(configStr: screenshotsYaml);
+    final config = ScreenshotsConfig(configStr: screenshotsYaml);
     await fastlane.clearFastlaneDirs(config, screens, RunMode.normal);
-  }, skip:     true  );
+  }, skip: true);
 
   test('check if frame is needed', () {
-    final config = Config(configStr: screenshotsYaml);
+    final config = ScreenshotsConfig(configStr: screenshotsYaml);
 
     expect(config.isFrameRequired('iPhone X', null), true);
     expect(config.isFrameRequired('iPhone 7 Plus', null), false);

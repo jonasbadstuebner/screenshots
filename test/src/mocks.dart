@@ -129,6 +129,7 @@ class MockProcessManager implements ProcessManager {
     bool runInShell = false,
     ProcessStartMode mode = ProcessStartMode.normal,
   }) {
+    assert(command is List<String>);
     command = command as List<String>;
     if (!succeed) {
       final String executable = command[0];

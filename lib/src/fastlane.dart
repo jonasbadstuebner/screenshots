@@ -10,7 +10,7 @@ import 'globals.dart';
 
 /// clear configured fastlane directories.
 Future clearFastlaneDirs(
-    Config config, Screens screens, RunMode runMode) async {
+    ScreenshotsConfig config, Screens screens, RunMode runMode) async {
   if (config.isRunTypeActive(DeviceType.android)) {
     for (ConfigDevice device in config.androidDevices) {
       for (final locale in config.locales) {
@@ -69,6 +69,9 @@ String getDirPath(
       break;
     case DeviceType.ios:
       dirPath = '$iosPrefix/$locale';
+      break;
+    case DeviceType.web:
+      throw 'web not yet implemented';
   }
   return dirPath;
 }

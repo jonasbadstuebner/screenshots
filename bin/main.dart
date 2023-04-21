@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:screenshots/screenshots.dart';
+import 'package:screenshots/src/globals.dart';
 
 const usage =
     'usage: screenshots [-h] [-c <config file>] [-m <normal|recording|comparison|archive>] [-f <flavor>] [-b <true|false>] [-v]';
@@ -30,7 +31,10 @@ void main(List<String> arguments) async {
         allowed: ['normal', 'recording', 'comparison', 'archive'],
         valueHelp: 'normal|recording|comparison|archive')
     ..addOption(flavorArg,
-        abbr: 'f', help: 'Flavor name.', valueHelp: 'flavor name')
+        defaultsTo: kNoFlavor,
+        abbr: 'f',
+        help: 'Flavor name.',
+        valueHelp: 'flavor name')
     ..addOption(buildArg,
         abbr: 'b',
         help:
@@ -94,7 +98,7 @@ void main(List<String> arguments) async {
     exit(1);
   }
 
-  final config = Config(configPath: argResults[configArg]);
+  final config = ScreenshotsConfig(configPath: argResults[configArg]);
   if (config.isRunTypeActive(DeviceType.android)) {
     // check required executables for android
     if (!await isAdbPath()) {

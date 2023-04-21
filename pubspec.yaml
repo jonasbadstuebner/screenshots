@@ -1,6 +1,6 @@
 name: screenshots
 description: Auto-generation of screenshots for Apple and Play Stores using emulators, simulators and real devices. Includes support for multiple locales and framing. Compatible with fastlane.
-version: 2.2.0
+version: 2.2.1
 homepage: https://github.com/DrBu7cher/screenshots
 publish_to: none
 
@@ -17,14 +17,13 @@ dependencies:
   platform: ">=3.1.0"
   process: ">=4.2.0"
   meta: ">=1.8.0"
+  # network_info_plus: ">=3.0.3"
   intl: ">=0.15.0 <1.0.0"
   tool_mobile:
     git: https://github.com/DrBu7cher/tool_mobile.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
 
 dev_dependencies:
-  test: ^1.24.1
-  test_api: ^0.5.1
   mockito: ^5.4.0
   quiver: ^3.2.1
   fake_process_manager:
@@ -33,7 +32,6 @@ dev_dependencies:
   tool_base_test:
     git: https://github.com/DrBu7cher/tool_base_test.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main
-  collection: ^1.17.1
 
 executables:
   screenshots: main

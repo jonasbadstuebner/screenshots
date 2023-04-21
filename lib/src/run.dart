@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:io' as io;
+import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -58,7 +61,7 @@ class Screenshots {
     this.isBuild,
     this.verbose = false,
   }) {
-    config = Config(configPath: configPath, configStr: configStr);
+    config = ScreenshotsConfig(configPath: configPath, configStr: configStr);
   }
 
   String get configPath => config.configPath;
@@ -72,7 +75,7 @@ class Screenshots {
   late Screens screens;
   late List<DaemonDevice> devices;
   late List<DaemonEmulator> emulators;
-  late Config config;
+  late ScreenshotsConfig config;
   late Archive archive;
 
   /// Capture screenshots, process, and load into fastlane according to config file.
@@ -114,7 +117,11 @@ class Screenshots {
         .directory(path.join(config.stagingDir, kTestScreenshotsDir))
         .create(recursive: true);
     if (!platform.isWindows) await resources.unpackScripts(config.stagingDir);
-    archive = Archive(config.archiveDir!);
+    if (config.archiveDir != null) {
+      archive = Archive(config.archiveDir!);
+    } else {
+      throw 'Error: \'archive\' dir is not specified in your screenshots.yaml';
+    }
     if (runMode == RunMode.archive) {
       printStatus('Archiving screenshots to ${archive.archiveDirPrefix}...');
     } else {
@@ -237,9 +244,8 @@ class Screenshots {
 
       // a device is now found
       // (and running if not ios simulator pending locale change)
-      deviceId == null
-          ? throw 'Error: device \'$configDeviceName\' not found'
-          : Null;
+      if (deviceId == null)
+        throw 'Error: device \'$configDeviceName\' not found';
 
       // todo: make a backup of GlobalPreferences.plist if changing iOS locale
       // set locale and run tests
@@ -343,6 +349,8 @@ class Screenshots {
                         'Warning: cannot change orientation of a real iOS device.');
                   }
                   break;
+                case DeviceType.web:
+                  throw 'web interaction not yet implemented.';
               }
 
               // store env for later use by tests
@@ -394,8 +402,49 @@ class Screenshots {
     DeviceType deviceType,
     String deviceId,
   ) async {
+    var server = await HttpServer.bind(
+        (await NetworkInterface.list(type: InternetAddressType.IPv4))
+            .first
+            .addresses
+            .first,
+        8020);
+    server.forEach((HttpRequest request) async {
+      List<int> bytes = [];
+      await for (var b in request) {
+        bytes.addAll(b);
+      }
+
+      io.File screenshotFile = io.File(request.uri.path);
+
+      await screenshotFile.writeAsBytes(bytes);
+
+      request.response.write('Written screenshot to ${screenshotFile.path}');
+      request.response.close();
+    });
+    print('screenshot-receiver started at: ${server.address.address}:8020');
+
+    final Map<String, String> environment = {
+      kEnvConfigPath: configPath,
+      kEnvImageReceiverIPAddress: server.address.address,
+    };
+
     for (final testPath in config.tests) {
-      final command = ['flutter', '-d', deviceId, 'drive'];
+      final command = ['flutter', '-d', deviceId];
+      if (deviceType == DeviceType.web) {
+        command.addAll([
+          '--driver',
+          'test_driver/integration_test.dart',
+          'drive',
+        ]);
+      } else {
+        command.add('test');
+      }
+
+      for (var element in environment.entries) {
+        command.add("--dart-define");
+        command.add('${element.key}=${element.value}');
+      }
+
       bool _isBuild() => isBuild != null
           ? isBuild!
           : config.getDevice(configDeviceName).isBuild;
@@ -413,12 +462,13 @@ class Screenshots {
         printStatus(
             'Warning: flavor parameter \'$flavor\' is ignored because no build is set for this device');
       }
-      await utils.streamCmd(command, environment: {kEnvConfigPath: configPath});
+      await utils.streamCmd(command, environment: environment);
       // process screenshots
       final imageProcessor = ImageProcessor(screens, config);
       await imageProcessor.process(
           deviceType, configDeviceName, locale, orientation, runMode, archive);
     }
+    await server.close(force: true);
   }
 }
 
@@ -432,7 +482,7 @@ Future<void> shutdownSimulator(String deviceId) async {
 Future<void> startSimulator(DaemonClient daemonClient, String deviceId) async {
   utils.cmd(['xcrun', 'simctl', 'boot', deviceId]);
   await Future.delayed(Duration(milliseconds: 2000));
-  await waitForEmulatorToStart(daemonClient, deviceId);
+  await waitForEmulatorToStart(daemonClient, deviceId: deviceId);
 }
 
 /// Start android emulator and return device id.
@@ -444,7 +494,13 @@ Future<String> startEmulator(
 //    return utils.findAndroidDeviceId(emulatorId);
 //  } else {
   // testing locally, so start emulator in normal way
-  return await daemonClient.launchEmulator(emulatorId);
+  try {
+    String deviceId = await daemonClient.launchEmulator(emulatorId);
+    await Future.delayed(Duration(milliseconds: 2000));
+    return deviceId;
+  } catch (e) {
+    return await waitForEmulatorToStart(daemonClient, emulatorId: emulatorId);
+  }
 //  }
 }
 
@@ -523,7 +579,7 @@ Future<void> setEmulatorLocale(String deviceId, testLocale, deviceName) async {
     //          daemonClient.verbose = true;
     printStatus(
         'Changing locale from $deviceLocale to $testLocale on \'$deviceName\'...');
-    changeAndroidLocale(deviceId, deviceLocale, testLocale);
+    await changeAndroidLocale(deviceId, deviceLocale, testLocale);
     //          daemonClient.verbose = false;
     await utils.waitAndroidLocaleChange(deviceId, testLocale);
     // allow additional time before orientation change
@@ -533,8 +589,8 @@ Future<void> setEmulatorLocale(String deviceId, testLocale, deviceName) async {
 }
 
 /// Change local of real android device or running emulator.
-void changeAndroidLocale(
-    String deviceId, String deviceLocale, String testLocale) {
+Future<void> changeAndroidLocale(
+    String deviceId, String deviceLocale, String testLocale) async {
   if (utils.cmd([getAdbPath(androidSdk)!, '-s', deviceId, 'root']) ==
       'adbd cannot run as root in production builds\n') {
     printError(
@@ -544,19 +600,14 @@ void changeAndroidLocale(
     printError(
         '    https://stackoverflow.com/questions/43923996/adb-root-is-not-working-on-emulator/45668555#45668555 for details.\n');
   }
+  await Future.delayed(const Duration(seconds: 1));
   // adb shell "setprop persist.sys.locale fr_CA; setprop ctl.restart zygote"
   utils.cmd([
     getAdbPath(androidSdk)!,
     '-s',
     deviceId,
     'shell',
-    'setprop',
-    'persist.sys.locale',
-    testLocale,
-    ';',
-    'setprop',
-    'ctl.restart',
-    'zygote'
+    'setprop persist.sys.locale $testLocale; setprop ctl.restart zygote'
   ]);
 }
 
@@ -603,6 +654,6 @@ Future<String> shutdownAndroidEmulator(
 //}
 
 /// Get device type from config info
-DeviceType getDeviceType(Config config, String deviceName) {
+DeviceType getDeviceType(ScreenshotsConfig config, String deviceName) {
   return config.getDevice(deviceName).deviceType;
 }

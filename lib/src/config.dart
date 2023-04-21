@@ -12,12 +12,15 @@ import 'utils.dart' as utils;
 
 const kEnvConfigPath = 'SCREENSHOTS_YAML';
 
+const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
+
 /// Config info used to manage screenshots for android and ios.
 // Note: should not have context dependencies as is also used in driver.
 // todo: yaml validation
-class Config {
-  Config({String? configPath, String? configStr})
-      : this.configPath = configPath ?? kEnvConfigPath {
+class ScreenshotsConfig {
+  ScreenshotsConfig({String? configPath, String? configStr})
+      : this.configPath = configPath ?? kConfigFileName,
+        this._configStr = configStr {
     if (configStr != null) {
       // used by tests
       _configInfo = utils.parseYamlStr(configStr);
@@ -34,7 +37,7 @@ class Config {
       } else {
         io.stdout.writeln('Warning: screenshots not available.\n'
             '\tTo enable set $kEnvConfigPath environment variable\n'
-            '\tor create $kConfigFileName.');
+            '\tor create ${io.File(this.configPath).absolute}.');
       }
     }
   }
@@ -44,11 +47,13 @@ class Config {
   /// Created for use in driver.
   // Note: order of boolean tests is important
   bool get isScreenShotsAvailable =>
+      _configStr != null ||
       io.Platform.environment[kEnvConfigPath] != null ||
       io.File(configPath).existsSync();
 
   final String configPath;
 
+  String? _configStr;
   late Map _configInfo;
   Map? _screenshotsEnv; // current screenshots env
   List<ConfigDevice>? _devices;

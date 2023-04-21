@@ -469,7 +469,7 @@ Future<void> streamCmd(
     int exitCode = await runCommandAndStreamOutput(cmd,
         workingDirectory: workingDirectory, environment: environment);
     if (exitCode != 0) {
-      throw 'command failed: exitcode=$exitCode, cmd=\'${cmd.join(" ")}\', workingDirectory=$workingDirectory, mode=$mode';
+      throw 'command failed: exitcode=$exitCode, cmd=\'${cmd.join(" ")}\', workingDirectory=$workingDirectory, mode=$mode, environment=$environment';
     }
   } else {
 //    final process = await runDetached(cmd);

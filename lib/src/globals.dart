@@ -11,7 +11,7 @@ const kImageExtension = 'png';
 const kTestScreenshotsDir = 'test';
 
 /// Distinguish device OS.
-enum DeviceType { android, ios }
+enum DeviceType { android, ios, web }
 
 /// Run mode
 enum RunMode { normal, recording, comparison, archive }

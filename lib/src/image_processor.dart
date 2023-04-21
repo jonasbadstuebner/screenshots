@@ -22,9 +22,9 @@ class ImageProcessor {
       '1000x40+0+0'; // default sample size and location to test for brightness
 
   final Screens _screens;
-  final Config _config;
+  final ScreenshotsConfig _config;
 
-  ImageProcessor(Screens screens, Config config)
+  ImageProcessor(Screens screens, ScreenshotsConfig config)
       : _screens = screens,
         _config = config;
 

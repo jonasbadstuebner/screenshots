@@ -69,7 +69,8 @@ void main() {
       final Screens screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 6P');
-      final Config config = Config(configPath: 'test/screenshots_test.yaml');
+      final ScreenshotsConfig config =
+          ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
       final Map scrnResources = screen!['resources'];
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
       final statusbarPath =
@@ -87,7 +88,8 @@ void main() {
       final Screens screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 9');
-      final Config config = Config(configPath: 'test/screenshots_test.yaml');
+      final ScreenshotsConfig config =
+          ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
       final Map scrnResources = screen!['resources'];
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
       final screenshotNavbarPath =
@@ -105,7 +107,8 @@ void main() {
       final Screens screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 9');
-      final Config config = Config(configPath: 'test/screenshots_test.yaml');
+      final ScreenshotsConfig config =
+          ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
       final Map scrnResources = screen!['resources'];
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
       final framePath = config.stagingDir + '/' + scrnResources['frame'];
@@ -452,7 +455,7 @@ void main() {
       frame: true
       ''';
 
-      final configInfo = Config(configStr: config);
+      final configInfo = ScreenshotsConfig(configStr: config);
       DeviceType deviceType = run.getDeviceType(configInfo, deviceName);
       expect(deviceType, expected);
     });
@@ -537,7 +540,7 @@ void main() {
         await run.screenshots(
             configPath: configPath,
             mode: utils.getStringFromEnum(RunMode.recording));
-        final config = Config(configPath: configPath);
+        final config = ScreenshotsConfig(configPath: configPath);
         final recordingDir = config.recordingDir;
         expect(await utils.isRecorded(recordingDir), isTrue);
         Directory.current = origDir;
@@ -564,7 +567,7 @@ void main() {
             return im.compare(comparisonImage, recordedImage);
           });
           behave == 'good'
-              ? Null
+              ? null
               : File(im.getDiffImagePath(comparisonImage)).deleteSync();
           behave == 'good' ? expect(doCompare, true) : expect(doCompare, false);
         });
@@ -574,7 +577,7 @@ void main() {
         final origDir = Directory.current;
         Directory.current = 'example';
         final configPath = 'screenshots.yaml';
-        final config = Config(configPath: configPath);
+        final config = ScreenshotsConfig(configPath: configPath);
         final recordingDir = config.recordingDir;
         expect(await utils.isRecorded(recordingDir), isTrue);
         await run.screenshots(
@@ -760,7 +763,7 @@ void main() {
         fuschia:
       frame: true
       ''';
-        final configInfo = Config(configStr: params);
+        final configInfo = ScreenshotsConfig(configStr: params);
         final deviceNames = configInfo.deviceNames;
         for (final devName in deviceNames) {
           final deviceInfo = configInfo.getDevice(devName);
