@@ -13,6 +13,8 @@ void main(List<String> arguments) async {
 
   final configArg = 'config';
   final modeArg = 'mode';
+  final patrolArg = 'patrol';
+  final patrolLabelArg = '$patrolArg-label';
   final flavorArg = 'flavor';
   final buildArg = 'build';
   final helpArg = 'help';
@@ -30,6 +32,16 @@ void main(List<String> arguments) async {
             'If mode is recording, screenshots will be saved for later comparison. \nIf mode is comparison, screenshots will be compared with recorded.\nIf mode is archive, screenshots will be archived (and cannot be uploaded via fastlane).',
         allowed: ['normal', 'recording', 'comparison', 'archive'],
         valueHelp: 'normal|recording|comparison|archive')
+    ..addFlag(patrolLabelArg,
+        defaultsTo: false,
+        help:
+            'If set to true, displays the test name as label overlaying the application during testing. (Would show up on screenshots, so it is false by default)',
+        negatable: true)
+    ..addFlag(patrolArg,
+        abbr: 'p',
+        help:
+            'If set, the tests run with patrol instead of flutter native tests.',
+        negatable: false)
     ..addOption(flavorArg,
         defaultsTo: kNoFlavor,
         abbr: 'f',
@@ -133,6 +145,8 @@ void main(List<String> arguments) async {
             : false
         : null,
     isVerbose: argResults.wasParsed(verboseArg) ? true : false,
+    usePatrol: argResults.wasParsed(patrolArg) ? true : false,
+    showPatrolLabel: argResults[patrolLabelArg],
   );
   exit(success ? 0 : 1);
 }

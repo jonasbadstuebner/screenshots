@@ -658,6 +658,7 @@ main() {
         null,
         getDeviceType(screenshots.config, deviceName),
         deviceId,
+        usePatrol: false,
       );
       expect(result, isNull);
       final BufferLogger logger = context.get<Logger>() as BufferLogger;

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:io' as io;
-import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -22,20 +21,26 @@ import 'utils.dart' as utils;
 import 'validate.dart' as validate;
 
 /// Run screenshots
-Future<bool> screenshots(
-    {String? configPath,
-    String? configStr,
-    String mode = 'normal',
-    String flavor = kNoFlavor,
-    bool? isBuild,
-    bool isVerbose = false}) async {
+Future<bool> screenshots({
+  String? configPath,
+  String? configStr,
+  String mode = 'normal',
+  String flavor = kNoFlavor,
+  bool? isBuild,
+  bool isVerbose = false,
+  bool usePatrol = false,
+  bool showPatrolLabel = false,
+}) async {
   final screenshots = Screenshots(
-      configPath: configPath,
-      configStr: configStr,
-      mode: mode,
-      flavor: flavor,
-      isBuild: isBuild,
-      verbose: isVerbose);
+    configPath: configPath,
+    configStr: configStr,
+    mode: mode,
+    flavor: flavor,
+    isBuild: isBuild,
+    verbose: isVerbose,
+    usePatrol: usePatrol,
+    showPatrolLabel: showPatrolLabel,
+  );
   // run in context
   if (isVerbose) {
     Logger verboseLogger = VerboseLogger(
@@ -60,6 +65,8 @@ class Screenshots {
     this.flavor = kNoFlavor,
     this.isBuild,
     this.verbose = false,
+    this.usePatrol = false,
+    this.showPatrolLabel = false,
   }) {
     config = ScreenshotsConfig(configPath: configPath, configStr: configStr);
   }
@@ -70,6 +77,8 @@ class Screenshots {
   final String? flavor;
   final bool? isBuild;
   final bool verbose;
+  final bool usePatrol;
+  final bool showPatrolLabel;
 
   late RunMode runMode;
   late Screens screens;
@@ -250,6 +259,7 @@ class Screenshots {
       // todo: make a backup of GlobalPreferences.plist if changing iOS locale
       // set locale and run tests
       final deviceType = getDeviceType(config, configDeviceName);
+
       if (device != null && !device.emulator) {
         // device is real
         final defaultLocale =
@@ -262,6 +272,7 @@ class Screenshots {
           null,
           deviceType,
           deviceId,
+          usePatrol: usePatrol,
         );
       } else {
         // device is emulated
@@ -365,6 +376,7 @@ class Screenshots {
                 orientation,
                 deviceType,
                 deviceId,
+                usePatrol: usePatrol,
               );
             }
           } else {
@@ -374,6 +386,7 @@ class Screenshots {
               null,
               deviceType,
               deviceId,
+              usePatrol: usePatrol,
             );
           }
         }
@@ -400,8 +413,9 @@ class Screenshots {
     String locale,
     Orientation? orientation,
     DeviceType deviceType,
-    String deviceId,
-  ) async {
+    String deviceId, {
+    required bool usePatrol,
+  }) async {
     var server = await HttpServer.bind(
         (await NetworkInterface.list(type: InternetAddressType.IPv4))
             .first
@@ -429,15 +443,20 @@ class Screenshots {
     };
 
     for (final testPath in config.tests) {
-      final command = ['flutter', '-d', deviceId];
-      if (deviceType == DeviceType.web) {
+      final command = (usePatrol ? ['patrol', 'test'] : ['flutter'])
+        ..addAll(['-d', deviceId]);
+      if (!usePatrol && deviceType == DeviceType.web) {
         command.addAll([
           '--driver',
           'test_driver/integration_test.dart',
           'drive',
         ]);
-      } else {
+      } else if (!usePatrol) {
         command.add('test');
+      }
+
+      if (usePatrol && !showPatrolLabel) {
+        command.add("--no-label");
       }
 
       for (var element in environment.entries) {
