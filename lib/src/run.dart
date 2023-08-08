@@ -499,7 +499,13 @@ Future<void> shutdownSimulator(String deviceId) async {
 }
 
 Future<void> startSimulator(DaemonClient daemonClient, String deviceId) async {
-  utils.cmd(['xcrun', 'simctl', 'boot', deviceId]);
+  try {
+    utils.cmd(['xcrun', 'simctl', 'boot', deviceId]);
+  } catch (e) {
+    if (!e.toString().contains('current state: Booted')) {
+      rethrow;
+    }
+  }
   await Future.delayed(Duration(milliseconds: 2000));
   await waitForEmulatorToStart(daemonClient, deviceId: deviceId);
 }
