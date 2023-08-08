@@ -173,7 +173,7 @@ String getAndroidDeviceLocale(String deviceId) {
 }
 
 /// Returns locale of simulator with udid [udId].
-String getIosSimulatorLocale(String udId) {
+String? getIosSimulatorLocale(String udId) {
   final env = platform.environment;
   final globalPreferencesPath =
       '${env['HOME']}/Library/Developer/CoreSimulator/Devices/$udId/data/Library/Preferences/.GlobalPreferences.plist';
