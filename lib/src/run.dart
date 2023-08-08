@@ -502,7 +502,7 @@ Future<void> startSimulator(DaemonClient daemonClient, String deviceId) async {
   try {
     utils.cmd(['xcrun', 'simctl', 'boot', deviceId]);
   } catch (e) {
-    if (!e.toString().contains('current state: Booted')) {
+    if (!e.toString().contains('exitcode=149')) {
       rethrow;
     }
   }
