@@ -11,8 +11,8 @@ import 'screens.dart';
 import 'utils.dart' as utils;
 
 const kEnvConfigPath = 'SCREENSHOTS_YAML';
-
 const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
+const kEnvImageReceiverPort = 'IMAGE_RECEIVER_PORT';
 
 /// Config info used to manage screenshots for android and ios.
 // Note: should not have context dependencies as is also used in driver.
@@ -62,6 +62,10 @@ class ScreenshotsConfig {
 
   // Getters
   List<String> get tests => _processList(_configInfo['tests']);
+
+  int get imageReceiverPort => _configInfo.containsKey('imageReceiverPort')
+      ? _configInfo['imageReceiverPort']
+      : 8020;
 
   String get stagingDir => _configInfo['staging'];
 

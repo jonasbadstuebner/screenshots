@@ -657,6 +657,7 @@ main() {
         locale,
         null,
         getDeviceType(screenshots.config, deviceName),
+        8020,
         deviceId,
         usePatrol: false,
       );

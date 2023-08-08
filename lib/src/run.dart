@@ -271,6 +271,7 @@ class Screenshots {
           defaultLocale,
           null,
           deviceType,
+          config.imageReceiverPort,
           deviceId,
           usePatrol: usePatrol,
         );
@@ -375,6 +376,7 @@ class Screenshots {
                 locale,
                 orientation,
                 deviceType,
+                config.imageReceiverPort,
                 deviceId,
                 usePatrol: usePatrol,
               );
@@ -385,6 +387,7 @@ class Screenshots {
               locale,
               null,
               deviceType,
+              config.imageReceiverPort,
               deviceId,
               usePatrol: usePatrol,
             );
@@ -413,6 +416,7 @@ class Screenshots {
     String locale,
     Orientation? orientation,
     DeviceType deviceType,
+    int imageReceiverPort,
     String deviceId, {
     required bool usePatrol,
   }) async {
@@ -421,7 +425,7 @@ class Screenshots {
             .first
             .addresses
             .first,
-        8020);
+        imageReceiverPort);
     server.forEach((HttpRequest request) async {
       List<int> bytes = [];
       await for (var b in request) {
@@ -435,11 +439,13 @@ class Screenshots {
       request.response.write('Written screenshot to ${screenshotFile.path}');
       request.response.close();
     });
-    print('screenshot-receiver started at: ${server.address.address}:8020');
+    print(
+        'screenshot-receiver started at: ${server.address.address}:${server.port}');
 
     final Map<String, String> environment = {
       kEnvConfigPath: configPath,
       kEnvImageReceiverIPAddress: server.address.address,
+      kEnvImageReceiverPort: server.port.toString(),
     };
 
     for (final testPath in config.tests) {

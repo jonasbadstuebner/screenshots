@@ -42,7 +42,7 @@ Future screenshot(
     try {
       var response = await client.post(
           Uri.http(
-              '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:8020',
+              '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
               fullFilePath),
           body: pixels);
       print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
