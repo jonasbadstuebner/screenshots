@@ -619,7 +619,7 @@ Future<void> changeAndroidLocale(
     printError(
         '    https://stackoverflow.com/questions/43923996/adb-root-is-not-working-on-emulator/45668555#45668555 for details.\n');
   }
-  await Future.delayed(const Duration(seconds: 1));
+  await Future.delayed(const Duration(seconds: 5));
   // adb shell "setprop persist.sys.locale fr_CA; setprop ctl.restart zygote"
   utils.cmd([
     getAdbPath(androidSdk)!,
