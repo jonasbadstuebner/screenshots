@@ -492,7 +492,13 @@ class Screenshots {
 }
 
 Future<void> shutdownSimulator(String deviceId) async {
-  utils.cmd(['xcrun', 'simctl', 'shutdown', deviceId]);
+  try {
+    utils.cmd(['xcrun', 'simctl', 'shutdown', deviceId]);
+  } catch (e) {
+    if (!e.toString().contains('exitcode=149')) {
+      rethrow;
+    }
+  }
   // shutdown apparently needs time when restarting
   // see https://github.com/flutter/flutter/issues/10228 for race condition on simulator
   await Future.delayed(Duration(milliseconds: 2000));
