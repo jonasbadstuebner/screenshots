@@ -60,13 +60,13 @@ ios:
       - iPhone 11 Pro Max
   6.7inch:
     size: 2796×1290
-    resize: 93%
+    resize: 100%
     resources:
     #   statusbar: resources/ios/6.7inch/statusbar_white.png
     #   statusbar black: resources/ios/6.7inch/statusbar_black.png
     #   statusbar white: resources/ios/6.7inch/statusbar_white.png
-      frame: resources/ios/phones/Apple iPhone 14 Pro Max Black.png
-    offset: -0-2
+    #   frame: resources/ios/phones/Apple iPhone 14 Pro Max Black.png
+    # offset: -0-2
     devices:
       - iPhone 14 Pro Max
 #  7.9inches:
