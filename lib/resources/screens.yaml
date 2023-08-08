@@ -58,6 +58,17 @@ ios:
       - iPhone XS Max
       - iPhone Xs Max
       - iPhone 11 Pro Max
+  6.7inch:
+    size: 2796×1290
+    resize: 93%
+    resources:
+    #   statusbar: resources/ios/6.7inch/statusbar_white.png
+    #   statusbar black: resources/ios/6.7inch/statusbar_black.png
+    #   statusbar white: resources/ios/6.7inch/statusbar_white.png
+      frame: resources/ios/phones/Apple iPhone 14 Pro Max Black.png
+    offset: -0-2
+    devices:
+      - iPhone 14 Pro Max
 #  7.9inches:
 #    devices:
 #      - iPad Mini
@@ -102,6 +113,7 @@ ios:
     offset: -3+2
     devices:
       - iPad Pro (12.9-inch) (3rd generation)
+      - iPad Pro (12.9-inch) (6th generation)
 android:
   5.2inch:
     size: 1080x1920
