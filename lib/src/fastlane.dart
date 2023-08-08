@@ -33,7 +33,7 @@ Future clearFastlaneDirs(
 Future _clearFastlaneDir(Screens screens, String deviceName, String locale,
     DeviceType deviceType, RunMode runMode) async {
   final Map? screenProps = screens.getScreen(deviceName);
-  String androidModelType = getAndroidModelType(screenProps, deviceName);
+  String? androidModelType = getAndroidModelType(screenProps, deviceName);
 
   final dirPath = getDirPath(deviceType, locale, androidModelType);
 
@@ -58,7 +58,7 @@ const kFastlaneTenInch = 'tenInch';
 // android/fastlane/metadata/android/en-US/images/sevenInchScreenshots
 /// Generate fastlane dir path for ios or android.
 String getDirPath(
-    DeviceType deviceType, String locale, String androidModelType) {
+    DeviceType deviceType, String locale, String? androidModelType) {
   locale = locale.replaceAll('_', '-'); // in case canonicalized
   const androidPrefix = 'android/fastlane/metadata/android';
   const iosPrefix = 'ios/fastlane/screenshots';
@@ -77,8 +77,8 @@ String getDirPath(
 }
 
 /// Get android model type (phone or tablet screen size).
-String getAndroidModelType(Map? screenProps, String deviceName) {
-  String androidDeviceType = kFastlanePhone;
+String? getAndroidModelType(Map? screenProps, String deviceName) {
+  String? androidDeviceType = kFastlanePhone;
   if (screenProps == null) {
     printStatus(
         'Warning: using default value \'$kFastlanePhone\' in \'$deviceName\' fastlane directory.');
