@@ -80,9 +80,10 @@ Future<List<int>> takeScreenshot(
     // return;
   } else if (Platform.isAndroid) {
     try {
-      await integrationTestChannel.invokeMethod<void>(
-        'convertFlutterSurfaceToImage',
-      );
+      // await integrationTestChannel.invokeMethod<void>(
+      //   'convertFlutterSurfaceToImage',
+      // );
+      await binding.convertFlutterSurfaceToImage();
     } catch (e) {
       print(
           'converting surface to image failed; probably it was already an image?: $e');
@@ -99,21 +100,26 @@ Future<List<int>> takeScreenshot(
   final reportData = <String, dynamic>{};
   reportData['screenshots'] ??= <dynamic>[];
   final data = await _takeScreenshot(
-      integrationTestChannel, platformDispatcher, screenshotName);
+      binding, integrationTestChannel, platformDispatcher, screenshotName);
   assert(data.containsKey('bytes'));
 
   (reportData['screenshots']! as List<dynamic>).add(data);
   return data['bytes']! as List<int>;
 }
 
-Future<Map<String, dynamic>> _takeScreenshot(dynamic integrationTestChannel,
-    dynamic platformDispatcher, String screenshot) async {
+Future<Map<String, dynamic>> _takeScreenshot(
+    dynamic binding,
+    dynamic integrationTestChannel,
+    dynamic platformDispatcher,
+    String screenshot) async {
   integrationTestChannel.setMethodCallHandler(
       (dynamic call) => _onMethodChannelCall(call, platformDispatcher));
-  final rawBytes = await integrationTestChannel.invokeMethod<List<int>>(
-    'captureScreenshot',
-    <String, dynamic>{'name': screenshot},
-  ) as List<int>?;
+  // final rawBytes = await integrationTestChannel.invokeMethod<List<int>>(
+  //   'captureScreenshot',
+  //   <String, dynamic>{'name': screenshot},
+  // ) as List<int>?;
+  final rawBytes = await binding.takeScreenshot(screenshot);
+
   if (rawBytes == null) {
     throw StateError(
         'Expected a list of bytes, but instead captureScreenshot returned null');
