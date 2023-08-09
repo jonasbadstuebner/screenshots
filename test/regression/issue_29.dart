@@ -3,13 +3,11 @@ import 'package:screenshots/src/utils.dart' as utils;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
-import '../src/common.dart';
-
 void main() {
   // issue #29
   test('check full matching emulator name', () async {
     // emulator named in config must match name of installed emulator
-    final screenshotsYaml = '''
+    const screenshotsYaml = '''
 devices:
   ios:
     iPhone X:
@@ -23,13 +21,13 @@ devices:
     final daemonClient = DaemonClient();
     await daemonClient.start;
     final emulators = await daemonClient.emulators;
-    final foundIt = (emulator) => emulator != null;
+    bool foundIt(dynamic emulator) => emulator != null;
 
     print('emulators=$emulators');
     final deviceNames = configInfo['devices']['android'];
     print('deviceNames=$deviceNames');
-    for (final deviceName in deviceNames.keys) {
-      DaemonEmulator? emulator = utils.findEmulator(emulators, deviceName);
+    for (final deviceName in (deviceNames as Map<String, String>).keys) {
+      final emulator = utils.findEmulator(emulators, deviceName);
 //      if (!foundIt(emulator)) {
 //        // find by emulatorId
 //        emulator = findEmulatorById(emulators, deviceName);
@@ -42,8 +40,8 @@ devices:
   }, skip: true);
 }
 
-Map findEmulatorById(List emulators, String emulatorName) {
-  return emulators.firstWhere(
-      (emulator) => emulator['id'].replaceAll('_', ' ').contains(emulatorName),
-      orElse: () => null);
-}
+// Map findEmulatorById(List emulators, String emulatorName) {
+//   return emulators.firstWhere(
+//       (emulator) => emulator['id'].replaceAll('_', ' ').contains(emulatorName),
+//       orElse: () => null);
+// }

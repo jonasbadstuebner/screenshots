@@ -9,9 +9,7 @@ import 'package:test/test.dart';
 import 'package:screenshots/src/fastlane.dart' as fastlane;
 import 'package:yaml/yaml.dart';
 
-import 'src/common.dart';
-
-final screenshotsYaml = '''
+const screenshotsYaml = '''
 # Screen capture tests
 tests:
   - example/test_driver/main.dart
@@ -64,14 +62,14 @@ void main() {
       'staging': '/tmp/screenshots'
     };
 
-    final Map screenshotsConfig = loadYaml(screenshotsYaml);
+    final screenshotsConfig = loadYaml(screenshotsYaml);
     expect(screenshotsConfig, expected);
   });
 
   test('validate test paths', () async {
-    final mainPath = 'example/test_driver/main.dart';
-    final testPath = 'example/test_driver/main_test.dart';
-    final bogusPath = 'example/test_driver/non_existant.dart';
+    const mainPath = 'example/test_driver/main.dart';
+    const testPath = 'example/test_driver/main_test.dart';
+    // const bogusPath = 'example/test_driver/non_existant.dart';
 
     expect(isValidTestPaths(mainPath), isTrue);
     expect(isValidTestPaths('--target=$mainPath'), isTrue);
@@ -79,21 +77,20 @@ void main() {
     expect(isValidTestPaths('--driver=$testPath --target=$mainPath '), isTrue);
     expect(isValidTestPaths('--driver $testPath --target $mainPath '), isTrue);
 
-    if (!true) {
-      expect(isValidTestPaths(bogusPath), isFalse);
-      expect(isValidTestPaths('--target=$bogusPath'), isFalse);
-      expect(
-          isValidTestPaths('--target=$bogusPath --driver=$mainPath'), isFalse);
-      expect(
-          isValidTestPaths('--target=$mainPath --driver=$bogusPath'), isFalse);
-    }
+    // if (!true) {
+    //   expect(isValidTestPaths(bogusPath), isFalse);
+    //   expect(isValidTestPaths('--target=$bogusPath'), isFalse);
+    //   expect(
+    //       isValidTestPaths('--target=$bogusPath --driver=$mainPath'), isFalse);
+    //   expect(
+    //       isValidTestPaths('--target=$mainPath --driver=$bogusPath'), isFalse);
+    // }
   });
 
   test('validate config file', () async {
-    final Screens screens = Screens();
+    final screens = Screens();
     await screens.init();
-    final ScreenshotsConfig config =
-        ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
+    final config = ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
     final daemonClient = DaemonClient();
     await daemonClient.start;
     // for this test change directory
@@ -112,7 +109,7 @@ void main() {
   }, skip: true);
 
   test('clear all destination directories on init', () async {
-    final Screens screens = Screens();
+    final screens = Screens();
     await screens.init();
     final config = ScreenshotsConfig(configStr: screenshotsYaml);
     await fastlane.clearFastlaneDirs(config, screens, RunMode.normal);
@@ -125,7 +122,7 @@ void main() {
     expect(config.isFrameRequired('iPhone 7 Plus', null), false);
     expect(config.isFrameRequired('Nexus 5X', null), true);
     expect(config.isFrameRequired('iPhone 5c', null), false);
-    final unknownDevice = 'unknown';
+    const unknownDevice = 'unknown';
     expect(() => config.isFrameRequired('unknown', null),
         throwsA('Error: device \'$unknownDevice\' not found'));
   });

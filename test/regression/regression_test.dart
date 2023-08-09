@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:screenshots/src/utils.dart' as utils;
 import 'package:test/test.dart';
 
-import '../src/common.dart';
-
 void main() {
   test('issue #25: test parsing of iOS device info returned by xcrun', () {
-    final expected = '''
+    const expected = '''
     {
       "availability": "(available)",
       "state": "Shutdown",
@@ -17,8 +15,8 @@ void main() {
       "availabilityError": ""
     }
     ''';
-    final deviceName = 'iPhone X';
-    final deviceInfoRaw = '''
+    const deviceName = 'iPhone X';
+    const deviceInfoRaw = '''
 {
   "devices" : {
     "com.apple.CoreSimulator.SimRuntime.tvOS-12-0" : [
@@ -821,17 +819,18 @@ void main() {
 ''';
     print(
         'getIosDevice=${utils.getHighestIosSimulator(utils.getIosSimulators(), deviceName)}');
-    final deviceInfo = jsonDecode(deviceInfoRaw)['devices'];
+    final deviceInfo =
+        jsonDecode(deviceInfoRaw)['devices'] as Map<String, dynamic>;
     final iosDevices = utils.transformIosSimulators(deviceInfo);
 //    final iosDevice = getHighestIosDevice(iosDevices, deviceName);
 //    expect(
 //        () => getHighestIosDevice(iosDevices, deviceName), throwsA(anything));
     expect(utils.getHighestIosSimulator(iosDevices, deviceName),
         jsonDecode(expected));
-  }, skip:     true  );
+  }, skip: true);
 
   test('issue #73: parse without availability', () {
-    final expected = '''
+    const expected = '''
       {
         "state" : "Shutdown",
         "isAvailable" : true,
@@ -839,8 +838,8 @@ void main() {
         "udid" : "3AD11D72-B3FA-4E4C-94B3-E4E51C67250A"
       }
     ''';
-    final deviceName = 'iPhone Xs Max';
-    final deviceInfoRaw = '''
+    const deviceName = 'iPhone Xs Max';
+    const deviceInfoRaw = '''
 {
   "devices" : {
     "com.apple.CoreSimulator.SimRuntime.iOS-12-0" : [
@@ -867,7 +866,8 @@ void main() {
   }
 }    
     ''';
-    final deviceInfo = jsonDecode(deviceInfoRaw)['devices'];
+    final deviceInfo =
+        jsonDecode(deviceInfoRaw)['devices'] as Map<String, dynamic>;
     final iosDevices = utils.transformIosSimulators(deviceInfo);
     expect(utils.getHighestIosSimulator(iosDevices, deviceName),
         jsonDecode(expected));

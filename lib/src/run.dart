@@ -437,7 +437,7 @@ class Screenshots {
       request.response.write('Written screenshot to ${screenshotFile.path}');
       await request.response.close();
     }));
-    print(
+    printTrace(
         'screenshot-receiver started at: ${server.address.address}:${server.port}');
 
     final environment = <String, String>{

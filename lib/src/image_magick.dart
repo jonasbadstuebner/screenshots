@@ -178,7 +178,7 @@ Future<bool> isImageMagicInstalled() async {
           0;
     });
   } catch (e) {
-    print('error: $e');
+    printTrace('error: $e');
     return false;
   }
 }

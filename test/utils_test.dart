@@ -17,7 +17,7 @@ class FakeAndroidSDK extends Fake implements AndroidSdk {
   String get emulatorPath => 'path to emulator';
 }
 
-main() {
+void main() {
   group('utils', () {
     group('in context', () {
       late FakeAndroidSDK fakeAndroidSdk;
@@ -70,7 +70,7 @@ main() {
 
     group('not in context', () {
       test('findEmulator', () {
-        final emulatorName = 'emulator name';
+        const emulatorName = 'emulator name';
         final emulatorId = '$emulatorName API 123'.replaceAll(' ', '_');
         final expected = DaemonEmulator(
             emulatorId, '$emulatorName version', 'category', 'platformType');

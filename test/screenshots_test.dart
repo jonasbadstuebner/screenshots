@@ -66,16 +66,16 @@ void main() {
     });
 
     test('overlay statusbar', () async {
-      final Screens screens = Screens();
+      final screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 6P');
-      final ScreenshotsConfig config =
+      final config =
           ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
-      final Map scrnResources = screen!['resources'];
+      final scrnResources = screen!['resources'] as Map<String, String>;
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
       final statusbarPath =
           '${config.stagingDir}/${scrnResources['statusbar']}';
-      final screenshotPath = 'test/resources/0.png';
+      const screenshotPath = 'test/resources/0.png';
       final options = {
         'screenshotPath': screenshotPath,
         'statusbarPath': statusbarPath,
@@ -85,16 +85,16 @@ void main() {
     }, skip: true);
 
     test('append navbar', () async {
-      final Screens screens = Screens();
+      final screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 9');
-      final ScreenshotsConfig config =
+      final config =
           ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
-      final Map scrnResources = screen!['resources'];
+      final scrnResources = screen!['resources'] as Map<String, String>;
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
       final screenshotNavbarPath =
           '${config.stagingDir}/${scrnResources['navbar']}';
-      final screenshotPath = 'test/resources/nexus_9_0.png';
+      const screenshotPath = 'test/resources/nexus_9_0.png';
       final options = {
         'screenshotPath': screenshotPath,
         'screenshotNavbarPath': screenshotNavbarPath,
@@ -104,23 +104,23 @@ void main() {
     }, skip: true);
 
     test('frame screenshot', () async {
-      final Screens screens = Screens();
+      final screens = Screens();
       await screens.init();
       final screen = screens.getScreen('Nexus 9');
-      final ScreenshotsConfig config =
+      final config =
           ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
-      final Map scrnResources = screen!['resources'];
+      final scrnResources = screen!['resources'] as Map<String, String>;
       await resources.unpackImages(scrnResources, '/tmp/screenshots');
-      final framePath = config.stagingDir + '/' + scrnResources['frame'];
+      final framePath = '${config.stagingDir}/${scrnResources['frame']}';
       final size = screen['size'];
       final resize = screen['resize'];
       final offset = screen['offset'];
-      final screenshotPath = 'test/resources/nexus_9_0.png';
-      final options = {
+      const screenshotPath = 'test/resources/nexus_9_0.png';
+      final options = <String, String>{
         'framePath': framePath,
-        'size': size,
-        'resize': resize,
-        'offset': offset,
+        'size': size.toString(),
+        'resize': resize.toString(),
+        'offset': offset.toString(),
         'screenshotPath': screenshotPath,
         'backgroundColor': ImageProcessor.kDefaultAndroidBackground,
       };
@@ -160,7 +160,7 @@ void main() {
         'udid': '1DD6DBF1-846F-4644-8E97-76175788B9A5'
       };
       final iosDevices = utils.getIosSimulators();
-      final deviceName = 'iPhone 7 Plus';
+      const deviceName = 'iPhone 7 Plus';
 //    final deviceName = 'iPhone 5c';
       final highestDevice =
           utils.getHighestIosSimulator(iosDevices, deviceName);
@@ -173,8 +173,8 @@ void main() {
         'resources/android/1080/navbar.png',
         'resources/android/phones/Nexus_5X.png'
       ];
-      final dest = '/tmp';
-      for (String resource in scrnResources) {
+      const dest = '/tmp';
+      for (final resource in scrnResources) {
         await resources.writeImage(
             await resources.readResourceImage(resource), '$dest/$resource');
       }
@@ -186,13 +186,13 @@ void main() {
         'B': 'resources/android/1080/navbar.png',
         'C': 'resources/android/phones/Nexus_5X.png'
       };
-      final dest = '/tmp';
+      const dest = '/tmp';
       await resources.unpackImages(scrnResources, dest);
     }, skip: true);
 
     test('rooted emulator', () async {
-      final emulatorId = 'Nexus_5X_API_27';
-      final stagingDir = '/tmp/tmp';
+      const emulatorId = 'Nexus_5X_API_27';
+      const stagingDir = '/tmp/tmp';
       await resources.unpackScripts(stagingDir);
       final daemonClient = DaemonClient();
       await daemonClient.start;
@@ -212,13 +212,14 @@ void main() {
 //    }, skip:     true  );
 
     test('move files', () async {
-      final fileName = 'filename';
-      final srcDir = '/tmp/tmp1/multiple/levels/deep';
-      final dstDir = '/tmp/tmp2/more/levels/deep';
+      const fileName = 'filename';
+      const srcDir = '/tmp/tmp1/multiple/levels/deep';
+      const dstDir = '/tmp/tmp2/more/levels/deep';
 
       await File('$srcDir/$fileName').create(recursive: true);
       utils.moveFiles(srcDir, dstDir);
-      expect(await File(dstDir + '/' + fileName).exists(), true);
+      // ignore: avoid_slow_async_io
+      expect(await File('$dstDir/$fileName').exists(), true);
     });
 
     test('start/stop emulator', () async {
@@ -231,16 +232,15 @@ void main() {
         'platformType': 'android',
         'ephemeral': true
       };
-      final emulatorName = 'Nexus 6P';
-      final emulatorId = 'Nexus_6P_API_28';
+      const emulatorName = 'Nexus 6P';
+      const emulatorId = 'Nexus_6P_API_28';
       final daemonClient = DaemonClient();
 //    daemonClient.verbose = true;
       await daemonClient.start;
       final deviceId = await daemonClient.launchEmulator(emulatorId);
       final devices = await daemonClient.devices;
-      final startedDevice = (devices, emulatorName) => devices.firstWhere(
-          (device) => device['emulator'] == true,
-          orElse: () => null);
+      DaemonDevice? startedDevice(List<DaemonDevice> devices, emulatorName) =>
+          devices.firstWhereOrNull((device) => device.emulator == true);
       expect(startedDevice(devices, emulatorName), expected);
       expect(
           await run.shutdownAndroidEmulator(daemonClient, deviceId), deviceId);
@@ -248,31 +248,31 @@ void main() {
     }, skip: true);
 
     test('change android locale', () async {
-      final deviceName = 'Nexus 6P';
-      final emulatorId = 'Nexus_6P_API_28';
-      final origLocale = 'en_US';
-      final newLocale = 'fr_CA';
+      const deviceName = 'Nexus 6P';
+      const emulatorId = 'Nexus_6P_API_28';
+      const origLocale = 'en_US';
+      const newLocale = 'fr_CA';
       final daemonClient = DaemonClient();
       await daemonClient.start;
 //    daemonClient.verbose = true;
       final deviceId = await daemonClient.launchEmulator(emulatorId);
 //    print('switching to $newLocale locale');
-      run.changeAndroidLocale(deviceId, deviceName, newLocale);
+      await run.changeAndroidLocale(deviceId, deviceName, newLocale);
       // wait for locale to change
       await utils.waitAndroidLocaleChange(deviceId, newLocale);
       // change back for repeated testing
 //    print('switching to $origLocale locale');
-      run.changeAndroidLocale(deviceId, deviceName, origLocale);
+      await run.changeAndroidLocale(deviceId, deviceName, origLocale);
       await utils.waitAndroidLocaleChange(deviceId, origLocale);
       expect(
           await run.shutdownAndroidEmulator(daemonClient, deviceId), deviceId);
-    }, timeout: Timeout(Duration(seconds: 180)), skip: true);
+    }, timeout: const Timeout(Duration(seconds: 180)), skip: true);
 
     test('start/stop simulator', () async {
-      final simulatorName = 'iPhone X';
+      const simulatorName = 'iPhone X';
       final simulatorInfo =
           utils.getHighestIosSimulator(utils.getIosSimulators(), simulatorName);
-      final deviceId = simulatorInfo!['udid'];
+      final deviceId = simulatorInfo!['udid'] as String;
       final daemonClient = DaemonClient();
 //    daemonClient.verbose = true;
       await daemonClient.start;
@@ -283,7 +283,7 @@ void main() {
 
     test('start emulator on travis', () async {
       final androidHome = Platform.environment['ANDROID_HOME'];
-      final emulatorName = 'Nexus_6P_API_27';
+      const emulatorName = 'Nexus_6P_API_27';
       await streamCmd(
         [
           '$androidHome/emulator/emulator',
@@ -300,13 +300,13 @@ void main() {
     }, skip: true);
 
     test('change locale on android and test', () async {
-      final emulatorId = 'Nexus_6P_API_28';
-      final deviceName = 'any device name';
-      final stagingDir = '/tmp/tmp';
-      final origLocale = 'en_US';
-      final newLocale = 'fr_CA';
-      final testAppDir = 'example';
-      final testAppSrcPath = 'test_driver/main.dart';
+      const emulatorId = 'Nexus_6P_API_28';
+      const deviceName = 'any device name';
+      const stagingDir = '/tmp/tmp';
+      const origLocale = 'en_US';
+      const newLocale = 'fr_CA';
+      const testAppDir = 'example';
+      const testAppSrcPath = 'test_driver/main.dart';
 
       // unpack resources
       await resources.unpackScripts(stagingDir);
@@ -330,12 +330,12 @@ void main() {
       // stop emulator
       expect(
           await run.shutdownAndroidEmulator(daemonClient, deviceId), deviceId);
-    }, timeout: Timeout(Duration(seconds: 90)), skip: true);
+    }, timeout: const Timeout(Duration(seconds: 90)), skip: true);
 
     test('get android device locale', () async {
-      final emulatorId = 'Nexus_6P_API_28';
-      final stagingDir = '/tmp/tmp';
-      final locale = 'en_US';
+      const emulatorId = 'Nexus_6P_API_28';
+      const stagingDir = '/tmp/tmp';
+      const locale = 'en_US';
 
       await resources.unpackScripts(stagingDir);
       final daemonClient = DaemonClient();
@@ -349,12 +349,12 @@ void main() {
     }, skip: true);
 
     test('change locale on iOS and test', () async {
-      final simulatorName = 'iPhone X';
-      final stagingDir = '/tmp/tmp';
-      final origLocale = 'en_US';
-      final locale = 'fr_CA';
-      final testAppDir = 'example';
-      final testAppSrcPath = 'test_driver/main.dart';
+      const simulatorName = 'iPhone X';
+      const stagingDir = '/tmp/tmp';
+      const origLocale = 'en_US';
+      const locale = 'fr_CA';
+      const testAppDir = 'example';
+      const testAppSrcPath = 'test_driver/main.dart';
 
       // unpack resources
       await resources.unpackScripts(stagingDir);
@@ -365,7 +365,7 @@ void main() {
       // change locale
       final simulatorInfo =
           utils.getHighestIosSimulator(utils.getIosSimulators(), simulatorName);
-      final deviceId = simulatorInfo!['udid'];
+      final deviceId = simulatorInfo!['udid'] as String;
       await run.setSimulatorLocale(
           deviceId, simulatorName, locale, stagingDir, daemonClient);
 
@@ -382,10 +382,10 @@ void main() {
       // restore orig locale
       await run.setSimulatorLocale(
           deviceId, simulatorName, origLocale, stagingDir, daemonClient);
-    }, timeout: Timeout(Duration(seconds: 90)), skip: true);
+    }, timeout: const Timeout(Duration(seconds: 90)), skip: true);
 
     test('get ios simulator locale', () async {
-      final udId = '03D4FC12-3927-4C8B-A226-17DE34AE9C18';
+      const udId = '03D4FC12-3927-4C8B-A226-17DE34AE9C18';
       var locale = utils.getIosSimulatorLocale(udId);
       expect(locale, 'en-US');
     }, skip: true);
@@ -432,8 +432,8 @@ void main() {
         'emulator': false,
         'model': 'iPhone 5c (GSM)'
       });
-      String deviceName = 'iPhone 5c';
-      DaemonDevice? device = utils.getDevice([expected], deviceName);
+      var deviceName = 'iPhone 5c';
+      var device = utils.getDevice([expected], deviceName);
       expect(device, expected);
       final isDeviceAttached = (device) => device != null;
       expect(isDeviceAttached(device), true);
@@ -444,9 +444,9 @@ void main() {
     });
 
     test('get device type from config', () {
-      final deviceName = 'Nexus 9P';
-      final expected = DeviceType.android;
-      final config = '''
+      const deviceName = 'Nexus 9P';
+      const expected = DeviceType.android;
+      const config = '''
       devices:
         ios:
           iPhone X:
@@ -456,7 +456,7 @@ void main() {
       ''';
 
       final configInfo = ScreenshotsConfig(configStr: config);
-      DeviceType deviceType = run.getDeviceType(configInfo, deviceName);
+      var deviceType = run.getDeviceType(configInfo, deviceName);
       expect(deviceType, expected);
     });
 
@@ -469,20 +469,20 @@ void main() {
           'new': {'xmpp.auto-presence': false}
         }
       };
-      final emulatorId = 'Nexus_6P_API_28';
+      const emulatorId = 'Nexus_6P_API_28';
 
       final daemonClient = DaemonClient();
       await daemonClient.start;
       // start emulator
       final deviceId = await daemonClient.launchEmulator(emulatorId);
 
-      Map props = getDeviceProps(deviceId);
+      var props = getDeviceProps(deviceId);
       final newProps = Map.from(props);
       newProps['xmpp.auto-presence'] = false; //changed
       newProps['xxx'] = 'yyy'; // added
       newProps.remove('wifi.direct.interface'); // removed
 
-      final Map diffs = diffMaps(props, newProps);
+      final diffs = diffMaps(props, newProps);
       expect(diffs, expected);
       expect(
           await run.shutdownAndroidEmulator(daemonClient, deviceId), deviceId);
@@ -490,7 +490,7 @@ void main() {
 
     group('ProcessWrapper', () {
       test('works in conjunction with subscribers to stdio streams', () async {
-        final expected = 'README.md';
+        const expected = 'README.md';
         final delegate = await Process.start('ls', ['-la']);
         final process = ProcessWrapper(delegate);
         final readme = await process.stdout
@@ -501,17 +501,16 @@ void main() {
       });
 
       test('scan syslog for string', () async {
-        final toLocale = 'en_US';
+        const toLocale = 'en_US';
 //      final expected =
 //          'ContactsProvider: Locale has changed from [fr_CA] to [en_US]';
 //      final expected = RegExp('Locale has changed from');
         final expected = RegExp(r'.*');
         final daemonClient = DaemonClient();
         await daemonClient.start;
-        final emulatorId = 'Nexus_6P_API_28';
+        const emulatorId = 'Nexus_6P_API_28';
         final deviceId = await daemonClient.launchEmulator(emulatorId);
-        String? actual =
-            await utils.waitSysLogMsg(deviceId, expected, toLocale);
+        var actual = await utils.waitSysLogMsg(deviceId, expected, toLocale);
 //      print('actual=$actual');
         expect(actual?.contains(expected), isTrue);
         expect(await run.shutdownAndroidEmulator(daemonClient, deviceId),
@@ -519,7 +518,7 @@ void main() {
       }, skip: true);
 
       test('reg exp', () {
-        final locale = 'fr_CA';
+        const locale = 'fr_CA';
         final line =
             'ContactsProvider: Locale has changed from [en_US] to [${locale.replaceFirst('-', '_')}]';
 //      final regExp = RegExp(
@@ -536,7 +535,7 @@ void main() {
       test('recording mode', () async {
         final origDir = Directory.current;
         Directory.current = 'example';
-        final configPath = 'screenshots.yaml';
+        const configPath = 'screenshots.yaml';
         await run.screenshots(
             configPath: configPath,
             mode: utils.getStringFromEnum(RunMode.recording));
@@ -544,12 +543,12 @@ void main() {
         final recordingDir = config.recordingDir;
         expect(await utils.isRecorded(recordingDir), isTrue);
         Directory.current = origDir;
-      }, timeout: Timeout(Duration(seconds: 180)), skip: true);
+      }, timeout: const Timeout(Duration(seconds: 180)), skip: true);
 
       test('imagemagick compare', () {
-        final recordedImage0 = 'test/resources/recording/Nexus 6P-0.png';
-        final comparisonImage0 = 'test/resources/comparison/Nexus 6P-0.png';
-        final comparisonImage1 = 'test/resources/comparison/Nexus 6P-1.png';
+        const recordedImage0 = 'test/resources/recording/Nexus 6P-0.png';
+        const comparisonImage0 = 'test/resources/comparison/Nexus 6P-0.png';
+        const comparisonImage1 = 'test/resources/comparison/Nexus 6P-1.png';
         final goodPair = {
           'recorded': recordedImage0,
           'comparison': comparisonImage0
@@ -563,7 +562,7 @@ void main() {
         pairs.forEach((behave, pair) async {
           final recordedImage = pair['recorded']!;
           final comparisonImage = pair['comparison']!;
-          bool doCompare = await runInContext<bool>(() async {
+          var doCompare = await runInContext<bool>(() async {
             return im.compare(comparisonImage, recordedImage);
           });
           behave == 'good'
@@ -576,7 +575,7 @@ void main() {
       test('comparison mode', () async {
         final origDir = Directory.current;
         Directory.current = 'example';
-        final configPath = 'screenshots.yaml';
+        const configPath = 'screenshots.yaml';
         final config = ScreenshotsConfig(configPath: configPath);
         final recordingDir = config.recordingDir;
         expect(await utils.isRecorded(recordingDir), isTrue);
@@ -584,10 +583,10 @@ void main() {
             configPath: configPath,
             mode: utils.getStringFromEnum(RunMode.comparison));
         Directory.current = origDir;
-      }, timeout: Timeout(Duration(seconds: 180)), skip: true);
+      }, timeout: const Timeout(Duration(seconds: 180)), skip: true);
 
       test('cleanup diffs at start of normal run', () {
-        final fastlaneDir = 'test/resources/comparison';
+        const fastlaneDir = 'test/resources/comparison';
         Directory(fastlaneDir).listSync().forEach((fsEntity) =>
             File(im.getDiffImagePath(fsEntity.path)).createSync());
         expect(
@@ -608,23 +607,25 @@ void main() {
       test('run with archiving enabled', () async {
         final origDir = Directory.current;
         Directory.current = 'example';
-        final configPath = 'screenshots.yaml';
+        const configPath = 'screenshots.yaml';
         await run.screenshots(
             configPath: configPath,
             mode: utils.getStringFromEnum(RunMode.archive));
         Directory.current = origDir;
-      }, timeout: Timeout(Duration(seconds: 180)), skip: true);
+      }, timeout: const Timeout(Duration(seconds: 180)), skip: true);
     });
 
     group('fastlane dirs', () {
       test('delete files matching a pattern', () async {
-        final dirPath = 'test/resources/test';
-        final deviceId = 'Nexus 6P';
+        const dirPath = 'test/resources/test';
+        const deviceId = 'Nexus 6P';
         final pattern = RegExp('$deviceId.*.$kImageExtension');
-        final filesPresent = (dirPath, pattern) => Directory(dirPath)
-            .listSync()
-            .toList()
-            .where((e) => pattern.hasMatch(p.basename(e.path)));
+        Iterable<FileSystemEntity> filesPresent(
+                String dirPath, RegExp pattern) =>
+            Directory(dirPath)
+                .listSync()
+                .toList()
+                .where((e) => pattern.hasMatch(p.basename(e.path)));
         expect(filesPresent(dirPath, pattern).length, 2);
         deleteMatchingFiles(dirPath, pattern);
         expect(filesPresent(dirPath, pattern), isEmpty);
@@ -635,10 +636,10 @@ void main() {
       });
 
       test('get android model type', () async {
-        final defaultPhone = 'default phone';
-        final defaultSevenInch = 'default seven inch';
-        final defaultTenInch = 'default ten inch';
-        final unknownDevice = 'unknown device';
+        const defaultPhone = 'default phone';
+        const defaultSevenInch = 'default seven inch';
+        const defaultTenInch = 'default ten inch';
+        const unknownDevice = 'unknown device';
         final phones = {
           defaultPhone: kFastlanePhone,
           unknownDevice: kFastlanePhone,
@@ -678,7 +679,7 @@ void main() {
 
     group('manage device orientation', () {
       test('find ios simulator orientation', () async {
-        final udId = '03D4FC12-3927-4C8B-A226-17DE34AE9C18';
+        const udId = '03D4FC12-3927-4C8B-A226-17DE34AE9C18';
         final env = Platform.environment;
         final preferencesDir =
             '${env['HOME']}/Library/Developer/CoreSimulator/Devices/$udId/data/Library/Preferences';
@@ -696,41 +697,42 @@ void main() {
       }, skip: true);
 
       test('set ios simulator orientation', () async {
-        final scriptDir = 'lib/resources/script';
-        final simulatorName = 'iPhone 7 Plus';
+        const scriptDir = 'lib/resources/script';
+        const simulatorName = 'iPhone 7 Plus';
         final simulatorInfo = utils.getHighestIosSimulator(
             utils.getIosSimulators(), simulatorName);
-        final deviceId = simulatorInfo!['udid'];
+        final deviceId = simulatorInfo!['udid'] as String;
         final daemonClient = DaemonClient();
 //      daemonClient.verbose = true;
         await daemonClient.start;
         await run.startSimulator(daemonClient, deviceId);
-        await Future.delayed(Duration(milliseconds: 5000)); // finish booting
+        await Future<void>.delayed(
+            const Duration(milliseconds: 5000)); // finish booting
         orient.changeDeviceOrientation(
             DeviceType.ios, orient.Orientation.LandscapeRight,
             scriptDir: scriptDir);
-        await Future.delayed(Duration(milliseconds: 3000));
+        await Future<void>.delayed(const Duration(milliseconds: 3000));
         orient.changeDeviceOrientation(
             DeviceType.ios, orient.Orientation.Portrait,
             scriptDir: scriptDir);
-        await Future.delayed(Duration(milliseconds: 1000));
+        await Future<void>.delayed(const Duration(milliseconds: 1000));
         await run.shutdownSimulator(deviceId);
         await daemonClient.stop;
       }, skip: true);
 
       test('set android emulator orientation', () async {
-        final emulatorId = 'Nexus_6P_API_28';
+        const emulatorId = 'Nexus_6P_API_28';
         final daemonClient = DaemonClient();
         await daemonClient.start;
         final deviceId = await daemonClient.launchEmulator(emulatorId);
         orient.changeDeviceOrientation(
             DeviceType.android, orient.Orientation.LandscapeRight,
             deviceId: deviceId);
-        await Future.delayed(Duration(milliseconds: 3000));
+        await Future<void>.delayed(const Duration(milliseconds: 3000));
         orient.changeDeviceOrientation(
             DeviceType.android, orient.Orientation.Portrait,
             deviceId: deviceId);
-        await Future.delayed(Duration(milliseconds: 3000));
+        await Future<void>.delayed(const Duration(milliseconds: 3000));
         expect(await run.shutdownAndroidEmulator(daemonClient, deviceId),
             deviceId);
       }, skip: true);
@@ -738,7 +740,7 @@ void main() {
 
     group('config validate', () {
       test('config guide', () async {
-        final Screens screens = Screens();
+        final screens = Screens();
         await screens.init();
         final daemonClient = DaemonClient();
         await daemonClient.start;
@@ -747,10 +749,10 @@ void main() {
       }, skip: true);
 
       test('validate device params', () {
-        final deviceName = 'ios device 1';
-        final orientation = 'Portrait';
-        final frame = true;
-        final params = '''
+        const deviceName = 'ios device 1';
+        const orientation = 'Portrait';
+        const frame = true;
+        const params = '''
       devices:
         ios:
           $deviceName:
@@ -769,17 +771,15 @@ void main() {
           final deviceInfo = configInfo.getDevice(devName);
 //        print('devName=$devName');
 //        print('deviceInfo=$deviceInfo');
-          if (deviceInfo != null) {
-            if (deviceInfo.name == deviceName) {
-              expect(utils.getEnumFromString(Orientation.values, orientation),
-                  deviceInfo.orientations![0]);
+          if (deviceInfo.name == deviceName) {
+            expect(utils.getEnumFromString(Orientation.values, orientation),
+                deviceInfo.orientations![0]);
 //              expect(validate.isValidOrientation(orientation), isTrue);
 //              expect(validate.isValidOrientation('bad orientation'), isFalse);
-            }
-            expect(deviceInfo.isFramed, frame);
-            expect(validate.isValidFrame(frame), isTrue);
-            expect(validate.isValidFrame('bad frame'), isFalse);
           }
+          expect(deviceInfo.isFramed, frame);
+          expect(validate.isValidFrame(frame), isTrue);
+          expect(validate.isValidFrame('bad frame'), isFalse);
         }
       });
 
@@ -793,21 +793,21 @@ void main() {
 
     group('flavors', () {
       test('flavor run', () async {
-        final flavor = 'paid';
+        const flavor = 'paid';
         final origDir = Directory.current;
         Directory.current = 'flavors';
-        final configPath = 'screenshots.yaml';
+        const configPath = 'screenshots.yaml';
         await run.screenshots(
             configPath: configPath,
             mode: utils.getStringFromEnum(RunMode.normal),
             flavor: flavor);
         Directory.current = origDir;
-      }, timeout: Timeout(Duration(seconds: 240)), skip: true);
+      }, timeout: const Timeout(Duration(seconds: 240)), skip: true);
     });
 
     group('run across platforms', () {
       test('ios only', () async {
-        final configIosOnly = '''
+        const configIosOnly = '''
         tests:
           - test_driver/main.dart
         staging: /tmp/screenshots
@@ -825,10 +825,10 @@ void main() {
         expect(await screenshots.run(), isTrue);
         // allow other tests to continue
         Directory.current = origDir;
-      }, timeout: Timeout(Duration(minutes: 4)), skip: true);
+      }, timeout: const Timeout(Duration(minutes: 4)), skip: true);
 
       test('find highest avd', () async {
-        final emulatorName = 'Nexus 6P';
+        const emulatorName = 'Nexus 6P';
         final expected = {
           'id': 'Nexus_6P_API_30',
           'name': 'Nexus 6P',
@@ -844,8 +844,8 @@ void main() {
 
       test('find a running device', () {
         // note: expects a running emulator
-        final androidDeviceName = 'Nexus 6P';
-        final iosDeviceName = 'iPhone 5c';
+        const androidDeviceName = 'Nexus 6P';
+        const iosDeviceName = 'iPhone 5c';
         final androidDevice = {
           'id': 'emulator-5554',
           'name': 'Android SDK built for x86',
@@ -890,7 +890,7 @@ void main() {
             'platformType': 'ios'
           })
         ];
-        DaemonDevice? deviceInfo = run.findRunningDevice(
+        var deviceInfo = run.findRunningDevice(
             runningDevices, installedEmulators, androidDeviceName);
         expect(deviceInfo, androidDevice);
         deviceInfo = run.findRunningDevice(
@@ -915,7 +915,7 @@ void main() {
         expect(p.relative(p.current), '.');
         final posixContext = p.Context(style: p.Style.posix);
         final windowsContext = p.Context(style: p.Style.windows);
-        for (var path in paths) {
+        for (final path in paths) {
           expect(utils.toPlatformPath(path['path']!, context: posixContext),
               path['posix']);
           expect(utils.toPlatformPath(path['path']!, context: windowsContext),

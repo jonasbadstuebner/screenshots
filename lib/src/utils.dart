@@ -46,7 +46,7 @@ Map<String, Map<String, dynamic>> getIosSimulators() {
 /// format to index into by simulator name.
 /// (also useful for testing)
 Map<String, Map<String, List<Map<String, dynamic>>>> transformIosSimulators(
-    Map<String, List<Map<String, dynamic>>> simsInfo) {
+    Map<String, dynamic> simsInfo) {
   // transform json to a Map of device name by a map of iOS versions by a list of
   // devices with a map of properties
   // ie, Map<String, Map<String, List<Map<String, String>>>>
@@ -60,7 +60,7 @@ Map<String, Map<String, List<Map<String, dynamic>>>> transformIosSimulators(
     //       so using 'availability' as well
     bool isSimAvailable(Map<String, dynamic> sim) =>
         sim['availability'] == '(available)' || sim['isAvailable'] == true;
-    for (final sim in sims) {
+    for (final sim in sims as List<Map<String, dynamic>>) {
       // skip if simulator unavailable
       if (!isSimAvailable(sim)) continue;
 
@@ -482,5 +482,15 @@ Future<void> streamCmd(
 //    final process = await runDetached(cmd);
 //    exitCode = await process.exitCode;
     unawaited(runDetached(cmd));
+  }
+}
+
+extension IterableMissingFunctionsExtension<T> on Iterable<T> {
+  /// The first element satisfying [test], or `null` if there are none.
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (final element in this) {
+      if (test(element)) return element;
+    }
+    return null;
   }
 }
