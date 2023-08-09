@@ -8,20 +8,19 @@ environment:
   sdk: ^3.0.0
 
 dependencies:
-  archive: ">=3.3.0"
-  args: ">=2.4.0"
-  file: ">=6.1.0"
-  intl: ">=0.15.0 <1.0.0"
-  meta: ">=1.8.0"
-  path: ">=1.8.2"
-  platform: ">=3.1.0"
-  process: ">=4.2.0"
-  resource_portable: ">=3.0.0"
-  # network_info_plus: ">=3.0.3"
+  archive: "^3.3.0"
+  args: "^2.4.0"
+  file: "^6.1.0"
+  meta: "^1.8.0"
+  path: "^1.8.2"
+  platform: "^3.1.0"
+  process: "^4.2.0"
+  resource_portable: "^3.0.0"
+  # network_info_plus: "^3.0.3"
   tool_mobile:
     git: https://github.com/DrBu7cher/tool_mobile.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
-  yaml: ">=3.1.0"
+  yaml: "^3.1.0"
 
 dev_dependencies:
   fake_process_manager:

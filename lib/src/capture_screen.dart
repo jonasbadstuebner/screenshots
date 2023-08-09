@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:tool_base/tool_base.dart' show printTrace;
 
 import 'config.dart';
 import 'globals.dart';
@@ -22,7 +21,7 @@ Future<void> screenshot(
 }) async {
   if (config.isScreenShotsAvailable) {
     // todo: auto-naming scheme
-    printTrace("Takin screenshot '$name'");
+    print("Takin screenshot '$name'");
 
     final pixels = await takeScreenshot(
       binding,
@@ -49,16 +48,16 @@ Future<void> screenshot(
               '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
               fullFilePath),
           body: pixels);
-      printTrace('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
+      print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
     } catch (e) {
-      printTrace('screenshot-send-error: $e');
+      print('screenshot-send-error: $e');
     } finally {
       client.close();
     }
 
-    if (!silent) printTrace('Screenshot $name created at $fullFilePath');
+    if (!silent) print('Screenshot $name created at $fullFilePath');
   } else {
-    if (!silent) printTrace('Warning: screenshot $name not created');
+    if (!silent) print('Warning: screenshot $name not created');
   }
 }
 
@@ -79,7 +78,7 @@ Future<List<int>> takeScreenshot(
         'convertFlutterSurfaceToImage',
       );
     } catch (e) {
-      printTrace(
+      print(
           'converting surface to image failed; probably it was already an image?: $e');
     }
     final endTime = binding.clock
