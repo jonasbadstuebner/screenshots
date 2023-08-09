@@ -83,7 +83,7 @@ String? getAndroidModelType(Map? screenProps, String deviceName) {
     printStatus(
         'Warning: using default value \'$kFastlanePhone\' in \'$deviceName\' fastlane directory.');
   } else {
-    androidDeviceType = screenProps['destName'];
+    androidDeviceType = screenProps['destName'] as String?;
   }
   return androidDeviceType;
 }

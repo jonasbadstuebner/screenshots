@@ -28,26 +28,26 @@ class ImageMagick {
   ///
   /// ImageMagick calls.
   ///
-  Future convert(String command, Map options) async {
+  Future<void> convert(String command, Map<String, String> options) async {
     List<String> cmdOptions;
     switch (command) {
       case 'overlay':
         cmdOptions = [
-          options['screenshotPath'],
-          options['statusbarPath'],
+          options['screenshotPath']!,
+          options['statusbarPath']!,
           '-gravity',
           'north',
           '-composite',
-          options['screenshotPath'],
+          options['screenshotPath']!,
         ];
         break;
       case 'append':
         // convert -append screenshot_statusbar.png navbar.png final_screenshot.png
         cmdOptions = [
           '-append',
-          options['screenshotPath'],
-          options['screenshotNavbarPath'],
-          options['screenshotPath'],
+          options['screenshotPath']!,
+          options['screenshotNavbarPath']!,
+          options['screenshotPath']!,
         ];
         break;
       case 'frame':
@@ -58,27 +58,27 @@ class ImageMagick {
 
         cmdOptions = [
           '-size',
-          options['size'],
-          options['backgroundColor'],
+          options['size']!,
+          options['backgroundColor']!,
           '(',
-          options['screenshotPath'],
+          options['screenshotPath']!,
           '-resize',
-          options['resize'],
+          options['resize']!,
           ')',
           '-gravity',
           'center',
           '-geometry',
-          options['offset'],
+          options['offset']!,
           '-composite',
           '(',
-          options['framePath'],
+          options['framePath']!,
           '-resize',
-          options['resize'],
+          options['resize']!,
           ')',
           '-gravity',
           'center',
           '-composite',
-          options['screenshotPath']
+          options['screenshotPath']!
         ];
         break;
       default:
@@ -145,7 +145,7 @@ class ImageMagick {
   }
 
   /// Different command for windows (based on recommended installed version!)
-  List<String> _getPlatformCmd(String imCmd, List imCmdArgs) {
+  List<String> _getPlatformCmd(String imCmd, List<String> imCmdArgs) {
     // windows uses ImageMagick v7 or later which by default does not
     // have the legacy commands.
     if (platform.isWindows) {
@@ -163,7 +163,7 @@ class ImageMagick {
   }
 
   /// ImageMagick command
-  int _imageMagickCmd(String imCmd, List imCmdArgs) {
+  int _imageMagickCmd(String imCmd, List<String> imCmdArgs) {
     return runCmd(_getPlatformCmd(imCmd, imCmdArgs));
   }
 }

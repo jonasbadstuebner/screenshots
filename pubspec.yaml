@@ -1,34 +1,35 @@
 name: screenshots
 description: Auto-generation of screenshots for Apple and Play Stores using emulators, simulators and real devices. Includes support for multiple locales and framing. Compatible with fastlane.
-version: 2.2.1
+version: 2.3.0
 homepage: https://github.com/DrBu7cher/screenshots
 publish_to: none
 
 environment:
-  sdk: ">=2.18.6 <3.0.0"
+  sdk: ^3.0.0
 
 dependencies:
-  args: ">=2.4.0"
-  yaml: ">=3.1.0"
-  resource_portable: ">=3.0.0"
-  path: ">=1.8.2"
-  file: ">=6.1.0"
   archive: ">=3.3.0"
+  args: ">=2.4.0"
+  file: ">=6.1.0"
+  intl: ">=0.15.0 <1.0.0"
+  meta: ">=1.8.0"
+  path: ">=1.8.2"
   platform: ">=3.1.0"
   process: ">=4.2.0"
-  meta: ">=1.8.0"
+  resource_portable: ">=3.0.0"
   # network_info_plus: ">=3.0.3"
-  intl: ">=0.15.0 <1.0.0"
   tool_mobile:
     git: https://github.com/DrBu7cher/tool_mobile.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
+  yaml: ">=3.1.0"
 
 dev_dependencies:
-  mockito: ^5.4.0
-  quiver: ^3.2.1
   fake_process_manager:
     git: https://github.com/DrBu7cher/fake_process_manager.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
+  flutter_lints: ^2.0.2
+  mockito: ^5.4.0
+  quiver: ^3.2.1
   tool_base_test:
     git: https://github.com/DrBu7cher/tool_base_test.git
     # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main

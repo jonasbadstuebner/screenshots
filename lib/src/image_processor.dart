@@ -46,7 +46,7 @@ class ImageProcessor {
     RunMode runMode,
     Archive? archive,
   ) async {
-    final Map? screenProps = _screens.getScreen(deviceName);
+    final screenProps = _screens.getScreen(deviceName);
     final screenshotsDir = '${_config.stagingDir}/$kTestScreenshotsDir';
     final screenshotPaths = fs.directory(screenshotsDir).listSync();
     if (screenProps == null) {
@@ -54,10 +54,10 @@ class ImageProcessor {
     } else {
       // add frame if required
       if (_config.isFrameRequired(deviceName, orientation)) {
-        final Map screenResources = screenProps['resources'];
+        final screenResources = screenProps['resources'] as Map<String, String>;
         final status = logger.startProgress(
             'Processing screenshots from test...',
-            timeout: Duration(minutes: 4));
+            timeout: const Duration(minutes: 4));
 
         // unpack images for screen from package to local tmpDir area
         await resources.unpackImages(screenResources, _config.stagingDir);
@@ -90,7 +90,7 @@ class ImageProcessor {
     if (screenshotPaths.isNotEmpty) {
       final androidModelType =
           fastlane.getAndroidModelType(screenProps, deviceName);
-      String dstDir = fastlane.getDirPath(deviceType, locale, androidModelType);
+      var dstDir = fastlane.getDirPath(deviceType, locale, androidModelType);
       runMode == RunMode.recording
           ? dstDir = '${_config.recordingDir}/$dstDir'
           : null;
@@ -121,7 +121,7 @@ class ImageProcessor {
   }
 
   @visibleForTesting
-  static void showFailedCompare(Map failedCompare) {
+  static void showFailedCompare(Map<String, dynamic> failedCompare) {
     printError('Comparison failed:');
 
     failedCompare.forEach((screenshotName, result) {
@@ -132,9 +132,9 @@ class ImageProcessor {
   }
 
   @visibleForTesting
-  static Future<Map> compareImages(
+  static Future<Map<String, Map<String, String>>> compareImages(
       String deviceName, String recordingDir, String comparisonDir) async {
-    Map failedCompare = {};
+    var failedCompare = <String, Map<String, String>>{};
     final recordedImages = fs.directory(recordingDir).listSync();
     fs
         .directory(comparisonDir)
@@ -161,8 +161,8 @@ class ImageProcessor {
   }
 
   /// Overlay status bar over screenshot.
-  static Future<void> overlay(
-      String tmpDir, Map screenResources, String screenshotPath) async {
+  static Future<void> overlay(String tmpDir,
+      Map<String, String> screenResources, String screenshotPath) async {
     // if no status bar skip
     // todo: get missing status bars
     if (screenResources['statusbar'] == null) {
@@ -190,8 +190,8 @@ class ImageProcessor {
   }
 
   /// Append android navigation bar to screenshot.
-  static Future<void> append(
-      String tmpDir, Map screenResources, String screenshotPath) async {
+  static Future<void> append(String tmpDir, Map<String, String> screenResources,
+      String screenshotPath) async {
     final screenshotNavbarPath = '$tmpDir/${screenResources['navbar']}';
     final options = {
       'screenshotPath': screenshotPath,
@@ -203,11 +203,11 @@ class ImageProcessor {
   /// Frame a screenshot with image of device.
   ///
   /// Resulting image is scaled to fit dimensions required by stores.
-  static Future<void> frame(String tmpDir, Map screen, String screenshotPath,
-      DeviceType deviceType, RunMode runMode) async {
-    final Map resources = screen['resources'];
+  static Future<void> frame(String tmpDir, Map<String, dynamic> screen,
+      String screenshotPath, DeviceType deviceType, RunMode runMode) async {
+    final resources = screen['resources'] as Map<String, String>;
 
-    final framePath = tmpDir + '/' + resources['frame'];
+    final framePath = '$tmpDir/${resources['frame']}';
     final size = screen['size'];
     final resize = screen['resize'];
     final offset = screen['offset'];
@@ -218,11 +218,11 @@ class ImageProcessor {
         ? backgroundColor = _kDefaultIosBackground
         : backgroundColor = kDefaultAndroidBackground;
 
-    final options = {
+    final options = <String, String>{
       'framePath': framePath,
-      'size': size,
-      'resize': resize,
-      'offset': offset,
+      'size': size.toString(),
+      'resize': resize.toString(),
+      'offset': offset.toString(),
       'screenshotPath': screenshotPath,
       'backgroundColor': backgroundColor,
     };

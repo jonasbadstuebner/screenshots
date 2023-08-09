@@ -7,28 +7,28 @@ import 'utils.dart' as utils;
 /// Manage screens file.
 class Screens {
   static const _screensPath = 'resources/screens.yaml';
-  late Map _screens;
+  late Map<String, dynamic> _screens;
 
   /// Get screens yaml file from resources and parse.
   Future<void> init() async {
-    final resource = Resource("package:screenshots/$_screensPath");
-    String screens = await resource.readAsString(encoding: utf8);
-    _screens = utils.parseYamlStr(screens);
+    const resource = Resource('package:screenshots/$_screensPath');
+    final screens = await resource.readAsString(encoding: utf8);
+    _screens = utils.parseYamlStr(screens)!;
   }
 
   /// Get screen information
-  Map get screens => _screens;
+  Map<String, dynamic> get screens => _screens;
 
   /// Get screen properties for [deviceName].
-  Map? getScreen(String deviceName) {
-    Map? screenProps;
-    screens.values.forEach((osScreens) {
-      osScreens.values.forEach((_screenProps) {
-        if (_screenProps['devices'].contains(deviceName)) {
-          screenProps = _screenProps;
+  Map<String, dynamic>? getScreen(String deviceName) {
+    Map<String, dynamic>? screenProps;
+    for (final osScreens in screens.values) {
+      for (var screenProps in (osScreens as Map<String, dynamic>).values) {
+        if ((screenProps['devices'] as List<dynamic>).contains(deviceName)) {
+          screenProps = screenProps;
         }
-      });
-    });
+      }
+    }
     return screenProps;
   }
 
@@ -36,11 +36,12 @@ class Screens {
   DeviceType? getDeviceType(String deviceName) {
     DeviceType? deviceType;
     screens.forEach((_deviceType, osScreens) {
-      osScreens.values.forEach((osScreen) {
-        if (osScreen['devices'].contains(deviceName)) {
+      for (final osScreen
+          in (osScreens as Map<String, Map<String, List<String>>>).values) {
+        if (osScreen['devices']!.contains(deviceName)) {
           deviceType = utils.getEnumFromString(DeviceType.values, _deviceType);
         }
-      });
+      }
     });
     return deviceType;
   }
@@ -54,13 +55,12 @@ class Screens {
     final deviceNames = <String>[];
     screens.forEach((osType, osScreens) {
       if (osType == os) {
-        osScreens.forEach((screenId, screenProps) {
+        (osScreens as Map<String, Map<String, List<String>>>)
+            .forEach((screenId, screenProps) {
           // omit devices that have screens that are
           // only used to identify android model type
           if (!Screens.isAndroidModelTypeScreen(screenProps)) {
-            for (String device in screenProps['devices']) {
-              deviceNames.add(device);
-            }
+            screenProps['devices']!.forEach(deviceNames.add);
           }
         });
       }

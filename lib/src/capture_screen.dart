@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,7 +8,7 @@ import 'globals.dart';
 import 'package:http/http.dart' as http;
 
 /// Called by integration test to capture images.
-Future screenshot(
+Future<void> screenshot(
   dynamic tester, // WidgetTester
   dynamic binding, // IntegrationTestWidgetsFlutterBinding
   dynamic integrationTestChannel, // MethodChannel
@@ -38,16 +40,16 @@ Future screenshot(
     final testDir = '${config.stagingDir}/$kTestScreenshotsDir';
     final fullFilePath = '$testDir/$name.$kImageExtension';
 
-    var client = http.Client();
+    final client = http.Client();
     try {
-      var response = await client.post(
+      final response = await client.post(
           Uri.http(
               '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
               fullFilePath),
           body: pixels);
       print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
     } catch (e) {
-      print("screenshot-send-error: $e");
+      print('screenshot-send-error: $e');
     } finally {
       client.close();
     }
@@ -64,7 +66,7 @@ Future<List<int>> takeScreenshot(
     dynamic platformDispatcher,
     String screenshotName,
     {Duration? timeout}) async {
-  if (bool.fromEnvironment('dart.library.js_util')) {
+  if (const bool.fromEnvironment('dart.library.js_util')) {
     // kIsWeb implementation
     throw 'web not yet implemented';
     // await binding.takeScreenshot(name);
@@ -78,18 +80,18 @@ Future<List<int>> takeScreenshot(
       print(
           'converting surface to image failed; probably it was already an image?: $e');
     }
-    final DateTime endTime =
-        binding.clock.fromNowBy(timeout ?? const Duration(seconds: 30));
+    final endTime = binding.clock
+        .fromNowBy(timeout ?? const Duration(seconds: 30)) as DateTime;
     do {
-      if (binding.clock.now().isAfter(endTime)) {
+      if ((binding.clock.now() as DateTime).isAfter(endTime)) {
         break;
       }
       await binding.pump(const Duration(milliseconds: 100));
-    } while (binding.hasScheduledFrame);
+    } while (binding.hasScheduledFrame as bool);
   }
-  var reportData = <String, dynamic>{};
+  final reportData = <String, dynamic>{};
   reportData['screenshots'] ??= <dynamic>[];
-  final Map<String, dynamic> data = await _takeScreenshot(
+  final data = await _takeScreenshot(
       integrationTestChannel, platformDispatcher, screenshotName);
   assert(data.containsKey('bytes'));
 
@@ -100,12 +102,11 @@ Future<List<int>> takeScreenshot(
 Future<Map<String, dynamic>> _takeScreenshot(dynamic integrationTestChannel,
     dynamic platformDispatcher, String screenshot) async {
   integrationTestChannel.setMethodCallHandler(
-      (call) => _onMethodChannelCall(call, platformDispatcher));
-  final List<int>? rawBytes =
-      await integrationTestChannel.invokeMethod<List<int>>(
+      (dynamic call) => _onMethodChannelCall(call, platformDispatcher));
+  final rawBytes = await integrationTestChannel.invokeMethod<List<int>>(
     'captureScreenshot',
     <String, dynamic>{'name': screenshot},
-  );
+  ) as List<int>?;
   if (rawBytes == null) {
     throw StateError(
         'Expected a list of bytes, but instead captureScreenshot returned null');

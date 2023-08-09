@@ -13,12 +13,13 @@ import 'context_runner.dart';
 import 'globals.dart';
 
 /// Parse a yaml file.
-Map parseYamlFile(String yamlPath) =>
-    jsonDecode(jsonEncode(loadYaml(fs.file(yamlPath).readAsStringSync())));
+Map<String, dynamic>? parseYamlFile(String yamlPath) =>
+    jsonDecode(jsonEncode(loadYaml(fs.file(yamlPath).readAsStringSync())))
+        as Map<String, dynamic>?;
 
 /// Parse a yaml string.
-Map parseYamlStr(String yamlString) =>
-    jsonDecode(jsonEncode(loadYaml(yamlString)));
+Map<String, dynamic>? parseYamlStr(String yamlString) =>
+    jsonDecode(jsonEncode(loadYaml(yamlString))) as Map<String, dynamic>?;
 
 /// Move files from [srcDir] to [dstDir].
 /// If dstDir does not exist, it is created.
@@ -34,27 +35,30 @@ void moveFiles(String srcDir, String dstDir) {
 /// Creates a list of available iOS simulators.
 /// (really just concerned with simulators for now).
 /// Provides access to their IDs and status'.
-Map getIosSimulators() {
+Map<String, Map<String, dynamic>> getIosSimulators() {
   final simulators = cmd(['xcrun', 'simctl', 'list', 'devices', '--json']);
-  final simulatorsInfo = cnv.jsonDecode(simulators)['devices'];
+  final simulatorsInfo = cnv.jsonDecode(simulators)['devices']
+      as Map<String, List<Map<String, dynamic>>>;
   return transformIosSimulators(simulatorsInfo);
 }
 
 /// Transforms latest information about iOS simulators into more convenient
 /// format to index into by simulator name.
 /// (also useful for testing)
-Map transformIosSimulators(Map simsInfo) {
+Map<String, Map<String, List<Map<String, dynamic>>>> transformIosSimulators(
+    Map<String, List<Map<String, dynamic>>> simsInfo) {
   // transform json to a Map of device name by a map of iOS versions by a list of
   // devices with a map of properties
   // ie, Map<String, Map<String, List<Map<String, String>>>>
   // In other words, just pop-out the device name for 'easier' access to
   // the device properties.
-  Map simsInfoTransformed = {};
+  final simsInfoTransformed =
+      <String, Map<String, List<Map<String, dynamic>>>>{};
 
   simsInfo.forEach((iOSName, sims) {
     // note: 'isAvailable' field does not appear consistently
     //       so using 'availability' as well
-    isSimAvailable(sim) =>
+    bool isSimAvailable(Map<String, dynamic> sim) =>
         sim['availability'] == '(available)' || sim['isAvailable'] == true;
     for (final sim in sims) {
       // skip if simulator unavailable
@@ -62,33 +66,35 @@ Map transformIosSimulators(Map simsInfo) {
 
       // init iOS versions map if not already present
       if (simsInfoTransformed[sim['name']] == null) {
-        simsInfoTransformed[sim['name']] = {};
+        simsInfoTransformed[sim['name'] as String] = {};
       }
 
       // init iOS version simulator array if not already present
       // note: there can be multiple versions of a simulator with the same name
       //       for an iOS version, hence the use of an array.
-      if (simsInfoTransformed[sim['name']][iOSName] == null) {
-        simsInfoTransformed[sim['name']][iOSName] = [];
+      if (simsInfoTransformed[sim['name']]![iOSName] == null) {
+        simsInfoTransformed[sim['name']]![iOSName] = [];
       }
 
       // add simulator to iOS version simulator array
-      simsInfoTransformed[sim['name']][iOSName].add(sim);
+      simsInfoTransformed[sim['name']]![iOSName]!.add(sim);
     }
   });
   return simsInfoTransformed;
 }
 
 // finds the iOS simulator with the highest available iOS version
-Map? getHighestIosSimulator(Map iosSims, String simName) {
-  final Map? iOSVersions = iosSims[simName];
-  if (iOSVersions == null) return null; // todo: hack for real device
+Map<String, dynamic>? getHighestIosSimulator(
+    Map<String, Map<String, dynamic>> iosSims, String simName) {
+  final iOSVersions = iosSims[simName] as Map<String, String>?;
+  if (iOSVersions == null) return null; // TODO(mmcc007): hack for real device
 
   // get highest iOS version
-  var iOSVersionName = getHighestIosVersion(iOSVersions);
+  final iOSVersionName = getHighestIosVersion(iOSVersions);
 
-  final iosVersionSims = iosSims[simName][iOSVersionName];
-  if (iosVersionSims.length == 0) {
+  final iosVersionSims =
+      iosSims[simName]![iOSVersionName]! as List<Map<String, dynamic>>;
+  if (iosVersionSims.isEmpty) {
     throw "Error: no simulators found for \'$simName\'";
   }
   // use the first device found for the iOS version
@@ -96,7 +102,7 @@ Map? getHighestIosSimulator(Map iosSims, String simName) {
 }
 
 // returns name of highest iOS version names
-String getHighestIosVersion(Map iOSVersions) {
+String getHighestIosVersion(Map<String, dynamic> iOSVersions) {
   // sort keys in iOS version order
   final iosVersionNames = iOSVersions.keys.toList();
   iosVersionNames.sort((v1, v2) {
@@ -127,7 +133,7 @@ String getHighestIosVersion(Map iOSVersions) {
 //}
 
 /// Adds prefix to all files in a directory
-Future prefixFilesInDir(String dirPath, String prefix) async {
+Future<void> prefixFilesInDir(String dirPath, String prefix) async {
   await for (final file
       in fs.directory(dirPath).list(recursive: false, followLinks: false)) {
     await file
@@ -152,7 +158,7 @@ T? getEnumFromString<T>(List<T> values, String value,
 String getAndroidDeviceLocale(String deviceId) {
 // ro.product.locale is available on first boot but does not update,
 // persist.sys.locale is empty on first boot but updates with locale changes
-  String locale = cmd([
+  var locale = cmd([
     getAdbPath(androidSdk)!,
     '-s',
     deviceId,
@@ -181,7 +187,7 @@ String? getIosSimulatorLocale(String udId) {
   // create file if missing (iOS 13)
   final globalPreferences = fs.file(globalPreferencesPath);
   if (!globalPreferences.existsSync()) {
-    final contents = '''
+    const contents = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -245,7 +251,7 @@ String? getIosSimulatorLocale(String udId) {
   }
   final localeInfo = cnv.jsonDecode(
       cmd(['plutil', '-convert', 'json', '-o', '-', globalPreferencesPath]));
-  final locale = localeInfo['AppleLocale'];
+  final locale = localeInfo['AppleLocale'] as String?;
   return locale;
 }
 
@@ -340,7 +346,8 @@ Future<String?> waitSysLogMsg(
     String deviceId, RegExp regExp, String locale) async {
   cmd([getAdbPath(androidSdk)!, '-s', deviceId, 'logcat', '-c']);
 //  await Future.delayed(Duration(milliseconds: 1000)); // wait for log to clear
-  await Future.delayed(Duration(milliseconds: 500)); // wait for log to clear
+  await Future<void>.delayed(
+      const Duration(milliseconds: 500)); // wait for log to clear
   // -b main ContactsDatabaseHelper:I '*:S'
   final delegate = await runCommand([
     getAdbPath(androidSdk)!,
@@ -372,7 +379,7 @@ DaemonEmulator? findEmulator(
     List<DaemonEmulator> emulators, String emulatorName) {
   // find highest by avd version number
   emulators.sort(emulatorComparison);
-  // todo: fix find for example 'Nexus_6_API_28' and Nexus_6P_API_28'
+  // TODO(mmcc007): fix find for example 'Nexus_6_API_28' and Nexus_6P_API_28'
   return emulators.map<DaemonEmulator?>((e) => e).lastWhere(
       (emulator) => emulator!.id
           .toUpperCase()
@@ -424,14 +431,14 @@ String cmd(List<String> cmd, {String? workingDirectory, bool silent = true}) {
   final result = processManager.runSync(cmd,
       workingDirectory: workingDirectory, runInShell: true);
   _traceCommand(cmd, workingDirectory: workingDirectory);
-  if (!silent) printStatus(result.stdout);
+  if (!silent) printStatus(result.stdout.toString());
   if (result.exitCode != 0) {
-    if (silent) printError(result.stdout);
-    printError(result.stderr);
+    if (silent) printError(result.stdout.toString());
+    printError(result.stderr.toString());
     throw 'command failed: exitcode=${result.exitCode}, cmd=\'${cmd.join(" ")}\', workingDir=$workingDirectory';
   }
   // return stdout
-  return result.stdout;
+  return result.stdout.toString();
 }
 
 /// Run command and return exit code as [int].
@@ -441,8 +448,8 @@ int runCmd(List<String> cmd) {
   _traceCommand(cmd);
   final result = processManager.runSync(cmd);
   if (result.exitCode != 0) {
-    printTrace(result.stdout);
-    printTrace(result.stderr);
+    printTrace(result.stdout.toString());
+    printTrace(result.stderr.toString());
   }
   return result.exitCode;
 }
@@ -466,7 +473,7 @@ Future<void> streamCmd(
   Map<String, String>? environment,
 }) async {
   if (mode == ProcessStartMode.normal) {
-    int exitCode = await runCommandAndStreamOutput(cmd,
+    final int exitCode = await runCommandAndStreamOutput(cmd,
         workingDirectory: workingDirectory, environment: environment);
     if (exitCode != 0) {
       throw 'command failed: exitcode=$exitCode, cmd=\'${cmd.join(" ")}\', workingDirectory=$workingDirectory, mode=$mode, environment=$environment';

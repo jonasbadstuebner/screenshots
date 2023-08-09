@@ -43,7 +43,7 @@ Future<bool> screenshots({
   );
   // run in context
   if (isVerbose) {
-    Logger verboseLogger = VerboseLogger(
+    final Logger verboseLogger = VerboseLogger(
         platform.isWindows ? WindowsStdoutLogger() : StdoutLogger());
     return runInContext<bool>(() async {
       return screenshots.run();
@@ -104,7 +104,7 @@ class Screenshots {
 
     // start flutter daemon
     final status = logger.startProgress('Starting flutter daemon...',
-        timeout: Duration(milliseconds: 10000));
+        timeout: const Duration(milliseconds: 10000));
     await daemonClient.start;
     status.stop();
 
@@ -218,8 +218,8 @@ class Screenshots {
 
       String? deviceId;
       DaemonEmulator? emulator;
-      Map? simulator;
-      bool pendingIosLocaleChangeAtStart = false;
+      Map<String, dynamic>? simulator;
+      var pendingIosLocaleChangeAtStart = false;
       if (device != null) {
         deviceId = device.id;
       } else {
@@ -235,7 +235,7 @@ class Screenshots {
           // and start it
           simulator = utils.getHighestIosSimulator(
               utils.getIosSimulators(), configDeviceName);
-          deviceId = simulator?['udid'];
+          deviceId = simulator?['udid'] as String?;
           // check if current simulator is pending a locale change
           if (deviceId != null &&
               Intl.canonicalizedLocale(config.locales[0]) ==
@@ -262,7 +262,7 @@ class Screenshots {
 
       if (device != null && !device.emulator) {
         // device is real
-        final defaultLocale =
+        const defaultLocale =
             'en_US'; // todo: need actual locale of real device
         printStatus('Warning: the locale of a real device cannot be changed.');
         printStatus('Warning: currently defaulting to locale $defaultLocale.');
@@ -411,8 +411,8 @@ class Screenshots {
   }
 
   /// Runs tests and processes images.
-  Future runProcessTests(
-    configDeviceName,
+  Future<void> runProcessTests(
+    String configDeviceName,
     String locale,
     Orientation? orientation,
     DeviceType deviceType,
@@ -420,29 +420,27 @@ class Screenshots {
     String deviceId, {
     required bool usePatrol,
   }) async {
-    var server = await HttpServer.bind(
+    final server = await HttpServer.bind(
         (await NetworkInterface.list(type: InternetAddressType.IPv4))
             .first
             .addresses
             .first,
         imageReceiverPort);
-    server.forEach((HttpRequest request) async {
-      List<int> bytes = [];
-      await for (var b in request) {
-        bytes.addAll(b);
-      }
+    unawaited(server.forEach((request) async {
+      final bytes = <int>[];
+      await request.forEach(bytes.addAll);
 
-      io.File screenshotFile = io.File(request.uri.path);
+      final screenshotFile = io.File(request.uri.path);
 
       await screenshotFile.writeAsBytes(bytes);
 
       request.response.write('Written screenshot to ${screenshotFile.path}');
-      request.response.close();
-    });
+      await request.response.close();
+    }));
     print(
         'screenshot-receiver started at: ${server.address.address}:${server.port}');
 
-    final Map<String, String> environment = {
+    final environment = <String, String>{
       kEnvConfigPath: configPath,
       kEnvImageReceiverIPAddress: server.address.address,
       kEnvImageReceiverPort: server.port.toString(),
@@ -462,28 +460,28 @@ class Screenshots {
       }
 
       if (usePatrol && !showPatrolLabel) {
-        command.add("--no-label");
+        command.add('--no-label');
       }
 
-      for (var element in environment.entries) {
-        command.add("--dart-define");
+      for (final element in environment.entries) {
+        command.add('--dart-define');
         command.add('${element.key}=${element.value}');
       }
 
-      bool _isBuild() => isBuild != null
+      bool iisBuild() => isBuild != null
           ? isBuild!
           : config.getDevice(configDeviceName).isBuild;
-      if (!_isBuild()) {
+      if (!iisBuild()) {
         command.add('--no-build');
       }
       bool isFlavor() => flavor != null && flavor != kNoFlavor;
       if (isFlavor()) {
         command.addAll(['--flavor', flavor!]);
       }
-      command.addAll(testPath.split(" ")); // add test path or custom command
+      command.addAll(testPath.split(' ')); // add test path or custom command
       printStatus(
-          'Running $testPath on \'$configDeviceName\' in locale $locale${isFlavor() ? ' with flavor $flavor' : ''}${!_isBuild() ? ' with no build' : ''}...');
-      if (!_isBuild() && isFlavor()) {
+          'Running $testPath on \'$configDeviceName\' in locale $locale${isFlavor() ? ' with flavor $flavor' : ''}${!iisBuild() ? ' with no build' : ''}...');
+      if (!iisBuild() && isFlavor()) {
         printStatus(
             'Warning: flavor parameter \'$flavor\' is ignored because no build is set for this device');
       }
@@ -507,7 +505,7 @@ Future<void> shutdownSimulator(String deviceId) async {
   }
   // shutdown apparently needs time when restarting
   // see https://github.com/flutter/flutter/issues/10228 for race condition on simulator
-  await Future.delayed(Duration(milliseconds: 2000));
+  await Future<void>.delayed(const Duration(milliseconds: 2000));
 }
 
 Future<void> startSimulator(DaemonClient daemonClient, String deviceId) async {
@@ -518,7 +516,7 @@ Future<void> startSimulator(DaemonClient daemonClient, String deviceId) async {
       rethrow;
     }
   }
-  await Future.delayed(Duration(milliseconds: 2000));
+  await Future<void>.delayed(const Duration(milliseconds: 2000));
   await waitForEmulatorToStart(daemonClient, deviceId: deviceId);
 }
 
@@ -532,8 +530,8 @@ Future<String> startEmulator(
 //  } else {
   // testing locally, so start emulator in normal way
   try {
-    String deviceId = await daemonClient.launchEmulator(emulatorId);
-    await Future.delayed(Duration(milliseconds: 2000));
+    final deviceId = await daemonClient.launchEmulator(emulatorId);
+    await Future<void>.delayed(const Duration(milliseconds: 2000));
     return deviceId;
   } catch (e) {
     return await waitForEmulatorToStart(daemonClient, emulatorId: emulatorId);
@@ -595,7 +593,7 @@ Future<bool> setSimulatorLocale(String deviceId, String deviceName,
   // a running simulator
   final deviceLocale = utils.getIosSimulatorLocale(deviceId);
   printTrace('\'$deviceName\' locale: $deviceLocale, test locale: $testLocale');
-  bool localeChanged = false;
+  var localeChanged = false;
   if (Intl.canonicalizedLocale(testLocale) !=
       Intl.canonicalizedLocale(deviceLocale)) {
     printStatus(
@@ -607,7 +605,8 @@ Future<bool> setSimulatorLocale(String deviceId, String deviceName,
 }
 
 /// Set the locale of a running emulator.
-Future<void> setEmulatorLocale(String deviceId, testLocale, deviceName) async {
+Future<void> setEmulatorLocale(
+    String deviceId, String testLocale, String deviceName) async {
   final deviceLocale = utils.getAndroidDeviceLocale(deviceId);
   printTrace('\'$deviceName\' locale: $deviceLocale, test locale: $testLocale');
   if (deviceLocale != '' &&
@@ -621,7 +620,7 @@ Future<void> setEmulatorLocale(String deviceId, testLocale, deviceName) async {
     await utils.waitAndroidLocaleChange(deviceId, testLocale);
     // allow additional time before orientation change
 //    await Future.delayed(Duration(milliseconds: 5000));
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
   }
 }
 
@@ -637,7 +636,7 @@ Future<void> changeAndroidLocale(
     printError(
         '    https://stackoverflow.com/questions/43923996/adb-root-is-not-working-on-emulator/45668555#45668555 for details.\n');
   }
-  await Future.delayed(const Duration(seconds: 5));
+  await Future<void>.delayed(const Duration(seconds: 5));
   // adb shell "setprop persist.sys.locale fr_CA; setprop ctl.restart zygote"
   utils.cmd([
     getAdbPath(androidSdk)!,
@@ -649,7 +648,7 @@ Future<void> changeAndroidLocale(
 }
 
 /// Change locale of non-running simulator.
-Future _changeSimulatorLocale(
+Future<void> _changeSimulatorLocale(
     String stagingDir, String name, String testLocale) async {
   await utils.streamCmd([
     '$stagingDir/resources/script/simulator-controller',
@@ -668,7 +667,7 @@ Future<String> shutdownAndroidEmulator(
   if (device['id'] != deviceId) {
     throw 'Error: device id \'$deviceId\' not shutdown';
   }
-  return device['id'];
+  return device['id'] as String;
 }
 
 ///// Start android emulator in a CI environment.

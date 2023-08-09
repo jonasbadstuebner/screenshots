@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -11,15 +13,15 @@ const sampleUsage = 'sample usage: screenshots';
 void main(List<String> arguments) async {
   late ArgResults argResults;
 
-  final configArg = 'config';
-  final modeArg = 'mode';
-  final patrolArg = 'patrol';
-  final patrolLabelArg = '$patrolArg-label';
-  final flavorArg = 'flavor';
-  final buildArg = 'build';
-  final helpArg = 'help';
-  final verboseArg = 'verbose';
-  final ArgParser argParser = ArgParser(allowTrailingOptions: false)
+  const configArg = 'config';
+  const modeArg = 'mode';
+  const patrolArg = 'patrol';
+  const patrolLabelArg = '$patrolArg-label';
+  const flavorArg = 'flavor';
+  const buildArg = 'build';
+  const helpArg = 'help';
+  const verboseArg = 'verbose';
+  final argParser = ArgParser(allowTrailingOptions: false)
     ..addOption(configArg,
         abbr: 'c',
         defaultsTo: kConfigFileName,
@@ -66,7 +68,7 @@ void main(List<String> arguments) async {
   }
 
   // show help
-  if (argResults[helpArg]) {
+  if (argResults[helpArg] as bool) {
     _showUsage(argParser);
     exit(0);
   }
@@ -81,7 +83,7 @@ void main(List<String> arguments) async {
   if (!await isImageMagicInstalled()) {
     stderr.writeln(
         '#############################################################');
-    stderr.writeln("# You have to install ImageMagick to use Screenshots");
+    stderr.writeln('# You have to install ImageMagick to use Screenshots');
     if (Platform.isMacOS) {
       stderr.writeln(
           "# Install it using 'brew update && brew install imagemagick'");
@@ -93,8 +95,9 @@ void main(List<String> arguments) async {
   }
 
   // validate args
-  if (!await File(argResults[configArg]).exists()) {
-    _handleError(argParser, "File not found: ${argResults[configArg]}");
+  // ignore: avoid_slow_async_io
+  if (!await File(argResults[configArg] as String).exists()) {
+    _handleError(argParser, 'File not found: ${argResults[configArg]}');
   }
 
   // Check flutter command is found
@@ -103,21 +106,21 @@ void main(List<String> arguments) async {
     stderr.writeln(
         '#############################################################');
     stderr.writeln("# 'flutter' must be in the PATH to use Screenshots");
-    stderr.writeln("# You can usually add it to the PATH using"
+    stderr.writeln('# You can usually add it to the PATH using'
         "# export PATH='\$HOME/Library/flutter/bin:\$PATH'");
     stderr.writeln(
         '#############################################################');
     exit(1);
   }
 
-  final config = ScreenshotsConfig(configPath: argResults[configArg]);
+  final config = ScreenshotsConfig(configPath: argResults[configArg] as String);
   if (config.isRunTypeActive(DeviceType.android)) {
     // check required executables for android
     if (!await isAdbPath()) {
       stderr.writeln(
           '#############################################################');
       stderr.writeln("# 'adb' must be in the PATH to use Screenshots");
-      stderr.writeln("# You can usually add it to the PATH using"
+      stderr.writeln('# You can usually add it to the PATH using'
           "# export PATH='\$HOME/Library/Android/sdk/platform-tools:\$PATH'");
       stderr.writeln(
           '#############################################################');
@@ -127,7 +130,7 @@ void main(List<String> arguments) async {
       stderr.writeln(
           '#############################################################');
       stderr.writeln("# 'emulator' must be in the PATH to use Screenshots");
-      stderr.writeln("# You can usually add it to the PATH using"
+      stderr.writeln('# You can usually add it to the PATH using'
           "# export PATH='\$HOME/Library/Android/sdk/emulator:\$PATH'");
       stderr.writeln(
           '#############################################################');
@@ -136,17 +139,14 @@ void main(List<String> arguments) async {
   }
 
   final success = await screenshots(
-    configPath: argResults[configArg],
-    mode: argResults[modeArg],
-    flavor: argResults[flavorArg],
-    isBuild: argResults.wasParsed(buildArg)
-        ? argResults[buildArg] == 'true'
-            ? true
-            : false
-        : null,
-    isVerbose: argResults.wasParsed(verboseArg) ? true : false,
-    usePatrol: argResults.wasParsed(patrolArg) ? true : false,
-    showPatrolLabel: argResults[patrolLabelArg],
+    configPath: argResults[configArg] as String,
+    mode: argResults[modeArg] as String,
+    flavor: argResults[flavorArg] as String,
+    isBuild:
+        argResults.wasParsed(buildArg) ? argResults[buildArg] == 'true' : null,
+    isVerbose: argResults.wasParsed(verboseArg),
+    usePatrol: argResults.wasParsed(patrolArg),
+    showPatrolLabel: argResults[patrolLabelArg] as bool,
   );
   exit(success ? 0 : 1);
 }
@@ -157,7 +157,7 @@ void _handleError(ArgParser argParser, String msg) {
 }
 
 void _showUsage(ArgParser argParser) {
-  print('$usage');
+  print(usage);
   print('\n$sampleUsage\n');
   print(argParser.usage);
   exit(2);

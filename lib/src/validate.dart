@@ -11,25 +11,24 @@ import 'utils.dart' as utils;
 /// matching screen is available and tests exist.
 Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
     List<DaemonDevice> allDevices, List<DaemonEmulator> allEmulators) async {
-  bool isValid = true;
-  bool showDeviceGuide = false;
+  var isValid = true;
+  var showDeviceGuide = false;
   final configPath = config.configPath;
 
   // validate tests
-  for (String test in config.tests) {
+  for (var test in config.tests) {
     if (!isValidTestPaths(test)) {
       printError('Invalid config: \'$test\' in $configPath');
       isValid = false;
     }
   }
 
-  final bool Function(DaemonDevice?) isDeviceAttached =
-      (DaemonDevice? device) => device != null;
+  final isDeviceAttached = (DaemonDevice? device) => device != null;
 
   // validate android device
   if (config.isRunTypeActive(DeviceType.android)) {
     final androidDevices = utils.getAndroidDevices(allDevices);
-    for (ConfigDevice configDevice in config.androidDevices) {
+    for (var configDevice in config.androidDevices) {
       if (config.isFrameRequired(configDevice.name, null)) {
         // check screen available for this device
         if (!_isScreenAvailable(screens, configDevice.name, configPath)) {
@@ -57,8 +56,8 @@ Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
     // validate ios device
     if (config.isRunTypeActive(DeviceType.ios)) {
       final iosDevices = utils.getIosDaemonDevices(allDevices);
-      final Map simulators = utils.getIosSimulators();
-      for (ConfigDevice configDevice in config.iosDevices) {
+      final simulators = utils.getIosSimulators();
+      for (final configDevice in config.iosDevices) {
         if (config.isFrameRequired(configDevice.name, null)) {
           // check screen available for this device
           if (!_isScreenAvailable(screens, configDevice.name, configPath)) {
@@ -92,16 +91,14 @@ Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
   final deviceNames = config.deviceNames;
   for (final devName in deviceNames) {
     final configDevice = config.getDevice(devName);
-    if (configDevice != null) {
-      final frame = configDevice.isFramed;
-      if (frame != null && !isValidFrame(frame)) {
-        printError(
-            'Invalid value for \'frame\' for device \'$devName\': $frame');
-        printStatus('Valid values:');
-        printStatus('  true');
-        printStatus('  false');
-        isValid = false;
-      }
+
+    final frame = configDevice.isFramed;
+    if (!isValidFrame(frame)) {
+      printError('Invalid value for \'frame\' for device \'$devName\': $frame');
+      printStatus('Valid values:');
+      printStatus('  true');
+      printStatus('  false');
+      isValid = false;
     }
   }
   if (showDeviceGuide) {
@@ -126,8 +123,8 @@ bool isValidTestPaths(String driverArgs) {
   }
 
   // Remember any failed path during matching (if any matching)
-  bool isInvalidPath = false;
-  bool matchFound = false;
+  var isInvalidPath = false;
+  var matchFound = false;
   for (final regExp in regExps) {
     final match = regExp.firstMatch(driverArgs);
     if (match != null) {
@@ -154,7 +151,7 @@ bool isEmulatorInstalled(List<DaemonEmulator> emulators, String deviceName) {
   if (isEmulatorInstalled) {
     final matchingEmulators =
         emulators.where((emulator) => emulator.name == deviceName);
-    if (matchingEmulators != null && matchingEmulators.length > 1) {
+    if (matchingEmulators.length > 1) {
       printStatus('Warning: \'$deviceName\' has multiple avd versions.');
       printStatus(
           '       : Using \'$deviceName\' with avd version ${emulator.id}.');
@@ -165,9 +162,10 @@ bool isEmulatorInstalled(List<DaemonEmulator> emulators, String deviceName) {
 
 /// Checks if a simulator is installed, matching the device named in config file.
 @visibleForTesting
-bool isSimulatorInstalled(Map simulators, String deviceName) {
+bool isSimulatorInstalled(
+    Map<String, Map<String, dynamic>> simulators, String deviceName) {
   // check simulator installed
-  bool isSimulatorInstalled = false;
+  var isSimulatorInstalled = false;
   simulators.forEach((simulatorName, iOSVersions) {
     if (simulatorName == deviceName) {
       // check for duplicate installs
@@ -175,7 +173,9 @@ bool isSimulatorInstalled(Map simulators, String deviceName) {
       final udid = iOSVersions[iOSVersionName][0]['udid'];
       // check for device present with multiple os's
       // or with duplicate name
-      if (iOSVersions.length > 1 || iOSVersions[iOSVersionName].length > 1) {
+      if (iOSVersions.length > 1 ||
+          (iOSVersions[iOSVersionName] as List<Map<String, dynamic>>).length >
+              1) {
         printStatus('Warning: \'$deviceName\' has multiple iOS versions.');
         printStatus(
             '       : Using \'$deviceName\' with iOS version $iOSVersionName (ID: $udid).');
@@ -234,7 +234,7 @@ void screenGuide(Screens screens) {
   printStatus('\n  Supported screens:');
   for (final os in ['android', 'ios']) {
     printStatus('    $os:');
-    for (String deviceName in screens.getSupportedDeviceNamesByOs(os)) {
+    for (var deviceName in screens.getSupportedDeviceNamesByOs(os)) {
       printStatus(
           '      $deviceName (${screens.getScreen(deviceName)?['size']})');
     }
