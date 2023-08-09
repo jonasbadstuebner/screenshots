@@ -105,7 +105,8 @@ class ScreenshotsConfig {
       .where((device) => device.deviceType == DeviceType.android)
       .toList();
 
-  bool get isFrameEnabled => _configInfo['frame'] as bool;
+  bool get isFrameEnabled =>
+      bool.tryParse(_configInfo['frame'].toString()) ?? true;
 
   String? get recordingDir => _configInfo['recording'] as String?;
 
