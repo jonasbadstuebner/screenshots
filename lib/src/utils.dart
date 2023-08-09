@@ -37,8 +37,8 @@ void moveFiles(String srcDir, String dstDir) {
 /// Provides access to their IDs and status'.
 Map<String, Map<String, dynamic>> getIosSimulators() {
   final simulators = cmd(['xcrun', 'simctl', 'list', 'devices', '--json']);
-  final simulatorsInfo = cnv.jsonDecode(simulators)['devices']
-      as Map<String, List<Map<String, dynamic>>>;
+  final simulatorsInfo =
+      cnv.jsonDecode(simulators)['devices'] as Map<String, dynamic>;
   return transformIosSimulators(simulatorsInfo);
 }
 
