@@ -28,7 +28,7 @@ Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
   // validate android device
   if (config.isRunTypeActive(DeviceType.android)) {
     final androidDevices = utils.getAndroidDevices(allDevices);
-    for (var configDevice in config.androidDevices) {
+    for (final configDevice in config.androidDevices) {
       if (config.isFrameRequired(configDevice.name, null)) {
         // check screen available for this device
         if (!_isScreenAvailable(screens, configDevice.name, configPath)) {
@@ -234,7 +234,7 @@ void screenGuide(Screens screens) {
   printStatus('\n  Supported screens:');
   for (final os in ['android', 'ios']) {
     printStatus('    $os:');
-    for (var deviceName in screens.getSupportedDeviceNamesByOs(os)) {
+    for (final deviceName in screens.getSupportedDeviceNamesByOs(os)) {
       printStatus(
           '      $deviceName (${screens.getScreen(deviceName)?['size']})');
     }

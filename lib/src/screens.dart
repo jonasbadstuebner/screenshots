@@ -23,9 +23,10 @@ class Screens {
   Map<String, dynamic>? getScreen(String deviceName) {
     Map<String, dynamic>? screenProps;
     for (final osScreens in screens.values) {
-      for (var screenProps in (osScreens as Map<String, dynamic>).values) {
-        if ((screenProps['devices'] as List<dynamic>).contains(deviceName)) {
-          screenProps = screenProps;
+      for (final scrP in (osScreens as Map<String, dynamic>).values) {
+        scrP as Map<String, dynamic>;
+        if ((scrP['devices'] as List<dynamic>).contains(deviceName)) {
+          screenProps = scrP;
         }
       }
     }
@@ -35,11 +36,11 @@ class Screens {
   /// Get [DeviceType] for [deviceName].
   DeviceType? getDeviceType(String deviceName) {
     DeviceType? deviceType;
-    screens.forEach((_deviceType, osScreens) {
+    screens.forEach((devT, osScreens) {
       for (final osScreen
           in (osScreens as Map<String, Map<String, List<String>>>).values) {
         if (osScreen['devices']!.contains(deviceName)) {
-          deviceType = utils.getEnumFromString(DeviceType.values, _deviceType);
+          deviceType = utils.getEnumFromString(DeviceType.values, devT);
         }
       }
     });
