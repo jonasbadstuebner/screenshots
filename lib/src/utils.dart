@@ -60,9 +60,9 @@ Map<String, Map<String, List<Map<String, dynamic>>>> transformIosSimulators(
     //       so using 'availability' as well
     bool isSimAvailable(Map<String, dynamic> sim) =>
         sim['availability'] == '(available)' || sim['isAvailable'] == true;
-    for (final sim in sims as List<Map<String, dynamic>>) {
+    for (final sim in sims as List<dynamic>) {
       // skip if simulator unavailable
-      if (!isSimAvailable(sim)) continue;
+      if (!isSimAvailable(sim as Map<String, dynamic>)) continue;
 
       // init iOS versions map if not already present
       if (simsInfoTransformed[sim['name']] == null) {
