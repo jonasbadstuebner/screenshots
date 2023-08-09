@@ -53,9 +53,9 @@ class ImageProcessor {
       printStatus('Warning: \'$deviceName\' images will not be processed');
     } else {
       // add frame if required
-      if (!_config.rawScreenshots &&
-          _config.isFrameRequired(deviceName, orientation)) {
-        final screenResources = screenProps['resources'] as Map<String, String>;
+      if (!_config.rawScreenshots) {
+        final screenResources =
+            screenProps['resources'] as Map<String, dynamic>;
         final status = logger.startProgress(
             'Processing screenshots from test...',
             timeout: const Duration(minutes: 4));
@@ -77,9 +77,10 @@ class ImageProcessor {
             await append(
                 _config.stagingDir, screenResources, screenshotPath.path);
           }
-
-          await frame(_config.stagingDir, screenProps, screenshotPath.path,
-              deviceType, runMode);
+          if (_config.isFrameRequired(deviceName, orientation)) {
+            await frame(_config.stagingDir, screenProps, screenshotPath.path,
+                deviceType, runMode);
+          }
         }
         status.stop();
       } else {
@@ -163,7 +164,7 @@ class ImageProcessor {
 
   /// Overlay status bar over screenshot.
   static Future<void> overlay(String tmpDir,
-      Map<String, String> screenResources, String screenshotPath) async {
+      Map<String, dynamic> screenResources, String screenshotPath) async {
     // if no status bar skip
     // todo: get missing status bars
     if (screenResources['statusbar'] == null) {
@@ -191,8 +192,8 @@ class ImageProcessor {
   }
 
   /// Append android navigation bar to screenshot.
-  static Future<void> append(String tmpDir, Map<String, String> screenResources,
-      String screenshotPath) async {
+  static Future<void> append(String tmpDir,
+      Map<String, dynamic> screenResources, String screenshotPath) async {
     final screenshotNavbarPath = '$tmpDir/${screenResources['navbar']}';
     final options = {
       'screenshotPath': screenshotPath,

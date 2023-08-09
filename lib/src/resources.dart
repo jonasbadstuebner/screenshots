@@ -9,9 +9,9 @@ import 'utils.dart';
 /// Copy resource images for a screen from package to files.
 ///
 Future<void> unpackImages(
-    Map<String, String> screenResources, String dstDir) async {
+    Map<String, dynamic> screenResources, String dstDir) async {
   for (final resourcePath in screenResources.values) {
-    final resourceImage = await readResourceImage(resourcePath);
+    final resourceImage = await readResourceImage(resourcePath.toString());
 
     // create resource file
     final dstPath = '$dstDir/$resourcePath';

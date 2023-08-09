@@ -48,7 +48,7 @@ class Screens {
   }
 
   /// Test if screen is used for identifying android model type.
-  static bool isAndroidModelTypeScreen(Map screenProps) =>
+  static bool isAndroidModelTypeScreen(Map<String, dynamic> screenProps) =>
       screenProps['size'] == null;
 
   /// Get supported device names by [os]
