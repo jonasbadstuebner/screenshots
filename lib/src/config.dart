@@ -67,7 +67,7 @@ class ScreenshotsConfig {
   // Getters
   List<String> get tests => _processList(_configInfo['tests'] as List<dynamic>);
 
-  InternetAddress get imageReceiverHost =>
+  InternetAddress? get imageReceiverHost =>
       _configInfo.containsKey('imageReceiverHost')
           ? InternetAddress(_configInfo['imageReceiverHost'] as String,
               type: InternetAddressType.IPv4)
@@ -77,11 +77,11 @@ class ScreenshotsConfig {
       ? _configInfo['imageReceiverPort'] as int
       : 8020;
 
-  InternetAddress get imageSendHost =>
+  InternetAddress? get imageSendHost =>
       _configInfo.containsKey('imageSendTarget')
           ? InternetAddress(_configInfo['imageSendTarget'] as String,
               type: InternetAddressType.IPv4)
-          : InternetAddress('10.0.2.2', type: InternetAddressType.IPv4);
+          : null;
 
   int get imageSendPort => _configInfo.containsKey('imageSendPort')
       ? _configInfo['imageSendPort'] as int

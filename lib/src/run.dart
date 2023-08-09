@@ -416,7 +416,7 @@ class Screenshots {
     required bool usePatrol,
   }) async {
     final server = await HttpServer.bind(
-        await config.imageReceiverHost, config.imageReceiverPort);
+        config.imageReceiverHost, config.imageReceiverPort);
     unawaited(server.forEach((request) async {
       final bytes = <int>[];
       await request.forEach(bytes.addAll);
@@ -435,7 +435,8 @@ class Screenshots {
       kEnvConfigPath: configPath,
       kEnvImageReceiverIPAddress: server.address.address,
       kEnvImageReceiverPort: server.port.toString(),
-      kEnvImageSendHost: config.imageSendHost.address,
+      kEnvImageSendHost: config.imageSendHost?.address ??
+          (deviceType == DeviceType.ios ? '127.0.0.1' : '10.0.2.2'),
       kEnvImageSendPort: config.imageSendPort.toString(),
       kEnvSreenshotsStagingDir: config.stagingDir,
     };
