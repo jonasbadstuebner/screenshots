@@ -93,13 +93,12 @@ Map<String, dynamic>? getHighestIosSimulator(
   // get highest iOS version
   final iOSVersionName = getHighestIosVersion(iOSVersions);
 
-  final iosVersionSims =
-      iosSims[simName]![iOSVersionName]! as List<Map<String, dynamic>>;
+  final iosVersionSims = iosSims[simName]![iOSVersionName]! as List<dynamic>;
   if (iosVersionSims.isEmpty) {
     throw "Error: no simulators found for \'$simName\'";
   }
   // use the first device found for the iOS version
-  return iosVersionSims[0];
+  return iosVersionSims[0] as Map<String, dynamic>;
 }
 
 // returns name of highest iOS version names

@@ -207,7 +207,7 @@ class ImageProcessor {
   /// Resulting image is scaled to fit dimensions required by stores.
   static Future<void> frame(String tmpDir, Map<String, dynamic> screen,
       String screenshotPath, DeviceType deviceType, RunMode runMode) async {
-    final resources = screen['resources'] as Map<String, String>;
+    final resources = screen['resources'] as Map<String, dynamic>;
 
     final framePath = '$tmpDir/${resources['frame']}';
     final size = screen['size'];
