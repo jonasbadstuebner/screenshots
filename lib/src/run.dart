@@ -435,6 +435,8 @@ class Screenshots {
       kEnvConfigPath: configPath,
       kEnvImageReceiverIPAddress: server.address.address,
       kEnvImageReceiverPort: server.port.toString(),
+      kEnvImageSendHost: config.imageSendHost.address,
+      kEnvImageSendPort: config.imageSendPort.toString(),
       kEnvSreenshotsStagingDir: config.stagingDir,
     };
 

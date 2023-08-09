@@ -14,6 +14,8 @@ import 'utils.dart' as utils;
 const kEnvConfigPath = 'SCREENSHOTS_YAML';
 const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
 const kEnvImageReceiverPort = 'IMAGE_RECEIVER_PORT';
+const kEnvImageSendHost = 'IMAGE_SEND_HOST';
+const kEnvImageSendPort = 'IMAGE_SEND_PORT';
 const kEnvSreenshotsStagingDir = 'SCREENSHOTS_STAGING_DIR';
 
 /// Config info used to manage screenshots for android and ios.
@@ -65,18 +67,25 @@ class ScreenshotsConfig {
   // Getters
   List<String> get tests => _processList(_configInfo['tests'] as List<dynamic>);
 
-  Future<InternetAddress> get imageReceiverHost async =>
+  InternetAddress get imageReceiverHost =>
       _configInfo.containsKey('imageReceiverHost')
           ? InternetAddress(_configInfo['imageReceiverHost'] as String,
               type: InternetAddressType.IPv4)
-          : (await NetworkInterface.list(type: InternetAddressType.IPv4))
-              .first
-              .addresses
-              .first;
+          : InternetAddress('127.0.0.1', type: InternetAddressType.IPv4);
 
   int get imageReceiverPort => _configInfo.containsKey('imageReceiverPort')
       ? _configInfo['imageReceiverPort'] as int
       : 8020;
+
+  InternetAddress get imageSendHost =>
+      _configInfo.containsKey('imageSendTarget')
+          ? InternetAddress(_configInfo['imageSendTarget'] as String,
+              type: InternetAddressType.IPv4)
+          : InternetAddress('10.0.2.2', type: InternetAddressType.IPv4);
+
+  int get imageSendPort => _configInfo.containsKey('imageSendPort')
+      ? _configInfo['imageSendPort'] as int
+      : imageReceiverPort;
 
   String get stagingDir => _configInfo['staging'] as String;
 
