@@ -53,7 +53,8 @@ class ImageProcessor {
       printStatus('Warning: \'$deviceName\' images will not be processed');
     } else {
       // add frame if required
-      if (_config.isFrameRequired(deviceName, orientation)) {
+      if (!_config.rawScreenshots &&
+          _config.isFrameRequired(deviceName, orientation)) {
         final screenResources = screenProps['resources'] as Map<String, String>;
         final status = logger.startProgress(
             'Processing screenshots from test...',

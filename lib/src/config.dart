@@ -89,6 +89,9 @@ class ScreenshotsConfig {
 
   String get stagingDir => _configInfo['staging'] as String;
 
+  bool get rawScreenshots =>
+      bool.tryParse(_configInfo['rawScreenshots'].toString()) ?? false;
+
   List<String> get locales =>
       _processList(_configInfo['locales'] as List<dynamic>);
 
