@@ -86,7 +86,8 @@ Map<String, Map<String, List<Map<String, dynamic>>>> transformIosSimulators(
 // finds the iOS simulator with the highest available iOS version
 Map<String, dynamic>? getHighestIosSimulator(
     Map<String, Map<String, dynamic>> iosSims, String simName) {
-  final iOSVersions = iosSims[simName] as Map<String, String>?;
+  final iOSVersions =
+      iosSims[simName] as Map<String, List<Map<String, dynamic>>>?;
   if (iOSVersions == null) return null; // TODO(mmcc007): hack for real device
 
   // get highest iOS version
