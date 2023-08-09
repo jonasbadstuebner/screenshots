@@ -42,18 +42,28 @@ Future<void> screenshot(
     final fullFilePath = '$testDir/$name.$kImageExtension';
 
     final client = http.Client();
-    // try {
-    final response = await client.post(
-        Uri.http(
-            '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
-            fullFilePath),
-        body: pixels);
-    print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
-    // } catch (e) {
-    //   print('screenshot-send-error: $e');
-    // } finally {
-    client.close();
-    // }
+    Exception? sendError;
+    try {
+      final response = await client.post(
+          Uri.http(
+              '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
+              fullFilePath),
+          body: pixels);
+      print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
+    } catch (e) {
+      print('screenshot-send-error: $e');
+      if (e is Exception) {
+        sendError = e;
+      } else {
+        sendError = Exception(e.toString());
+      }
+    } finally {
+      client.close();
+    }
+    // You should see that something went wrong, but it should not leave the client open. So I did it like this.
+    if (sendError != null) {
+      throw sendError;
+    }
 
     if (!silent) print('Screenshot $name created at $fullFilePath');
   } else {
