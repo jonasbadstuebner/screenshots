@@ -14,61 +14,57 @@ Future<void> screenshot(
   dynamic binding, // IntegrationTestWidgetsFlutterBinding
   dynamic integrationTestChannel, // MethodChannel
   dynamic platformDispatcher, // PlatformDispatcher.instance
-  ScreenshotsConfig config,
   String name, {
   Duration? timeout,
   bool silent = false,
 }) async {
-  if (config.isScreenShotsAvailable) {
-    // todo: auto-naming scheme
-    print("Taking screenshot '$name'");
+  // todo: auto-naming scheme
+  print("Taking screenshot '$name'");
 
-    final pixels = await takeScreenshot(
-      binding,
-      integrationTestChannel,
-      platformDispatcher,
-      name,
-      timeout: timeout,
+  final pixels = await takeScreenshot(
+    binding,
+    integrationTestChannel,
+    platformDispatcher,
+    name,
+    timeout: timeout,
+  );
+
+  if (Platform.isAndroid) {
+    await integrationTestChannel.invokeMethod<void>(
+      'revertFlutterImage',
+      null,
     );
-
-    if (Platform.isAndroid) {
-      await integrationTestChannel.invokeMethod<void>(
-        'revertFlutterImage',
-        null,
-      );
-    }
-
-    final testDir = '${config.stagingDir}/$kTestScreenshotsDir';
-    final fullFilePath = '$testDir/$name.$kImageExtension';
-
-    final client = http.Client();
-    Exception? sendError;
-    try {
-      final response = await client.post(
-          Uri.http(
-              '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
-              fullFilePath),
-          body: pixels);
-      print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
-    } catch (e) {
-      print('screenshot-send-error: $e');
-      if (e is Exception) {
-        sendError = e;
-      } else {
-        sendError = Exception(e.toString());
-      }
-    } finally {
-      client.close();
-    }
-    // You should see that something went wrong, but it should not leave the client open. So I did it like this.
-    if (sendError != null) {
-      throw sendError;
-    }
-
-    if (!silent) print('Screenshot $name created at $fullFilePath');
-  } else {
-    if (!silent) print('Warning: screenshot $name not created');
   }
+
+  const testDir =
+      '${const String.fromEnvironment(kEnvSreenshotsStagingDir)}/$kTestScreenshotsDir';
+  final fullFilePath = '$testDir/$name.$kImageExtension';
+
+  final client = http.Client();
+  Exception? sendError;
+  try {
+    final response = await client.post(
+        Uri.http(
+            '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${const String.fromEnvironment(kEnvImageReceiverPort)}',
+            fullFilePath),
+        body: pixels);
+    print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
+  } catch (e) {
+    print('screenshot-send-error: $e');
+    if (e is Exception) {
+      sendError = e;
+    } else {
+      sendError = Exception(e.toString());
+    }
+  } finally {
+    client.close();
+  }
+  // You should see that something went wrong, but it should not leave the client open. So I did it like this.
+  if (sendError != null) {
+    throw sendError;
+  }
+
+  if (!silent) print('Screenshot $name created at $fullFilePath');
 }
 
 Future<List<int>> takeScreenshot(

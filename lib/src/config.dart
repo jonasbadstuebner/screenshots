@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
@@ -13,6 +14,7 @@ import 'utils.dart' as utils;
 const kEnvConfigPath = 'SCREENSHOTS_YAML';
 const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
 const kEnvImageReceiverPort = 'IMAGE_RECEIVER_PORT';
+const kEnvSreenshotsStagingDir = 'SCREENSHOTS_STAGING_DIR';
 
 /// Config info used to manage screenshots for android and ios.
 // Note: should not have context dependencies as is also used in driver.
@@ -21,8 +23,8 @@ class ScreenshotsConfig {
   ScreenshotsConfig({
     String? configPath,
     String? configStr,
-  })  : this.configPath = configPath ?? kConfigFileName,
-        this._configStr = configStr {
+  })  : configPath = configPath ?? kConfigFileName,
+        _configStr = configStr {
     if (configStr != null) {
       // used by tests
       _configInfo = utils.parseYamlStr(configStr)!;
@@ -56,12 +58,21 @@ class ScreenshotsConfig {
   final String configPath;
 
   final String? _configStr;
-  late Map<dynamic, dynamic> _configInfo;
+  late Map<String, dynamic> _configInfo;
   Map<dynamic, dynamic>? _screenshotsEnv; // current screenshots env
   List<ConfigDevice>? _devices;
 
   // Getters
   List<String> get tests => _processList(_configInfo['tests'] as List<dynamic>);
+
+  Future<InternetAddress> get imageReceiverHost async =>
+      _configInfo.containsKey('imageReceiverHost')
+          ? InternetAddress(_configInfo['imageReceiverHost'] as String,
+              type: InternetAddressType.IPv4)
+          : (await NetworkInterface.list(type: InternetAddressType.IPv4))
+              .first
+              .addresses
+              .first;
 
   int get imageReceiverPort => _configInfo.containsKey('imageReceiverPort')
       ? _configInfo['imageReceiverPort'] as int

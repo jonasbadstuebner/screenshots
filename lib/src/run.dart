@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:io' as io;
 
 import 'package:intl/intl.dart';
@@ -188,7 +187,7 @@ class Screenshots {
   ///
   /// Assumes the integration tests capture the screen shots into a known directory using
   /// provided [capture_screen.screenshot()].
-  Future runTestsOnAll() async {
+  Future<void> runTestsOnAll() async {
     final recordingDir = config.recordingDir;
     switch (runMode) {
       case RunMode.normal:
@@ -271,7 +270,6 @@ class Screenshots {
           defaultLocale,
           null,
           deviceType,
-          config.imageReceiverPort,
           deviceId,
           usePatrol: usePatrol,
         );
@@ -376,7 +374,6 @@ class Screenshots {
                 locale,
                 orientation,
                 deviceType,
-                config.imageReceiverPort,
                 deviceId,
                 usePatrol: usePatrol,
               );
@@ -387,7 +384,6 @@ class Screenshots {
               locale,
               null,
               deviceType,
-              config.imageReceiverPort,
               deviceId,
               usePatrol: usePatrol,
             );
@@ -416,16 +412,11 @@ class Screenshots {
     String locale,
     Orientation? orientation,
     DeviceType deviceType,
-    int imageReceiverPort,
     String deviceId, {
     required bool usePatrol,
   }) async {
     final server = await HttpServer.bind(
-        (await NetworkInterface.list(type: InternetAddressType.IPv4))
-            .first
-            .addresses
-            .first,
-        imageReceiverPort);
+        await config.imageReceiverHost, config.imageReceiverPort);
     unawaited(server.forEach((request) async {
       final bytes = <int>[];
       await request.forEach(bytes.addAll);
@@ -444,6 +435,7 @@ class Screenshots {
       kEnvConfigPath: configPath,
       kEnvImageReceiverIPAddress: server.address.address,
       kEnvImageReceiverPort: server.port.toString(),
+      kEnvSreenshotsStagingDir: config.stagingDir,
     };
 
     for (final testPath in config.tests) {
