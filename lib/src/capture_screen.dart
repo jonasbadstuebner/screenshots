@@ -21,7 +21,7 @@ Future<void> screenshot(
 }) async {
   if (config.isScreenShotsAvailable) {
     // todo: auto-naming scheme
-    print("Takin screenshot '$name'");
+    print("Taking screenshot '$name'");
 
     final pixels = await takeScreenshot(
       binding,
@@ -42,18 +42,18 @@ Future<void> screenshot(
     final fullFilePath = '$testDir/$name.$kImageExtension';
 
     final client = http.Client();
-    try {
-      final response = await client.post(
-          Uri.http(
-              '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
-              fullFilePath),
-          body: pixels);
-      print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
-    } catch (e) {
-      print('screenshot-send-error: $e');
-    } finally {
-      client.close();
-    }
+    // try {
+    final response = await client.post(
+        Uri.http(
+            '${const String.fromEnvironment(kEnvImageReceiverIPAddress)}:${config.imageReceiverPort}',
+            fullFilePath),
+        body: pixels);
+    print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
+    // } catch (e) {
+    //   print('screenshot-send-error: $e');
+    // } finally {
+    client.close();
+    // }
 
     if (!silent) print('Screenshot $name created at $fullFilePath');
   } else {
