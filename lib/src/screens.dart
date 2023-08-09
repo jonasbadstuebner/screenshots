@@ -55,11 +55,11 @@ class Screens {
     final deviceNames = <String>[];
     screens.forEach((osType, osScreens) {
       if (osType == os) {
-        (osScreens as Map<String, Map<String, List<String>>>)
-            .forEach((screenId, screenProps) {
+        (osScreens as Map<String, dynamic>).forEach((screenId, screenProps) {
           // omit devices that have screens that are
           // only used to identify android model type
-          if (!Screens.isAndroidModelTypeScreen(screenProps)) {
+          if (!Screens.isAndroidModelTypeScreen(
+              screenProps as Map<String, dynamic>)) {
             screenProps['devices']!.forEach(deviceNames.add);
           }
         });
