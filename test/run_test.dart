@@ -3,7 +3,6 @@
 import 'package:fake_process_manager/fake_process_manager.dart';
 import 'package:file/memory.dart';
 import 'package:mockito/mockito.dart';
-import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:screenshots/src/daemon_client.dart';
 import 'package:screenshots/src/run.dart';
@@ -15,11 +14,11 @@ import 'package:tool_base_test/tool_base_test.dart';
 import 'src/mocks.dart';
 
 main() {
-  final stagingDir = '/tmp/screenshots';
-  final configAndroidDeviceName = 'Nexus 6P';
-  final configIosDeviceName = 'iPhone X';
-  final emulatorId = 'NEXUS_6P_API_28';
-  final List<String> stdinCaptured = <String>[];
+  const stagingDir = '/tmp/screenshots';
+  const configAndroidDeviceName = 'Nexus 6P';
+  const configIosDeviceName = 'iPhone X';
+  const emulatorId = 'NEXUS_6P_API_28';
+  final stdinCaptured = <String>[];
 
   Directory? sdkDir;
 
@@ -69,7 +68,7 @@ main() {
 
   group('run', () {
     group('with running android emulator', () {
-      final deviceId = 'emulator-5554';
+      const deviceId = 'emulator-5554';
       final runningDaemonDevice = loadDaemonDevice({
         'id': deviceId,
         'name': 'Android SDK built for x86',
@@ -89,7 +88,7 @@ main() {
 
       testUsingContext('no frames, no locales', () async {
         // screenshots config
-        final configStr = '''
+        const configStr = '''
           tests:
             - example/test_driver/main.dart
           staging: $stagingDir
@@ -100,12 +99,12 @@ main() {
               $configAndroidDeviceName:
           frame: false
       ''';
-        String adbPath = initAdbPath();
+        final adbPath = initAdbPath();
         final androidUSLocaleCall = Call(
             '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
-        final List<Call> calls = [
+        final calls = <Call>[
           ...unpackScriptsCalls,
 //          Call('$adbPath -s emulator-5554 emu avd name',
 //              ProcessResult(0, 0, 'Nexus_6P_API_28', '')),
@@ -116,7 +115,7 @@ main() {
         fakeProcessManager.calls = calls;
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>() as BufferLogger;
+        final logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             isNot(contains('Starting $configAndroidDeviceName...')));
         expect(logger.statusText, isNot(contains('Changing locale')));
@@ -129,13 +128,13 @@ main() {
         ProcessManager: () => fakeProcessManager,
 //        Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
 //          ..environment = {'CI': 'false'},
-        Logger: () => BufferLogger(),
+        Logger: BufferLogger.new,
       });
 
       testUsingContext('change orientation', () async {
-        final emulatorName = 'Nexus 6P';
+        const emulatorName = 'Nexus 6P';
         // screenshots config
-        final configStr = '''
+        const configStr = '''
           tests:
             - example/test_driver/main.dart
           staging: $stagingDir
@@ -147,12 +146,12 @@ main() {
                 orientation: LandscapeRight
           frame: true
       ''';
-        String adbPath = initAdbPath();
+        final adbPath = initAdbPath();
         final androidUSLocaleCall = Call(
             '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
-        final List<Call> calls = [
+        final calls = <Call>[
           ...unpackScriptsCalls,
 //          Call('$adbPath -s emulator-5554 emu avd name',
 //              ProcessResult(0, 0, 'Nexus_6P_API_28', '')),
@@ -166,7 +165,7 @@ main() {
         fakeProcessManager.calls = calls;
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>() as BufferLogger;
+        final logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             contains('Setting orientation to LandscapeRight'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
@@ -178,7 +177,7 @@ main() {
         ProcessManager: () => fakeProcessManager,
 //        Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
 //          ..environment = {'CI': 'false'},
-        Logger: () => BufferLogger(),
+        Logger: BufferLogger.new,
       });
     });
 
@@ -191,7 +190,7 @@ main() {
 
       testUsingContext(', android run, no frames, no locales', () async {
         // screenshots config
-        final configStr = '''
+        const configStr = '''
       tests:
         - example/test_driver/main.dart
       staging: $stagingDir
@@ -202,13 +201,13 @@ main() {
           $configAndroidDeviceName:
       frame: false
       ''';
-        String adbPath = initAdbPath();
-        final deviceId = 'emulator-5554';
+        final adbPath = initAdbPath();
+        const deviceId = 'emulator-5554';
         final androidUSLocaleCall = Call(
             '$adbPath -s $deviceId shell getprop persist.sys.locale',
             ProcessResult(0, 0, 'en-US', ''));
         // fake process responses
-        final List<Call> calls = [
+        final calls = <Call>[
           ...unpackScriptsCalls,
           androidUSLocaleCall,
           androidUSLocaleCall,
@@ -226,7 +225,7 @@ main() {
 
         final result = await screenshots(configStr: configStr);
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>() as BufferLogger;
+        final logger = context.get<Logger>() as BufferLogger;
         expect(logger.statusText,
             contains('Starting $configAndroidDeviceName...'));
         expect(logger.statusText, contains('Warning: framing is not enabled'));
@@ -241,20 +240,20 @@ main() {
         ProcessManager: () => fakeProcessManager,
 //        Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
 //          ..environment = {'CI': 'false'},
-        Logger: () => BufferLogger(),
+        Logger: BufferLogger.new,
       });
 
       testUsingContext(
           ', android and ios run, no frames, multiple locales, orientation',
           () async {
-        final locale1 = 'en-US';
-        final locale1Lower = 'en_US';
-        final locale2 = 'fr-CA';
-        final locale2Lower = 'fr_CA';
-        final orientation1 = 'LandscapeRight';
-        final orientation2 = 'LandscapeLeft';
-        final deviceId = 'emulator-5554';
-        final configStr = '''
+        const locale1 = 'en-US';
+        const locale1Lower = 'en_US';
+        const locale2 = 'fr-CA';
+        const locale2Lower = 'fr_CA';
+        const orientation1 = 'LandscapeRight';
+        const orientation2 = 'LandscapeLeft';
+        const deviceId = 'emulator-5554';
+        const configStr = '''
           tests:
             - example/test_driver/main.dart
           staging: $stagingDir
@@ -270,7 +269,7 @@ main() {
                 orientation: $orientation2
           frame: false
       ''';
-        final simulatorID = '6B3B1AD9-EFD3-49AB-9CE9-D43CE1A47446';
+        const simulatorID = '6B3B1AD9-EFD3-49AB-9CE9-D43CE1A47446';
 
         // fake process responses
         final callListIosDevices = Call(
@@ -307,14 +306,14 @@ main() {
         final callPlutilFrCA = Call(
             'plutil -convert json -o - //Library/Developer/CoreSimulator/Devices/$simulatorID/data/Library/Preferences/.GlobalPreferences.plist',
             ProcessResult(0, 0, '{"AppleLocale":"$locale2"}', ''));
-        String adbPath = initAdbPath();
+        final adbPath = initAdbPath();
         final androidEnUSLocaleCall = Call(
             '$adbPath -s $deviceId shell getprop persist.sys.locale',
-            ProcessResult(0, 0, '$locale1', ''));
+            ProcessResult(0, 0, locale1, ''));
         final androidFrCALocaleCall = Call(
             '$adbPath -s $deviceId shell getprop persist.sys.locale',
-            ProcessResult(0, 0, '$locale2', ''));
-        final List<Call> calls = [
+            ProcessResult(0, 0, locale2, ''));
+        final calls = <Call>[
           callListIosDevices,
           ...unpackScriptsCalls,
           androidEnUSLocaleCall,
@@ -388,7 +387,7 @@ main() {
         ];
         fakeProcessManager.calls = calls;
 
-        final runningEmulatorDeviceId = 'emulator-5554';
+        const runningEmulatorDeviceId = 'emulator-5554';
         final devices = [
           {
             'id': runningEmulatorDeviceId,
@@ -398,7 +397,7 @@ main() {
             'category': 'mobile',
             'platformType': 'android',
             'ephemeral': true,
-            "emulatorId": emulatorId,
+            'emulatorId': emulatorId,
           },
           {
             'id': simulatorID,
@@ -409,13 +408,13 @@ main() {
             'platformType': 'ios',
             'ephemeral': true,
             'model': 'iPhone 5c (GSM)',
-            "emulatorId": simulatorID,
+            'emulatorId': simulatorID,
           }
         ];
         final daemonDevices =
-            devices.map((device) => loadDaemonDevice(device)).toList();
+            devices.map(loadDaemonDevice).toList();
 
-        final List<List<DaemonDevice>> devicesResponses = [
+        final devicesResponses = <List<DaemonDevice>>[
           [],
           daemonDevices,
           daemonDevices,
@@ -443,7 +442,7 @@ main() {
         final screenshots = Screenshots(configStr: configStr);
         final result = await screenshots.run();
         expect(result, isTrue);
-        final BufferLogger logger = context.get<Logger>() as BufferLogger;
+        final logger = context.get<Logger>() as BufferLogger;
         expect(logger.errorText, '');
 //        print(logger.statusText);
         expect(logger.statusText,
@@ -489,14 +488,14 @@ main() {
 //            'HOME': LocalPlatform().environment['HOME']
               'HOME': memoryFileSystem.currentDirectory.path
             }, operatingSystem: 'macos'),
-        Logger: () => BufferLogger(),
+        Logger: BufferLogger.new,
         FileSystem: () => memoryFileSystem,
       });
     });
   });
 
   group('hack in CI', () {
-    final deviceId = 'emulator-5554';
+    const deviceId = 'emulator-5554';
     final runningEmulatorDaemonDevice = loadDaemonDevice({
       'id': deviceId,
       'name': 'Android SDK built for x86',
@@ -518,7 +517,7 @@ main() {
 
     testUsingContext('on android', () async {
       // screenshots config
-      final configStr = '''
+      const configStr = '''
           tests:
             - example/test_driver/main.dart
           staging: $stagingDir
@@ -532,11 +531,11 @@ main() {
                  - LandscapeRight
           frame: false
       ''';
-      String adbPath = initAdbPath();
+      final adbPath = initAdbPath();
       final androidUSLocaleCall = Call(
           '$adbPath -s $deviceId shell getprop persist.sys.locale',
           ProcessResult(0, 0, 'en-US', ''));
-      final List<Call> calls = [
+      final calls = <Call>[
         ...unpackScriptsCalls,
         androidUSLocaleCall,
         androidUSLocaleCall,
@@ -557,7 +556,7 @@ main() {
       fakeProcessManager.verifyCalls();
       verify(mockDaemonClient.devices).called(3);
       verify(mockDaemonClient.emulators).called(1);
-      final BufferLogger logger = context.get<Logger>() as BufferLogger;
+      final logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, '');
       expect(
           logger.statusText,
@@ -573,16 +572,16 @@ main() {
       ProcessManager: () => fakeProcessManager,
       Platform: () => FakePlatform.fromPlatform(const LocalPlatform())
           .copyWith(environment: {'CI': 'true'}),
-      Logger: () => BufferLogger(),
+      Logger: BufferLogger.new,
     });
   });
 
   group('utils', () {
     testUsingContext('change android locale of real device', () {
-      String adbPath = initAdbPath();
-      final deviceId = 'deviceId';
-      final deviceLocale = 'en-US';
-      final testLocale = 'fr-CA';
+      final adbPath = initAdbPath();
+      const deviceId = 'deviceId';
+      const deviceLocale = 'en-US';
+      const testLocale = 'fr-CA';
 
       fakeProcessManager.calls = [
         Call(
@@ -594,7 +593,7 @@ main() {
             null),
       ];
       changeAndroidLocale(deviceId, deviceLocale, testLocale);
-      final BufferLogger logger = context.get<Logger>() as BufferLogger;
+      final logger = context.get<Logger>() as BufferLogger;
       expect(
           logger.errorText,
           contains(
@@ -602,12 +601,12 @@ main() {
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
-      Logger: () => BufferLogger(),
+      Logger: BufferLogger.new,
     });
 
     test('find running emulator', () async {
       final runningEmulator = loadDaemonDevice({
-        'id': '$emulatorId',
+        'id': emulatorId,
         'name': 'sdk phone armv7',
         'platform': 'android-arm',
         'emulator': true,
@@ -628,12 +627,12 @@ main() {
     });
 
     testUsingContext('multiple tests (on iOS)', () async {
-      final deviceName = 'device name';
-      final deviceId = 'deviceId';
-      final locale = 'locale';
-      final test1 = 'test_driver/main.dart';
-      final test2 = 'test_driver/main2.dart';
-      final configStr = '''
+      const deviceName = 'device name';
+      const deviceId = 'deviceId';
+      const locale = 'locale';
+      const test1 = 'test_driver/main.dart';
+      const test2 = 'test_driver/main2.dart';
+      const configStr = '''
         tests:
           - $test1
           - $test2
@@ -662,7 +661,7 @@ main() {
         usePatrol: false,
       );
       expect(result, isNull);
-      final BufferLogger logger = context.get<Logger>() as BufferLogger;
+      final logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, '');
       expect(logger.statusText,
           contains('Running $test1 on \'$deviceName\' in locale $locale...'));
@@ -673,7 +672,7 @@ main() {
       fakeProcessManager.verifyCalls();
     }, skip: false, overrides: <Type, Generator>{
       ProcessManager: () => fakeProcessManager,
-      Logger: () => BufferLogger(),
+      Logger: BufferLogger.new,
     });
   });
 }

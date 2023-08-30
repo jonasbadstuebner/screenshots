@@ -14,16 +14,16 @@ final ImageMagick _kImageMagick = ImageMagick();
 ImageMagick get im => context.get<ImageMagick>() ?? _kImageMagick;
 
 class ImageMagick {
+  factory ImageMagick() {
+    return _imageMagick;
+  }
+  ImageMagick._internal();
   static const _kThreshold = 0.76;
   static const kDiffSuffix = '-diff';
 //const kThreshold = 0.5;
 
   // singleton
   static final ImageMagick _imageMagick = ImageMagick._internal();
-  factory ImageMagick() {
-    return _imageMagick;
-  }
-  ImageMagick._internal();
 
   ///
   /// ImageMagick calls.
@@ -110,7 +110,7 @@ class ImageMagick {
   bool compare(String? comparisonImage, String? recordedImage) {
     final diffImage = getDiffImagePath(comparisonImage);
 
-    int returnCode = _imageMagickCmd('compare', <String>[
+    final returnCode = _imageMagickCmd('compare', <String>[
       '-metric',
       'mae',
       recordedImage!,
@@ -127,11 +127,7 @@ class ImageMagick {
 
   /// Append diff suffix [kDiffSuffix] to [imagePath].
   String getDiffImagePath(String? imagePath) {
-    final diffName = p.dirname(imagePath!) +
-        '/' +
-        p.basenameWithoutExtension(imagePath) +
-        kDiffSuffix +
-        p.extension(imagePath);
+    final diffName = '${p.dirname(imagePath!)}/${p.basenameWithoutExtension(imagePath)}$kDiffSuffix${p.extension(imagePath)}';
     return diffName;
   }
 

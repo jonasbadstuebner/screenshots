@@ -1,18 +1,18 @@
 import 'dart:async';
 
+import 'package:path/path.dart' as p;
 import 'package:screenshots/src/image_magick.dart';
 import 'package:tool_base/tool_base.dart' hide Config;
 
 import 'config.dart';
-import 'screens.dart';
-import 'package:path/path.dart' as p;
 import 'globals.dart';
+import 'screens.dart';
 
 /// clear configured fastlane directories.
-Future clearFastlaneDirs(
+Future<void> clearFastlaneDirs(
     ScreenshotsConfig config, Screens screens, RunMode runMode) async {
   if (config.isRunTypeActive(DeviceType.android)) {
-    for (ConfigDevice device in config.androidDevices) {
+    for (final device in config.androidDevices) {
       for (final locale in config.locales) {
         await _clearFastlaneDir(
             screens, device.name, locale, DeviceType.android, runMode);
@@ -20,7 +20,7 @@ Future clearFastlaneDirs(
     }
   }
   if (config.isRunTypeActive(DeviceType.ios)) {
-    for (ConfigDevice device in config.iosDevices) {
+    for (final device in config.iosDevices) {
       for (final locale in config.locales) {
         await _clearFastlaneDir(
             screens, device.name, locale, DeviceType.ios, runMode);
@@ -30,10 +30,10 @@ Future clearFastlaneDirs(
 }
 
 /// Clear images destination.
-Future _clearFastlaneDir(Screens screens, String deviceName, String locale,
-    DeviceType deviceType, RunMode runMode) async {
-  final Map? screenProps = screens.getScreen(deviceName);
-  String? androidModelType = getAndroidModelType(screenProps, deviceName);
+Future<void> _clearFastlaneDir(Screens screens, String deviceName,
+    String locale, DeviceType deviceType, RunMode runMode) async {
+  final screenProps = screens.getScreen(deviceName);
+  final androidModelType = getAndroidModelType(screenProps, deviceName);
 
   final dirPath = getDirPath(deviceType, locale, androidModelType);
 
@@ -77,13 +77,14 @@ String getDirPath(
 }
 
 /// Get android model type (phone or tablet screen size).
-String? getAndroidModelType(Map? screenProps, String deviceName) {
+String? getAndroidModelType(
+    Map<String, dynamic>? screenProps, String deviceName) {
   String? androidDeviceType = kFastlanePhone;
   if (screenProps == null) {
     printStatus(
         'Warning: using default value \'$kFastlanePhone\' in \'$deviceName\' fastlane directory.');
   } else {
-    androidDeviceType = screenProps['destName'] as String?;
+    androidDeviceType = screenProps['destName']?.toString();
   }
   return androidDeviceType;
 }

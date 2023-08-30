@@ -11,7 +11,7 @@ import 'package:tool_base/tool_base.dart';
 import 'package:tool_mobile/tool_mobile.dart';
 
 Future<T> runInContext<T>(
-  FutureOr<T> runner(), {
+  FutureOr<T> Function() runner, {
   Map<Type, Generator>? overrides,
 }) async {
   return await context.run<T>(
@@ -21,12 +21,12 @@ Future<T> runInContext<T>(
     fallbacks: <Type, Generator>{
       AndroidSdk: AndroidSdk.locateAndroidSdk,
       BotDetector: () => const BotDetector(),
-      Config: () => Config(),
-      DaemonClient: () => DaemonClient(),
-      ImageMagick: () => ImageMagick(),
+      Config: Config.new,
+      DaemonClient: DaemonClient.new,
+      ImageMagick: ImageMagick.new,
       Logger: () => platform.isWindows ? WindowsStdoutLogger() : StdoutLogger(),
-      OperatingSystemUtils: () => OperatingSystemUtils(),
-      ProcessManager: () => LocalProcessManager(),
+      OperatingSystemUtils: OperatingSystemUtils.new,
+      ProcessManager: LocalProcessManager.new,
       Stdio: () => const Stdio(),
       TimeoutConfiguration: () => const TimeoutConfiguration(),
     },

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert' as cnv;
-import 'dart:convert';
 
 import 'package:path/path.dart' as p;
 import 'package:process/process.dart';
@@ -95,7 +94,7 @@ Map<String, dynamic>? getHighestIosSimulator(
 
   final iosVersionSims = iosSims[simName]![iOSVersionName]! as List<dynamic>;
   if (iosVersionSims.isEmpty) {
-    throw "Error: no simulators found for \'$simName\'";
+    throw "Error: no simulators found for '$simName'";
   }
   // use the first device found for the iOS version
   return iosVersionSims[0] as Map<String, dynamic>;
@@ -137,12 +136,12 @@ Future<void> prefixFilesInDir(String dirPath, String prefix) async {
   await for (final file
       in fs.directory(dirPath).list(recursive: false, followLinks: false)) {
     await file
-        .rename(p.dirname(file.path) + '/' + prefix + p.basename(file.path));
+        .rename('${p.dirname(file.path)}/$prefix${p.basename(file.path)}');
   }
 }
 
-/// Converts [_enum] value to [String].
-String getStringFromEnum(dynamic _enum) => _enum.toString().split('.').last;
+/// Converts [enum] value to [String].
+String getStringFromEnum(dynamic e) => e.toString().split('.').last;
 
 /// Converts [String] to [enum].
 T? getEnumFromString<T>(List<T> values, String value,
@@ -365,7 +364,7 @@ Future<String?> waitSysLogMsg(
   final process = ProcessWrapper(delegate);
   return await process.stdout
 //      .transform<String>(cnv.Utf8Decoder(reportErrors: false)) // from flutter tools
-      .transform<String>(cnv.Utf8Decoder(allowMalformed: true))
+      .transform<String>(const cnv.Utf8Decoder(allowMalformed: true))
       .transform<String>(const cnv.LineSplitter())
       .map<String?>((e) => e)
       .firstWhere((line) {
@@ -456,7 +455,7 @@ int runCmd(List<String> cmd) {
 
 /// Trace a command.
 void _traceCommand(List<String> args, {String? workingDirectory}) {
-  final String argsText = args.join(' ');
+  final argsText = args.join(' ');
   if (workingDirectory == null) {
     printTrace('executing: $argsText');
   } else {
@@ -473,7 +472,7 @@ Future<void> streamCmd(
   Map<String, String>? environment,
 }) async {
   if (mode == ProcessStartMode.normal) {
-    final int exitCode = await runCommandAndStreamOutput(cmd,
+    final exitCode = await runCommandAndStreamOutput(cmd,
         workingDirectory: workingDirectory, environment: environment);
     if (exitCode != 0) {
       throw 'command failed: exitcode=$exitCode, cmd=\'${cmd.join(" ")}\', workingDirectory=$workingDirectory, mode=$mode, environment=$environment';

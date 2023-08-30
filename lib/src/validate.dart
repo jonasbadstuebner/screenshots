@@ -16,14 +16,14 @@ Future<bool> isValidConfig(ScreenshotsConfig config, Screens screens,
   final configPath = config.configPath;
 
   // validate tests
-  for (var test in config.tests) {
+  for (final test in config.tests) {
     if (!isValidTestPaths(test)) {
       printError('Invalid config: \'$test\' in $configPath');
       isValid = false;
     }
   }
 
-  final isDeviceAttached = (DaemonDevice? device) => device != null;
+  bool isDeviceAttached(dynamic device) => device != null;
 
   // validate android device
   if (config.isRunTypeActive(DeviceType.android)) {
@@ -247,7 +247,7 @@ void _printAttachedDevices(List<DaemonDevice> devices) {
     device.platform == 'ios'
         ? printStatus('    ${device.iosModel} (${device.id})')
         : printStatus(
-            '    ${device.emulator ? '${device.emulatorId}' : '${device.name}'} (${device.id})');
+            '    ${device.emulator ? '${device.emulatorId}' : device.name} (${device.id})');
 //    }
   }
 }
@@ -261,13 +261,14 @@ void _printEmulators(List<DaemonEmulator> emulators, String platformType) {
 void _printSimulators() {
   final simulatorNames = utils.getIosSimulators().keys.toList();
   simulatorNames.sort((thisSim, otherSim) =>
-      '$thisSim'.contains('iPhone') && !'$otherSim'.contains('iPhone')
+      thisSim.contains('iPhone') && !otherSim.contains('iPhone')
           ? -1
           : thisSim.compareTo(otherSim));
   if (simulatorNames.isNotEmpty) {
     printStatus('\n  Installed simulators:');
-    simulatorNames
-        .forEach((simulatorName) => printStatus('    $simulatorName'));
+    for (final simulatorName in simulatorNames) {
+      printStatus('    $simulatorName');
+    }
   }
 }
 

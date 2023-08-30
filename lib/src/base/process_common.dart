@@ -57,28 +57,28 @@ String? getExecutablePath(
   assert(_osToPathStyle[platform.operatingSystem] == fs.path.style.name);
 
   workingDirectory ??= fs.currentDirectory.path;
-  Context context = Context(style: fs.path.style, current: workingDirectory);
+  final context = Context(style: fs.path.style, current: workingDirectory);
 
   // TODO(goderbauer): refactor when github.com/google/platform.dart/issues/2
   //     is available.
-  String pathSeparator = platform.isWindows ? ';' : ':';
+  final pathSeparator = platform.isWindows ? ';' : ':';
 
-  List<String> extensions = <String>[];
+  var extensions = <String>[];
   if (platform.isWindows && context.extension(command).isEmpty) {
     extensions = platform.environment['PATHEXT']!.split(pathSeparator);
   }
 
-  List<String> candidates = <String>[];
+  var candidates = <String>[];
   if (command.contains(context.separator)) {
     candidates = _getCandidatePaths(
         command, <String>[workingDirectory], extensions, context);
   } else {
-    List<String> searchPath =
+    final searchPath =
         platform.environment['PATH']!.split(pathSeparator);
     candidates = _getCandidatePaths(command, searchPath, extensions, context);
   }
   return candidates.map<String?>((e) => e).firstWhere(
-      (String? path) => fs.file(path).existsSync(),
+      (path) => fs.file(path).existsSync(),
       orElse: () => null);
 }
 
@@ -95,16 +95,16 @@ List<String> _getCandidatePaths(
   List<String> extensions,
   Context context,
 ) {
-  List<String> withExtensions = extensions.isNotEmpty
-      ? extensions.map((String ext) => '$command$ext').toList()
+  final withExtensions = extensions.isNotEmpty
+      ? extensions.map((ext) => '$command$ext').toList()
       : <String>[command];
   if (context.isAbsolute(command)) {
     return withExtensions;
   }
   return searchPaths
-      .map((String path) =>
-          withExtensions.map((String command) => context.join(path, command)))
-      .expand((Iterable<String> e) => e)
+      .map((path) =>
+          withExtensions.map((command) => context.join(path, command)))
+      .expand((e) => e)
       .toList()
       .cast<String>();
 }

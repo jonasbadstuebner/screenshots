@@ -15,6 +15,10 @@ import 'screens.dart';
 import 'utils.dart' as utils;
 
 class ImageProcessor {
+
+  ImageProcessor(Screens screens, ScreenshotsConfig config)
+      : _screens = screens,
+        _config = config;
   static const _kDefaultIosBackground = 'xc:white';
   @visibleForTesting // for now
   static const kDefaultAndroidBackground = 'xc:none'; // transparent
@@ -23,10 +27,6 @@ class ImageProcessor {
 
   final Screens _screens;
   final ScreenshotsConfig _config;
-
-  ImageProcessor(Screens screens, ScreenshotsConfig config)
-      : _screens = screens,
-        _config = config;
 
   /// Process screenshots.
   ///
@@ -136,7 +136,7 @@ class ImageProcessor {
   @visibleForTesting
   static Future<Map<String, Map<String, String>>> compareImages(
       String deviceName, String recordingDir, String comparisonDir) async {
-    var failedCompare = <String, Map<String, String>>{};
+    final failedCompare = <String, Map<String, String>>{};
     final recordedImages = fs.directory(recordingDir).listSync();
     fs
         .directory(comparisonDir)

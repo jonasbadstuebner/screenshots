@@ -15,7 +15,7 @@ typedef ContextInitializer = void Function(AppContext testContext);
 @isTest
 void testUsingContext(
   String description,
-  dynamic testMethod(), {
+  dynamic Function() testMethod, {
   Timeout? timeout,
   Map<Type, Generator> overrides = const <Type, Generator>{},
   bool initializeFlutterRoot = true,
@@ -35,7 +35,7 @@ void testUsingContext(
   Config buildConfig(FileSystem fs) {
     configDir =
         fs.systemTempDirectory.createTempSync('flutter_config_dir_test.');
-    final File settingsFile =
+    final settingsFile =
         fs.file(fs.path.join(configDir!.path, '.flutter_settings'));
     return Config(settingsFile);
   }
@@ -46,11 +46,11 @@ void testUsingContext(
         name: 'mocks',
         overrides: <Type, Generator>{
           Config: () => buildConfig(fs),
-          Logger: () => BufferLogger(),
-          OperatingSystemUtils: () => MockOperatingSystemUtils(),
+          Logger: BufferLogger.new,
+          OperatingSystemUtils: MockOperatingSystemUtils.new,
           OutputPreferences: () => OutputPreferences(showColor: false),
 //          ProcessManager: () => FakeProcessManager(),
-          FileSystem: () => LocalFileSystemBlockingSetCurrentDirectory(),
+          FileSystem: LocalFileSystemBlockingSetCurrentDirectory.new,
           TimeoutConfiguration: () => const TimeoutConfiguration(),
         },
         body: () {
@@ -77,7 +77,7 @@ void testUsingContext(
 //              _printBufferedErrors(context);
               rethrow;
             }
-          }, onError: (dynamic error, StackTrace stackTrace) {
+          }, onError: (dynamic error, stackTrace) {
             stdout.writeln(error);
             stdout.writeln(stackTrace);
 //            _printBufferedErrors(context);

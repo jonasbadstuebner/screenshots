@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 import 'package:screenshots/src/utils.dart';
 
 ///// Test for CI environment.
@@ -94,7 +92,7 @@ class Poller {
 
 /// Show differences between maps
 Map diffMaps(Map orig, Map diff, {bool verbose = false}) {
-  Map diffs = {
+  final Map diffs = {
     'added': {},
     'removed': {},
     'changed': {'orig': {}, 'new': {}}
@@ -124,9 +122,9 @@ Map diffMaps(Map orig, Map diff, {bool verbose = false}) {
 /// Returns a future that completes with a path suitable for ANDROID_HOME
 /// or with null, if ANDROID_HOME cannot be found.
 Future<String?> findAndroidHome() async {
-  final Iterable<String> hits = grep(
+  final hits = grep(
     'ANDROID_HOME = ',
-    from: await cmd(<String>['flutter', 'doctor', '-v']),
+    from: cmd(<String>['flutter', 'doctor', '-v']),
   );
   if (hits.isEmpty) return null;
   return hits.first.split('= ').last;
@@ -134,7 +132,7 @@ Future<String?> findAndroidHome() async {
 
 /// Splits [from] into lines and selects those that contain [pattern].
 Iterable<String> grep(Pattern pattern, {required String from}) {
-  return from.split('\n').where((String line) {
+  return from.split('\n').where((line) {
     return line.contains(pattern);
   });
 }

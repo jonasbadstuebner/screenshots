@@ -1,5 +1,4 @@
 import 'package:fake_process_manager/fake_process_manager.dart';
-import 'package:mockito/mockito.dart';
 import 'package:process/process.dart';
 import 'package:screenshots/src/resources.dart';
 import 'package:screenshots/src/screens.dart';
@@ -11,7 +10,7 @@ import 'src/context.dart';
 
 main() {
   group('resources', () {
-    final tmpDir = '/tmp/screenshots_test';
+    const tmpDir = '/tmp/screenshots_test';
 
     group('in context', () {
       late ProcessManager mockProcessManager;
@@ -29,7 +28,7 @@ main() {
 
     group('no context', () {
       test('unpack screen resource images', () async {
-        final Screens screens = Screens();
+        final screens = Screens();
         await screens.init();
         final screen = screens.getScreen('iPhone 7 Plus');
         final Map screenResources = screen!['resources'];

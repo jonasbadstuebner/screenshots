@@ -20,10 +20,10 @@ import 'src/context.dart';
 
 main() {
   test('process screenshots for iPhone X and iPhone XS Max', () async {
-    final imageDir = 'test/resources';
-    final Screens screens = Screens();
+    const imageDir = 'test/resources';
+    final screens = Screens();
     await screens.init();
-    final ScreenshotsConfig config =
+    final config =
         ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
 
     final Map devices = {
@@ -36,7 +36,7 @@ main() {
     for (final String deviceName in devices.keys) {
       final screenshotName = devices[deviceName];
 //      print('deviceName=$deviceName, screenshotName=$screenshotName');
-      Map screen = screens.getScreen(deviceName)!;
+      final Map screen = screens.getScreen(deviceName)!;
 
       final Map screenResources = screen['resources'];
       await resources.unpackImages(screenResources, '/tmp/screenshots');
@@ -52,7 +52,7 @@ main() {
       await runInContext<void>(() async {
         return im.convert('overlay', options);
       });
-      final framePath = config.stagingDir + '/' + screenResources['frame'];
+      final framePath = '${config.stagingDir}/' + screenResources['frame'];
       final size = screen['size'];
       final resize = screen['resize'];
       final offset = screen['offset'];
@@ -68,7 +68,7 @@ main() {
         return im.convert('frame', options);
       });
     }
-    for (var deviceName in devices.values) {
+    for (final deviceName in devices.values) {
       await runInContext<void>(() async {
         cmd(['git', 'checkout', '$imageDir/$deviceName']);
       });
@@ -87,16 +87,16 @@ main() {
     });
 
     testUsingContext('process', () async {
-      final stagingDir = '/tmp/screenshots';
+      const stagingDir = '/tmp/screenshots';
       // copy a screenshot to memory file system
-      final imagePath = 'test/resources/screenshot_Nexus_6P.png';
+      const imagePath = 'test/resources/screenshot_Nexus_6P.png';
       copyFileToMemory(imagePath, stagingDir);
 
       final screens = Screens();
       await screens.init();
-      final deviceName = 'Nexus 6P';
-      final locale = 'en-US';
-      final configStr = '''
+      const deviceName = 'Nexus 6P';
+      const locale = 'en-US';
+      const configStr = '''
           staging: $stagingDir
           devices:
             android:
@@ -136,9 +136,9 @@ main() {
     });
 
     testUsingContext('compare images', () async {
-      final comparisonDir = 'test/resources/comparison';
-      final recordingDir = 'test/resources/recording';
-      final deviceName = 'Nexus 6P';
+      const comparisonDir = 'test/resources/comparison';
+      const recordingDir = 'test/resources/recording';
+      const deviceName = 'Nexus 6P';
       final expected = {
         'Nexus 6P-0.png': {
           'recording': 'test/resources/recording/Nexus 6P-0.png',
@@ -161,11 +161,11 @@ main() {
       expect(failedCompare, expected);
       // show diffs
       ImageProcessor.showFailedCompare(failedCompare);
-      final BufferLogger logger = context.get<Logger>() as BufferLogger;
+      final logger = context.get<Logger>() as BufferLogger;
       expect(logger.errorText, contains('Comparison failed:'));
     }, overrides: <Type, Generator>{
 //      ProcessManager: () => fakeProcessManager,
-      Logger: () => BufferLogger(),
+      Logger: BufferLogger.new,
 //      FileSystem: () => memoryFileSystem,
       ImageMagick: () => mockImageMagick,
     });

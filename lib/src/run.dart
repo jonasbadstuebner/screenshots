@@ -171,7 +171,7 @@ class Screenshots {
   }
 
   void _printScreenshotDirs(String? dirPrefix) {
-    final prefix = dirPrefix == null ? '' : '${dirPrefix}/';
+    final prefix = dirPrefix == null ? '' : '$dirPrefix/';
     if (config.isRunTypeActive(DeviceType.ios)) {
       printStatus('  ${prefix}ios/fastlane/screenshots');
     }
@@ -252,8 +252,9 @@ class Screenshots {
 
       // a device is now found
       // (and running if not ios simulator pending locale change)
-      if (deviceId == null)
+      if (deviceId == null) {
         throw 'Error: device \'$configDeviceName\' not found';
+      }
 
       // todo: make a backup of GlobalPreferences.plist if changing iOS locale
       // set locale and run tests

@@ -2,22 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:screenshots/src/config.dart';
 import 'package:screenshots/src/daemon_client.dart';
 import 'package:screenshots/src/fastlane.dart' as fastlane;
 import 'package:screenshots/src/globals.dart';
 import 'package:screenshots/src/resources.dart' as resources;
 import 'package:screenshots/src/run.dart';
 import 'package:screenshots/src/screens.dart';
-import 'package:screenshots/src/config.dart';
 import 'package:screenshots/src/utils.dart' as utils;
 import 'package:test/test.dart';
-
-import 'src/common.dart';
 
 main() {
   group('daemon test', () {
     test('start shipped daemon client', () async {
-      final flutterHome = dirname(dirname((utils.cmd(['which', 'flutter']))));
+      final flutterHome = dirname(dirname(utils.cmd(['which', 'flutter'])));
       final flutterToolsHome = '$flutterHome/packages/flutter_tools';
 //      print('flutterToolsHome=$flutterToolsHome');
       final daemonClient = await Process.start(
@@ -25,12 +23,12 @@ main() {
           workingDirectory: flutterToolsHome);
 //      print('shipped daemon client process started, pid: ${daemonClient.pid}');
 
-      bool connected = false;
-      bool waitingForResponse = false;
+      var connected = false;
+      var waitingForResponse = false;
       daemonClient.stdout
           .transform<String>(utf8.decoder)
           .transform<String>(const LineSplitter())
-          .listen((String line) async {
+          .listen((line) async {
 //        print('<<< $line');
         if (line.contains('daemon.connected')) {
 //          print('connected');
@@ -61,9 +59,9 @@ main() {
     }, skip: true);
 
     test('parse daemon result response', () {
-      final expected =
+      const expected =
           '[{"id":"Nexus_5X_API_27","name":"Nexus 5X"},{"id":"Nexus_6P_API_28","name":"Nexus 6P"},{"id":"Nexus_9_API_28","name":"Nexus 9"},{"id":"apple_ios_simulator","name":"iOS Simulator"}]';
-      final response = '[{"id":0,"result":$expected}]';
+      const response = '[{"id":0,"result":$expected}]';
       final respExp = RegExp(r'result":(.*)}\]');
       final match = respExp.firstMatch(response)!.group(1);
 //      print('match=${jsonDecode(match)}');
@@ -82,11 +80,11 @@ main() {
           }
         }
       ];
-      final eventType = 'device.added';
-      final deviceId = 'emulator-5554';
-      final params =
+      const eventType = 'device.added';
+      const deviceId = 'emulator-5554';
+      const params =
           '{"id":"$deviceId","name":"Android SDK built for x86","platform":"android-x86","emulator":true}';
-      final response = '[{"event":"$eventType","params":$params}]';
+      const response = '[{"event":"$eventType","params":$params}]';
       final responseInfo = jsonDecode(response);
       expect(responseInfo, expected);
       expect(responseInfo[0]['event'], eventType);
@@ -104,8 +102,8 @@ main() {
     }, skip: true);
 
     test('launch android emulator via daemon and shutdown', () async {
-      final expected = 'emulator-5554';
-      final emulatorId = 'Nexus_6P_API_28';
+      const expected = 'emulator-5554';
+      const emulatorId = 'Nexus_6P_API_28';
       final daemonClient = DaemonClient();
       await daemonClient.start;
       final deviceId = await daemonClient.launchEmulator(emulatorId);
@@ -114,10 +112,10 @@ main() {
     }, skip: true);
 
     test('parse ios-deploy response', () {
-      final expectedDeviceId = '3b3455019e329e007e67239d9b897148244b5053';
-      final expectedModel = 'iPhone 5c (GSM)';
+      const expectedDeviceId = '3b3455019e329e007e67239d9b897148244b5053';
+      const expectedModel = 'iPhone 5c (GSM)';
       final regExp = RegExp(r'Found (\w+) \(\w+, (.*), \w+, \w+\)');
-      final response =
+      const response =
           "[....] Found $expectedDeviceId (N48AP, $expectedModel, iphoneos, armv7s) a.k.a. 'Maurice’s iPhone' connected through USB.";
 
       final deviceId = regExp.firstMatch(response)!.group(1);
@@ -181,7 +179,7 @@ main() {
 //    });
 
     test('run test on matching devices or emulators', () async {
-      final configPath = 'test/screenshots_test.yaml';
+      const configPath = 'test/screenshots_test.yaml';
       final screens = Screens();
       await screens.init();
 
@@ -189,7 +187,7 @@ main() {
 
       // init
       final stagingDir = config.stagingDir;
-      await Directory(stagingDir + '/$kTestScreenshotsDir')
+      await Directory('$stagingDir/$kTestScreenshotsDir')
           .create(recursive: true);
       await resources.unpackScripts(stagingDir);
       await fastlane.clearFastlaneDirs(config, screens, RunMode.normal);
@@ -212,6 +210,6 @@ main() {
       await screenshots.runTestsOnAll();
       // allow other tests to continue
       Directory.current = origDir;
-    }, timeout: Timeout(Duration(minutes: 4)), skip: true);
+    }, timeout: const Timeout(Duration(minutes: 4)), skip: true);
   });
 }

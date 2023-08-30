@@ -26,8 +26,8 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
     'LandscapeLeft': 'Landscape Left'
   };
   const sim_orientation_script = 'sim_orientation.scpt';
-  final _orientation = utils.getStringFromEnum(orientation);
-  printStatus('Setting orientation to $_orientation');
+  final orientation0 = utils.getStringFromEnum(orientation);
+  printStatus('Setting orientation to $orientation0');
   switch (deviceType) {
     case DeviceType.android:
       cmd([
@@ -39,7 +39,7 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
         'put',
         'system',
         'user_rotation',
-        androidOrientations[_orientation]!
+        androidOrientations[orientation0]!
       ]);
       break;
     case DeviceType.ios:
@@ -47,7 +47,7 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
       cmd([
         'osascript',
         '$scriptDir/$sim_orientation_script',
-        iosOrientations[_orientation]!
+        iosOrientations[orientation0]!
       ]);
       break;
     case DeviceType.web:
@@ -56,10 +56,10 @@ void changeDeviceOrientation(DeviceType deviceType, Orientation orientation,
 }
 
 Orientation getOrientationEnum(String orientation) {
-  final _orientation =
+  final orientation0 =
       utils.getEnumFromString<Orientation>(Orientation.values, orientation);
-  _orientation == null
+  orientation0 == null
       ? throw 'Error: orientation \'$orientation\' not found'
       : null;
-  return _orientation;
+  return orientation0;
 }

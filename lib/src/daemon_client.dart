@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:meta/meta.dart';
 import 'package:screenshots/src/utils.dart';
@@ -22,9 +21,10 @@ class DaemonClient {
   Completer<bool>? _waitForConnection;
   Completer<String>? _waitForResponse;
   Completer<String> _waitForEvent = Completer<String>();
-  List? _iosDevices; // contains model of device, used by screenshots
-  StreamSubscription? _stdOutListener;
-  StreamSubscription? _stdErrListener;
+  List<Map<String, String?>>?
+      _iosDevices; // contains model of device, used by screenshots
+  StreamSubscription<String>? _stdOutListener;
+  StreamSubscription<List<int>>? _stdErrListener;
 
   /// Start flutter tools daemon.
   Future<void> get start async {
@@ -37,7 +37,7 @@ class DaemonClient {
       // maybe should check if iOS run type is active
       if (platform.isMacOS) _iosDevices = getIosDevices();
       // wait for device discovery
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
     }
   }
 
@@ -213,7 +213,7 @@ class DaemonClient {
 /// Get attached ios devices with id and model.
 List<Map<String, String?>> getIosDevices() {
   final regExp = RegExp(r'Found (\w+) \(\w+, (.*), \w+, \w+\)');
-  final noAttachedDevices = 'no attached devices';
+  const noAttachedDevices = 'no attached devices';
   final iosDeployDevices =
       cmd(['sh', '-c', 'ios-deploy -c || echo "$noAttachedDevices"'])
           .trim()
@@ -247,18 +247,17 @@ Future<String> waitForEmulatorToStart(DaemonClient daemonClient,
         orElse: () => null);
     started = device != null;
     if (started) deviceId = device.id;
-    await Future<void>.delayed(Duration(milliseconds: 1000));
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
   }
   return deviceId!;
 }
 
 abstract class BaseDevice {
+  BaseDevice(this.id, this.name, this.category, this.platformType);
   final String id;
   final String name;
   final String category;
   final String platformType;
-
-  BaseDevice(this.id, this.name, this.category, this.platformType);
 
   @override
   bool operator ==(other) {
@@ -278,34 +277,35 @@ abstract class BaseDevice {
 /// Describe an emulator.
 class DaemonEmulator extends BaseDevice {
   DaemonEmulator(
-    String id,
-    String name,
-    String category,
-    String platformType,
-  ) : super(id, name, category, platformType);
+    super.id,
+    super.name,
+    super.category,
+    super.platformType,
+  );
 }
 
 /// Describe a device.
 class DaemonDevice extends BaseDevice {
-  final String platform;
-  final bool emulator;
-  final bool ephemeral;
-  final String? emulatorId;
-  final String? iosModel; //  iOS model
+  //  iOS model
   DaemonDevice(
-    String id,
-    String name,
-    String category,
-    String platformType,
+    super.id,
+    super.name,
+    super.category,
+    super.platformType,
     this.platform,
     this.emulator,
     this.ephemeral,
     this.emulatorId, {
     this.iosModel,
-  }) : super(id, name, category, platformType) {
+  }) {
     // debug check in CI
     if (emulator && emulatorId == null) throw 'Emulator id is null';
   }
+  final String platform;
+  final bool emulator;
+  final bool ephemeral;
+  final String? emulatorId;
+  final String? iosModel;
 
   @override
   bool operator ==(other) {

@@ -386,7 +386,7 @@ void main() {
 
     test('get ios simulator locale', () async {
       const udId = '03D4FC12-3927-4C8B-A226-17DE34AE9C18';
-      var locale = utils.getIosSimulatorLocale(udId);
+      final locale = utils.getIosSimulatorLocale(udId);
       expect(locale, 'en-US');
     }, skip: true);
 
@@ -435,7 +435,7 @@ void main() {
       var deviceName = 'iPhone 5c';
       var device = utils.getDevice([expected], deviceName);
       expect(device, expected);
-      final isDeviceAttached = (device) => device != null;
+      bool isDeviceAttached(device) => device != null;
       expect(isDeviceAttached(device), true);
       deviceName = 'iPhone X';
       device = utils.getDevice([expected], deviceName);
@@ -456,7 +456,7 @@ void main() {
       ''';
 
       final configInfo = ScreenshotsConfig(configStr: config);
-      var deviceType = run.getDeviceType(configInfo, deviceName);
+      final deviceType = run.getDeviceType(configInfo, deviceName);
       expect(deviceType, expected);
     });
 
@@ -476,7 +476,7 @@ void main() {
       // start emulator
       final deviceId = await daemonClient.launchEmulator(emulatorId);
 
-      var props = getDeviceProps(deviceId);
+      final props = getDeviceProps(deviceId);
       final newProps = Map.from(props);
       newProps['xmpp.auto-presence'] = false; //changed
       newProps['xxx'] = 'yyy'; // added
@@ -510,7 +510,7 @@ void main() {
         await daemonClient.start;
         const emulatorId = 'Nexus_6P_API_28';
         final deviceId = await daemonClient.launchEmulator(emulatorId);
-        var actual = await utils.waitSysLogMsg(deviceId, expected, toLocale);
+        final actual = await utils.waitSysLogMsg(deviceId, expected, toLocale);
 //      print('actual=$actual');
         expect(actual?.contains(expected), isTrue);
         expect(await run.shutdownAndroidEmulator(daemonClient, deviceId),
@@ -562,7 +562,7 @@ void main() {
         pairs.forEach((behave, pair) async {
           final recordedImage = pair['recorded']!;
           final comparisonImage = pair['comparison']!;
-          var doCompare = await runInContext<bool>(() async {
+          final doCompare = await runInContext<bool>(() async {
             return im.compare(comparisonImage, recordedImage);
           });
           behave == 'good'

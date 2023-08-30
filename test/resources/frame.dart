@@ -18,10 +18,10 @@ const kRunMode = RunMode.normal;
 main(List<String> arguments) async {
   late ArgResults argResults;
 
-  final screenshotArg = 'screenshot';
-  final deviceArg = 'device';
-  final helpArg = 'help';
-  final ArgParser argParser = ArgParser(allowTrailingOptions: false)
+  const screenshotArg = 'screenshot';
+  const deviceArg = 'device';
+  const helpArg = 'help';
+  final argParser = ArgParser(allowTrailingOptions: false)
     ..addOption(screenshotArg,
         abbr: 's',
         defaultsTo: 'screenshot.png',
@@ -46,7 +46,7 @@ main(List<String> arguments) async {
 
   // validate args
   if (!await File(argResults[screenshotArg]).exists()) {
-    _handleError(argParser, "File not found: ${argResults[screenshotArg]}");
+    _handleError(argParser, 'File not found: ${argResults[screenshotArg]}');
   }
 
   final screenshotPath = argResults[screenshotArg];
@@ -72,7 +72,7 @@ Future runFrame(String screenshotPath, String deviceName) async {
 
   clearDirectory(kFrameTestTmpDir);
 
-  final framedScreenshotPath = '$kFrameTestTmpDir/framed_screenshot.png';
+  const framedScreenshotPath = '$kFrameTestTmpDir/framed_screenshot.png';
   await File(screenshotPath).copy(framedScreenshotPath);
 
   final screenResources = screen['resources'];
@@ -102,7 +102,7 @@ void _handleError(ArgParser argParser, String msg) {
 }
 
 void _showUsage(ArgParser argParser) {
-  print('$usage');
+  print(usage);
   print('\n$sampleUsage\n');
   print(argParser.usage);
   exit(2);

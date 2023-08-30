@@ -1,7 +1,6 @@
 import 'dart:io' as io;
 
 import 'package:screenshots/screenshots.dart';
-import 'package:screenshots/src/config.dart';
 import 'package:screenshots/src/orientation.dart';
 import 'package:screenshots/src/screens.dart';
 import 'package:screenshots/src/utils.dart';
@@ -12,12 +11,12 @@ import 'src/common.dart';
 main() {
   group('config', () {
     test('getters', () {
-      final expectedTest = 'test_driver/main.dart';
-      final expectedStaging = '/tmp/screenshots';
-      final expectedLocale = 'en-US';
-      final expectedIosName = 'iPhone XS Max';
-      final expectedIosFrame = false;
-      final expectedOrientation = 'LandscapeRight';
+      const expectedTest = 'test_driver/main.dart';
+      const expectedStaging = '/tmp/screenshots';
+      const expectedLocale = 'en-US';
+      const expectedIosName = 'iPhone XS Max';
+      const expectedIosFrame = false;
+      const expectedOrientation = 'LandscapeRight';
       final orientation =
           getEnumFromString(Orientation.values, expectedOrientation);
       final expectedIosDevice = ConfigDevice(
@@ -27,8 +26,8 @@ main() {
         [orientation!],
         true,
       );
-      final expectedAndroidName = 'Nexus 6P';
-      final expectedGlobalFrame = true;
+      const expectedAndroidName = 'Nexus 6P';
+      const expectedGlobalFrame = true;
       final expectedAndroidDevice = ConfigDevice(
         expectedAndroidName,
         DeviceType.android,
@@ -36,9 +35,9 @@ main() {
         [orientation],
         true,
       );
-      final expectedRecording = '/tmp/screenshots_record';
-      final expectedArchive = '/tmp/screenshots_archive';
-      final configStr = '''
+      const expectedRecording = '/tmp/screenshots_record';
+      const expectedArchive = '/tmp/screenshots_archive';
+      const configStr = '''
       tests:
         - $expectedTest
       staging: $expectedStaging
@@ -75,7 +74,7 @@ main() {
     });
 
     test('backward compatible orientation', () {
-      String configStr = '''
+      var configStr = '''
         devices:
           android:
             device name:
@@ -83,7 +82,7 @@ main() {
                 - Portrait
         frame: true
         ''';
-      ScreenshotsConfig config = ScreenshotsConfig(configStr: configStr);
+      var config = ScreenshotsConfig(configStr: configStr);
       expect(config.devices[0].orientations![0], Orientation.Portrait);
       configStr = '''
         devices:
@@ -97,31 +96,31 @@ main() {
     });
 
     test('active run type', () {
-      final configIosOnly = '''
+      const configIosOnly = '''
         devices:
           ios:
             iPhone X:
       ''';
-      final configAndroidOnly = '''
+      const configAndroidOnly = '''
         devices:
           ios: # check for empty devices
           android:
             Nexus 6P:
       ''';
-      final configBoth = '''
+      const configBoth = '''
         devices:
           ios:
             iPhone X:
           android:
             Nexus 6P:
       ''';
-      final configNeither = '''
+      const configNeither = '''
         devices:
           ios:
           android:
       ''';
 //      Map config = utils.parseYamlStr(configIosOnly);
-      ScreenshotsConfig config = ScreenshotsConfig(configStr: configIosOnly);
+      var config = ScreenshotsConfig(configStr: configIosOnly);
       expect(config.isRunTypeActive(DeviceType.ios), isTrue);
       expect(config.isRunTypeActive(DeviceType.android), isFalse);
 
@@ -139,14 +138,14 @@ main() {
     });
 
     test('isFrameRequired', () {
-      final deviceName = 'Nexus 6P';
-      String configStr = '''
+      const deviceName = 'Nexus 6P';
+      var configStr = '''
         devices:
           android:
             $deviceName:
         frame: true
         ''';
-      ScreenshotsConfig config = ScreenshotsConfig(configStr: configStr);
+      var config = ScreenshotsConfig(configStr: configStr);
       expect(config.isFrameRequired(deviceName, null), isTrue);
       configStr = '''
         devices:
@@ -175,15 +174,15 @@ main() {
     });
 
     test('store and retrieve environment', () async {
-      final tmpDir = '/tmp/screenshots_test_env';
+      const tmpDir = '/tmp/screenshots_test_env';
       clearDirectory(tmpDir);
-      String configStr = '''
+      const configStr = '''
         staging: $tmpDir
       ''';
       final config = ScreenshotsConfig(configStr: configStr);
-      final screens = await Screens();
+      final screens = Screens();
       await screens.init();
-      final orientation = 'Portrait';
+      const orientation = 'Portrait';
 
       final env = {
         'screen_size': '1440x2560',
@@ -203,11 +202,11 @@ main() {
 
       // called by test
       // simulate no screenshots available
-      ScreenshotsConfig testConfig = ScreenshotsConfig(configStr: configStr);
+      var testConfig = ScreenshotsConfig(configStr: configStr);
       expect(await testConfig.screenshotsEnv, {});
 
       // simulate screenshots available
-      final configPath = '$tmpDir/screenshots.yaml';
+      const configPath = '$tmpDir/screenshots.yaml';
       await io.File(configPath).writeAsString(configStr);
       testConfig = ScreenshotsConfig(configPath: configPath);
       expect(await testConfig.screenshotsEnv, env);

@@ -10,16 +10,16 @@ import 'package:test/test.dart';
 main() {
   group('frame test', () {
     test('frame Nexus 9', () async {
-      final Screens screens = Screens();
+      final screens = Screens();
       await screens.init();
-      Map screen = screens.getScreen('Nexus 9')!;
-      final ScreenshotsConfig config =
+      final Map screen = screens.getScreen('Nexus 9')!;
+      final config =
           ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
 
       final Map ScreenResources = screen['resources'];
       await resources.unpackImages(ScreenResources, '/tmp/screenshots');
 
-      final screenshotPath = './test/resources/nexus_9_0.png';
+      const screenshotPath = './test/resources/nexus_9_0.png';
       final statusbarPath =
           '${config.stagingDir}/${ScreenResources['statusbar']}';
 
@@ -41,7 +41,7 @@ main() {
       await runInContext<void>(() async {
         return im.convert('append', options);
       });
-      final framePath = config.stagingDir + '/' + ScreenResources['frame'];
+      final framePath = '${config.stagingDir}/' + ScreenResources['frame'];
       final size = screen['size'];
       final resize = screen['resize'];
       final offset = screen['offset'];

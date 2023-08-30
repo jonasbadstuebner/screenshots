@@ -68,8 +68,8 @@ class Screens {
     });
     // sort iPhone devices first
     deviceNames.sort((v1, v2) {
-      if ('$v1'.contains('iPhone') && '$v2'.contains('iPad')) return -1;
-      if ('$v1'.contains('iPad') && '$v2'.contains('iPhone')) return 1;
+      if (v1.contains('iPhone') && v2.contains('iPad')) return -1;
+      if (v1.contains('iPad') && v2.contains('iPhone')) return 1;
       return v1.compareTo(v2);
     });
 

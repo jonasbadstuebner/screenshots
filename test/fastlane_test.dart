@@ -11,7 +11,7 @@ import 'src/context.dart';
 
 main() {
   group('fastlane', () {
-    final dirPath = 'test/$kTestScreenshotsDir';
+    const dirPath = 'test/$kTestScreenshotsDir';
     late MemoryFileSystem memoryFileSystem;
 
     setUp(() {
@@ -30,7 +30,7 @@ main() {
     });
 
     testUsingContext('prefix files and delete matching files', () async {
-      final prefix = 'my_prefix';
+      const prefix = 'my_prefix';
       expect(memoryFileSystem.directory(dirPath).listSync().length, 2);
       await for (final file in memoryFileSystem.directory(dirPath).list()) {
         expect(file.path.contains(prefix), isFalse);
@@ -45,7 +45,7 @@ main() {
     }, overrides: {FileSystem: () => memoryFileSystem});
 
     testUsingContext('clear fastlane dirs', () async {
-      final configStr = '''
+      const configStr = '''
         devices:
           android:
             android device1:
@@ -63,7 +63,7 @@ main() {
       for (final locale in config.locales) {
         for (final device in config.devices) {
           // create files
-          int i = 0;
+          const i = 0;
           final path = getDirPath(device.deviceType, locale,
               getAndroidModelType(screens.getScreen(device.name), device.name));
           expect(memoryFileSystem.directory(path).existsSync(), isFalse);

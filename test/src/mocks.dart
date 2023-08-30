@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' as io show IOSink;
 
 import 'package:mockito/mockito.dart';
@@ -18,10 +17,10 @@ class MockAndroidSdk extends Mock implements AndroidSdk {
     bool withPlatformTools = true,
     bool withBuildTools = true,
   }) {
-    final Directory dir =
+    final dir =
         fs.systemTempDirectory.createTempSync('flutter_mock_android_sdk.');
-    final String exe = platform.isWindows ? '.exe' : '';
-    final String bat = platform.isWindows ? '.bat' : '';
+    final exe = platform.isWindows ? '.exe' : '';
+    final bat = platform.isWindows ? '.bat' : '';
 
     _createDir(dir, 'licenses');
 
@@ -49,7 +48,7 @@ class MockAndroidSdk extends Mock implements AndroidSdk {
     if (withSdkManager) _createSdkFile(dir, 'tools/bin/sdkmanager$bat');
 
     if (withNdkDir != null) {
-      final String ndkToolchainBin = fs.path.join(
+      final ndkToolchainBin = fs.path.join(
         'ndk-bundle',
         'toolchains',
         'arm-linux-androideabi-4.9',
@@ -57,11 +56,11 @@ class MockAndroidSdk extends Mock implements AndroidSdk {
         withNdkDir,
         'bin',
       );
-      final String ndkCompiler = fs.path.join(
+      final ndkCompiler = fs.path.join(
         ndkToolchainBin,
         'arm-linux-androideabi-gcc',
       );
-      final String ndkLinker = fs.path.join(
+      final ndkLinker = fs.path.join(
         ndkToolchainBin,
         'arm-linux-androideabi-ld',
       );
@@ -75,7 +74,7 @@ Pkg.Revision = $ndkVersion.1.5063045
 ''');
     }
     if (withNdkSysroot) {
-      final String armPlatform = fs.path.join(
+      final armPlatform = fs.path.join(
         'ndk-bundle',
         'platforms',
         'android-9',
@@ -89,7 +88,7 @@ Pkg.Revision = $ndkVersion.1.5063045
 
   static void _createSdkFile(Directory dir, String filePath,
       {String? contents}) {
-    final File file = dir.childFile(filePath);
+    final file = dir.childFile(filePath);
     file.createSync(recursive: true);
     if (contents != null) {
       file.writeAsStringSync(contents, flush: true);
@@ -97,7 +96,7 @@ Pkg.Revision = $ndkVersion.1.5063045
   }
 
   static void _createDir(Directory dir, String path) {
-    final Directory directory = fs.directory(fs.path.join(dir.path, path));
+    final directory = fs.directory(fs.path.join(dir.path, path));
     directory.createSync(recursive: true);
   }
 
@@ -113,7 +112,7 @@ typedef ProcessFactory = Process Function(List<String> command);
 
 /// A ProcessManager that starts Processes by delegating to a ProcessFactory.
 class MockProcessManager implements ProcessManager {
-  ProcessFactory processFactory = (List<String> commands) => MockProcess();
+  ProcessFactory processFactory = (commands) => MockProcess();
   bool succeed = true;
   List<String> commands = [];
 
@@ -132,8 +131,8 @@ class MockProcessManager implements ProcessManager {
     assert(command is List<String>);
     command = command as List<String>;
     if (!succeed) {
-      final String executable = command[0];
-      final List<String> arguments =
+      final executable = command[0];
+      final arguments =
           command.length > 1 ? command.sublist(1) : <String>[];
       throw ProcessException(executable, arguments);
     }
@@ -148,7 +147,6 @@ class MockProcessManager implements ProcessManager {
 
 /// A process that exits successfully with no output and ignores all input.
 class MockProcess extends Mock implements Process {
-  late MemoryIOSink _stdin;
 
   MockProcess({
     this.pid = 1,
@@ -158,6 +156,7 @@ class MockProcess extends Mock implements Process {
     this.stderr = const Stream<List<int>>.empty(),
   })  : exitCode = exitCode ?? Future<int>.value(0),
         _stdin = stdin ?? MemoryIOSink();
+  late final MemoryIOSink _stdin;
 
   @override
   final int pid;
@@ -189,10 +188,8 @@ class MemoryIOSink implements IOSink {
 
   @override
   Future<void> addStream(Stream<List<int>> stream) {
-    final Completer<void> completer = Completer<void>();
-    stream.listen((List<int> data) {
-      add(data);
-    }).onDone(() => completer.complete());
+    final completer = Completer<void>();
+    stream.listen(add).onDone(completer.complete);
     return completer.future;
   }
 
@@ -207,14 +204,14 @@ class MemoryIOSink implements IOSink {
   }
 
   @override
-  void writeln([Object? object = ""]) {
+  void writeln([Object? object = '']) {
     add(encoding.encode('$object\n'));
   }
 
   @override
   void writeAll(Iterable<dynamic> objects, [String separator = '']) {
-    bool addSeparator = false;
-    for (dynamic object in objects) {
+    var addSeparator = false;
+    for (final dynamic object in objects) {
       if (addSeparator) {
         write(separator);
       }

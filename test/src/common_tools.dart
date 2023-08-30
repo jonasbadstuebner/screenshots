@@ -25,12 +25,12 @@ void tryToDelete(Directory directory) {
 
 /// Matcher for functions that throw [ToolExit].
 Matcher throwsToolExit({int? exitCode, Pattern? message}) {
-  Matcher matcher = isToolExit;
+  var matcher = isToolExit;
   if (exitCode != null) {
-    matcher = allOf(matcher, (ToolExit e) => e.exitCode == exitCode);
+    matcher = allOf(matcher, (e) => e.exitCode == exitCode);
   }
   if (message != null) {
-    matcher = allOf(matcher, (ToolExit e) => e.message.contains(message));
+    matcher = allOf(matcher, (e) => e.message.contains(message));
   }
   return throwsA(matcher);
 }
