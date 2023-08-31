@@ -464,22 +464,37 @@ class Screenshots {
         command.add('${element.key}=${element.value}');
       }
 
-      bool iisBuild() => isBuild != null
-          ? isBuild!
-          : config.getDevice(configDeviceName).isBuild;
-      if (!iisBuild()) {
-        command.add('--no-build');
-      }
       bool isFlavor() => flavor != null && flavor != kNoFlavor;
       if (isFlavor()) {
         command.addAll(['--flavor', flavor!]);
       }
-      command.addAll(testPath.split(' ')); // add test path or custom command
-      printStatus(
-          'Running $testPath on \'$configDeviceName\' in locale $locale${isFlavor() ? ' with flavor $flavor' : ''}${!iisBuild() ? ' with no build' : ''}...');
-      if (!iisBuild() && isFlavor()) {
+
+      if (!usePatrol) {
+        bool iisBuild() => isBuild != null
+            ? isBuild!
+            : config.getDevice(configDeviceName).isBuild;
+        if (!iisBuild()) {
+          command.add('--no-build');
+        }
+
+        // add test path or custom command
+        command.addAll(testPath.split(' '));
+
         printStatus(
-            'Warning: flavor parameter \'$flavor\' is ignored because no build is set for this device');
+            'Running $testPath on \'$configDeviceName\' in locale $locale${isFlavor() ? ' with flavor $flavor' : ''}${!iisBuild() ? ' with no build' : ''}...');
+        if (!iisBuild() && isFlavor()) {
+          printStatus(
+              'Warning: flavor parameter \'$flavor\' is ignored because no build is set for this device');
+        } else {
+          // add test target
+          final cleanedTarget = testPath.split(' ').first;
+          command.addAll([
+            '--target',
+            cleanedTarget,
+          ]);
+          printStatus(
+              'Running $cleanedTarget on \'$configDeviceName\' in locale $locale${isFlavor() ? ' with flavor $flavor' : ''}...');
+        }
       }
       await utils.streamCmd(command, environment: environment);
       // process screenshots
