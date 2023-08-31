@@ -101,6 +101,7 @@ If `pub` is not found, add to PATH using:
 On macOS/Linux:  
 ```
 export PATH="<path to flutter installation directory>/bin/cache/dart-sdk/bin:$PATH"
+brew install ios-deploy # for finding real devices and mapping their ID to a name (on MacOS)
 ```
 On windows:
 ```
