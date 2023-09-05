@@ -31,6 +31,14 @@ void moveFiles(String srcDir, String dstDir) {
   });
 }
 
+/// Fixes URL escaped characters in [filePath].
+Future<void> fixEncodedChars(String filePath) async {
+  if (!fs.isFileSync(filePath)) {
+    return;
+  }
+  await fs.file(filePath).rename(Uri.decodeComponent(filePath));
+}
+
 /// Creates a list of available iOS simulators.
 /// (really just concerned with simulators for now).
 /// Provides access to their IDs and status'.

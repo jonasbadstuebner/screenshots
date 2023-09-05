@@ -81,6 +81,9 @@ class ImageProcessor {
             await frame(_config.stagingDir, screenProps, screenshotPath.path,
                 deviceType, runMode);
           }
+          if (screenshotPath.path.contains('%')) {
+            await utils.fixEncodedChars(screenshotPath.path);
+          }
         }
         status.stop();
       } else {
