@@ -399,8 +399,10 @@ class Screenshots {
         // if a simulator was started, revert locale if necessary and shut it down
         if (simulator != null) {
           // todo restore backup of GlobalPreferences.plist
-          await setSimulatorLocale(deviceId, configDeviceName, origIosLocale!,
-              config.stagingDir, daemonClient);
+          if (origIosLocale != null) {
+            await setSimulatorLocale(deviceId, configDeviceName, origIosLocale!,
+                config.stagingDir, daemonClient);
+          }
           await shutdownSimulator(deviceId);
         }
       }
