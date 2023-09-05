@@ -29,13 +29,6 @@ Future<void> screenshot(
     timeout: timeout,
   );
 
-  if (Platform.isAndroid) {
-    await integrationTestChannel.invokeMethod<void>(
-      'revertFlutterImage',
-      null,
-    );
-  }
-
   const testDir =
       '${const String.fromEnvironment(kEnvSreenshotsStagingDir)}/$kTestScreenshotsDir';
   final fullFilePath = '$testDir/$name.$kImageExtension';
@@ -74,68 +67,42 @@ Future<List<int>> takeScreenshot(
     String screenshotName,
     {Duration? timeout}) async {
   if (const bool.fromEnvironment('dart.library.js_util')) {
-    // kIsWeb implementation
-    throw 'web not yet implemented';
-    // await binding.takeScreenshot(name);
-    // return;
+    throw Exception('web not yet implemented');
   } else if (Platform.isAndroid) {
-    try {
-      // await integrationTestChannel.invokeMethod<void>(
-      //   'convertFlutterSurfaceToImage',
-      // );
-      await binding.convertFlutterSurfaceToImage();
-    } catch (e) {
-      print(
-          'converting surface to image failed; probably it was already an image?: $e');
-    }
-    final endTime = binding.clock
-        .fromNowBy(timeout ?? const Duration(seconds: 30)) as DateTime;
-    do {
-      if ((binding.clock.now() as DateTime).isAfter(endTime)) {
-        break;
-      }
-      await binding.pump(const Duration(milliseconds: 100));
-    } while (binding.hasScheduledFrame as bool);
+    await integrationTestChannel.invokeMethod<void>(
+      'convertFlutterSurfaceToImage',
+    );
   }
-  final reportData = <String, dynamic>{};
-  reportData['screenshots'] ??= <dynamic>[];
-  final data = await _takeScreenshot(
-      binding, integrationTestChannel, platformDispatcher, screenshotName);
-  assert(data.containsKey('bytes'));
-
-  (reportData['screenshots']! as List<dynamic>).add(data);
-  return data['bytes']! as List<int>;
-}
-
-Future<Map<String, dynamic>> _takeScreenshot(
-    dynamic binding,
-    dynamic integrationTestChannel,
-    dynamic platformDispatcher,
-    String screenshot) async {
-  integrationTestChannel.setMethodCallHandler(
-      (dynamic call) => _onMethodChannelCall(call, platformDispatcher));
-  // final rawBytes = await integrationTestChannel.invokeMethod<List<int>>(
-  //   'captureScreenshot',
-  //   <String, dynamic>{'name': screenshot},
-  // ) as List<int>?;
-  final rawBytes = await binding.takeScreenshot(screenshot);
-
+  await binding.pump();
+  binding.reportData ??= <String, dynamic>{};
+  binding.reportData!['screenshots'] ??= <dynamic>[];
+  integrationTestChannel.setMethodCallHandler((dynamic call) async {
+    switch (call.method) {
+      case 'scheduleFrame':
+        platformDispatcher.scheduleFrame();
+        break;
+    }
+    return null;
+  });
+  final rawBytes = await integrationTestChannel.invokeMethod<List<int>>(
+    'captureScreenshot',
+    <String, dynamic>{'name': screenshotName},
+  );
   if (rawBytes == null) {
     throw StateError(
         'Expected a list of bytes, but instead captureScreenshot returned null');
   }
-  return <String, dynamic>{
-    'screenshotName': screenshot,
+  final data = <String, dynamic>{
+    'screenshotName': screenshotName,
     'bytes': rawBytes,
   };
-}
+  assert(data.containsKey('bytes'), 'Missing bytes key');
+  (binding.reportData!['screenshots'] as List<dynamic>).add(data);
 
-Future<dynamic> _onMethodChannelCall(
-    dynamic call, dynamic platformDispatcher) async {
-  switch (call.method) {
-    case 'scheduleFrame':
-      platformDispatcher.scheduleFrame();
-      break;
+  if (Platform.isAndroid) {
+    await integrationTestChannel.invokeMethod<void>(
+      'revertFlutterImage',
+    );
   }
-  return null;
+  return data['bytes']! as List<int>;
 }
