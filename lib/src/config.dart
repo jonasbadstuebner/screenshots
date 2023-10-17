@@ -16,7 +16,6 @@ const kEnvImageReceiverIPAddress = 'IMAGE_RECEIVER_ADDRESS';
 const kEnvImageReceiverPort = 'IMAGE_RECEIVER_PORT';
 const kEnvImageSendHost = 'IMAGE_SEND_HOST';
 const kEnvImageSendPort = 'IMAGE_SEND_PORT';
-const kEnvSreenshotsStagingDir = 'SCREENSHOTS_STAGING_DIR';
 
 /// Config info used to manage screenshots for android and ios.
 // Note: should not have context dependencies as is also used in driver.

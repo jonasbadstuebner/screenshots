@@ -29,9 +29,7 @@ Future<void> screenshot(
     timeout: timeout,
   );
 
-  const testDir =
-      '${const String.fromEnvironment(kEnvSreenshotsStagingDir)}/$kTestScreenshotsDir';
-  final fullFilePath = '$testDir/$name.$kImageExtension';
+  final fullFilePath = '$kTestScreenshotsDir/$name.$kImageExtension';
 
   final client = http.Client();
   Exception? sendError;

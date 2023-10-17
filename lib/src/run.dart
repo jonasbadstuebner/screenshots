@@ -424,7 +424,9 @@ class Screenshots {
       final bytes = <int>[];
       await request.forEach(bytes.addAll);
 
-      final screenshotFile = io.File(request.uri.pathSegments.join("/"));
+      final screenshotFile = io.File(
+        "${config.stagingDir}/${request.uri.pathSegments.join("/")}",
+      );
 
       await screenshotFile.writeAsBytes(bytes);
 
@@ -441,7 +443,6 @@ class Screenshots {
       kEnvImageSendHost: config.imageSendHost?.address ??
           (deviceType == DeviceType.ios ? '127.0.0.1' : '10.0.2.2'),
       kEnvImageSendPort: config.imageSendPort.toString(),
-      kEnvSreenshotsStagingDir: config.stagingDir,
     };
 
     for (final testPath in config.tests) {
