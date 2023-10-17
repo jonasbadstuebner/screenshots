@@ -18,7 +18,6 @@ ios:
     size: 1242x2208
     resize: 75%
     resources:
-      statusbar: resources/ios/1242/statusbar_black.png
       statusbar black: resources/ios/1242/statusbar_black.png
       statusbar white: resources/ios/1242/statusbar_black.png
       frame: resources/ios/phones/iPhone_7_Plus_Silver.png
@@ -33,7 +32,6 @@ ios:
     size: 1125x2436
     resize: 87%
     resources:
-      statusbar: resources/ios/1125/statusbar_white.png
       statusbar black: resources/ios/1125/statusbar_black.png
       statusbar white: resources/ios/1125/statusbar_white.png
       frame: resources/ios/phones/Apple iPhone X Silver.png
@@ -49,7 +47,6 @@ ios:
     size: 1242x2688
     resize: 87%
     resources:
-      statusbar: resources/ios/6.5inch/statusbar_white.png
       statusbar black: resources/ios/6.5inch/statusbar_black.png
       statusbar white: resources/ios/6.5inch/statusbar_white.png
       frame: resources/ios/phones/Apple iPhone XS Max Silver.png
@@ -58,15 +55,26 @@ ios:
       - iPhone XS Max
       - iPhone Xs Max
       - iPhone 11 Pro Max
-  6.7inch:
-    size: 2796×1290
+  6.7inch-1284x2778:
+    size: 1284x2778
+    resize: 87%
+    resources:
+      statusbar black: resources/ios/6.7inch-1284x2778/statusbar_black.png
+      statusbar white: resources/ios/6.7inch-1284x2778/statusbar_white.png
+      homeIndicator black: resources/ios/6.7inch-1284x2778/homeindicator_black.png
+      homeIndicator white: resources/ios/6.7inch-1284x2778/homeindicator_white.png
+      # frame: resources/ios/phones/Apple iPhone 13 Pro Max Graphite.png
+    offset: -0-0
+    devices:
+      - iPhone 13 Pro Max
+  6.7inch-1290x2796:
+    size: 1290x2796
     resize: 100%
     resources:
-    #   statusbar: resources/ios/6.7inch/statusbar_white.png
-    #   statusbar black: resources/ios/6.7inch/statusbar_black.png
-    #   statusbar white: resources/ios/6.7inch/statusbar_white.png
-    #   frame: resources/ios/phones/Apple iPhone 14 Pro Max Black.png
-    # offset: -0-2
+      statusbar black: resources/ios/6.7inch-1290x2796/statusbar_black.png
+      statusbar white: resources/ios/6.7inch-1290x2796/statusbar_white.png
+      frame: resources/ios/phones/Apple iPhone 14 Pro Max Black.png
+    offset: -0-2
     devices:
       - iPhone 14 Pro Max
 #  7.9inches:
@@ -94,7 +102,6 @@ ios:
     size: 2048x2732
     resize: 86%
     resources:
-      statusbar: resources/ios/2048/statusbar_white.png
       statusbar black: resources/ios/2048/statusbar_white.png
       statusbar white: resources/ios/2048/statusbar_white.png
       frame: resources/ios/phones/iPad_Pro_Silver.png
@@ -106,20 +113,19 @@ ios:
     size: 2048x2732
     resize: 91.25%
     resources:
-      statusbar: resources/ios/2048/statusbar_white.png
       statusbar black: resources/ios/2048/statusbar_white.png
       statusbar white: resources/ios/2048/statusbar_white.png
       frame: resources/ios/phones/iPad_Pro_Space_Grey_3rd_Generation.png
     offset: -3+2
     devices:
       - iPad Pro (12.9-inch) (3rd generation)
+      - iPad Pro (12.9-inch) (4th generation)
       - iPad Pro (12.9-inch) (6th generation)
 android:
   5.2inch:
     size: 1080x1920
     resize: 80%
     resources:
-      statusbar: resources/android/1080/statusbar.png
       statusbar black: resources/android/1080/statusbar.png
       statusbar white: resources/android/1080/statusbar.png
       navbar: resources/android/1080/navbar.png
@@ -134,7 +140,6 @@ android:
     size: 1440x2560
     resize: 80%
     resources:
-      statusbar: resources/android/1440/statusbar.png
       statusbar black: resources/android/1440/statusbar.png
       statusbar white: resources/android/1440/statusbar.png
       navbar: resources/android/1440/navbar_black.png
@@ -147,7 +152,6 @@ android:
     size: 1536x2048
     resize: 80%
     resources:
-      statusbar: resources/android/1536/statusbar.png
       statusbar black: resources/android/1536/statusbar.png
       statusbar white: resources/android/1536/statusbar.png
       navbar: resources/android/1536/navigationbar.png

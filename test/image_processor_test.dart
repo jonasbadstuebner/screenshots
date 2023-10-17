@@ -18,15 +18,14 @@ import 'package:tool_base/tool_base.dart' hide Config;
 
 import 'src/context.dart';
 
-main() {
+void main() {
   test('process screenshots for iPhone X and iPhone XS Max', () async {
     const imageDir = 'test/resources';
     final screens = Screens();
     await screens.init();
-    final config =
-        ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
+    final config = ScreenshotsConfig(configPath: 'test/screenshots_test.yaml');
 
-    final Map devices = {
+    final devices = <String, dynamic>{
       'iPhone X': 'iphone_x_1.png',
       'iPhone XS Max': 'iphone_xs_max_1.png',
       'iPad Pro (12.9-inch) (3rd generation)':
@@ -36,9 +35,9 @@ main() {
     for (final String deviceName in devices.keys) {
       final screenshotName = devices[deviceName];
 //      print('deviceName=$deviceName, screenshotName=$screenshotName');
-      final Map screen = screens.getScreen(deviceName)!;
+      final screen = screens.getScreen(deviceName)!;
 
-      final Map screenResources = screen['resources'];
+      final screenResources = screen['resources'];
       await resources.unpackImages(screenResources, '/tmp/screenshots');
 
       final screenshotPath = '$imageDir/$screenshotName';

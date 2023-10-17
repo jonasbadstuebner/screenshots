@@ -15,7 +15,6 @@ import 'screens.dart';
 import 'utils.dart' as utils;
 
 class ImageProcessor {
-
   ImageProcessor(Screens screens, ScreenshotsConfig config)
       : _screens = screens,
         _config = config;
@@ -167,9 +166,15 @@ class ImageProcessor {
       Map<String, dynamic> screenResources, String screenshotPath) async {
     // if no status bar skip
     // todo: get missing status bars
-    if (screenResources['statusbar'] == null) {
+    if (screenResources['statusbar black'] == null) {
       printStatus(
-          'error: image ${p.basename(screenshotPath)} is missing status bar.');
+          'error: image ${p.basename(screenshotPath)} is missing black status bar.');
+      return Future.value(null);
+    }
+
+    if (screenResources['statusbar white'] == null) {
+      printStatus(
+          'error: image ${p.basename(screenshotPath)} is missing white status bar.');
       return Future.value(null);
     }
 
@@ -184,10 +189,24 @@ class ImageProcessor {
       statusbarPath = '$tmpDir/${screenResources['statusbar white']}';
     }
 
-    final options = {
+    var options = {
       'screenshotPath': screenshotPath,
       'statusbarPath': statusbarPath,
     };
+
+    if (screenResources['homeIndicator black'] != null &&
+        screenResources['homeIndicator white'] != null) {
+      if (im.isThresholdExceeded(screenshotPath, _kCrop)) {
+        // use black status bar
+        options['homeIndicatorPath'] =
+            '$tmpDir/${screenResources['homeIndicator black']}';
+      } else {
+        // use white status bar
+        options['homeIndicatorPath'] =
+            '$tmpDir/${screenResources['homeIndicator white']}';
+      }
+    }
+
     await im.convert('overlay', options);
   }
 

@@ -29,26 +29,36 @@ class ImageMagick {
   /// ImageMagick calls.
   ///
   Future<void> convert(String command, Map<String, String> options) async {
-    List<String> cmdOptions;
+    var cmdOptions = <List<String>>[];
     switch (command) {
       case 'overlay':
-        cmdOptions = [
+        cmdOptions.add([
           options['screenshotPath']!,
           options['statusbarPath']!,
           '-gravity',
           'north',
           '-composite',
           options['screenshotPath']!,
-        ];
+        ]);
+        if (options.containsKey('homeIndicatorPath')) {
+          cmdOptions.add([
+            options['screenshotPath']!,
+            options['homeIndicatorPath']!,
+            '-gravity',
+            'south',
+            '-composite',
+            options['screenshotPath']!,
+          ]);
+        }
         break;
       case 'append':
         // convert -append screenshot_statusbar.png navbar.png final_screenshot.png
-        cmdOptions = [
+        cmdOptions.add([
           '-append',
           options['screenshotPath']!,
           options['screenshotNavbarPath']!,
           options['screenshotPath']!,
-        ];
+        ]);
         break;
       case 'frame':
 //  convert -size $size xc:skyblue \
@@ -56,7 +66,7 @@ class ImageMagick {
 //   \( final_screenshot.png -resize $resize \) -gravity center -geometry -4-9 -composite \
 //   framed.png
 
-        cmdOptions = [
+        cmdOptions.add([
           '-size',
           options['size']!,
           options['backgroundColor']!,
@@ -79,12 +89,14 @@ class ImageMagick {
           'center',
           '-composite',
           options['screenshotPath']!
-        ];
+        ]);
         break;
       default:
         throw 'unknown command: $command';
     }
-    _imageMagickCmd('convert', cmdOptions);
+    for (final cmd in cmdOptions) {
+      _imageMagickCmd('convert', cmd);
+    }
   }
 
   /// Checks if brightness of sample of image exceeds a threshold.
@@ -127,7 +139,8 @@ class ImageMagick {
 
   /// Append diff suffix [kDiffSuffix] to [imagePath].
   String getDiffImagePath(String? imagePath) {
-    final diffName = '${p.dirname(imagePath!)}/${p.basenameWithoutExtension(imagePath)}$kDiffSuffix${p.extension(imagePath)}';
+    final diffName =
+        '${p.dirname(imagePath!)}/${p.basenameWithoutExtension(imagePath)}$kDiffSuffix${p.extension(imagePath)}';
     return diffName;
   }
 

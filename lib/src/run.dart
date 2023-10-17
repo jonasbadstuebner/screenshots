@@ -424,7 +424,7 @@ class Screenshots {
       final bytes = <int>[];
       await request.forEach(bytes.addAll);
 
-      final screenshotFile = io.File(request.uri.path);
+      final screenshotFile = io.File(request.uri.pathSegments.join());
 
       await screenshotFile.writeAsBytes(bytes);
 

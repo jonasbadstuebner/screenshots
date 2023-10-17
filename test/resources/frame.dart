@@ -15,7 +15,7 @@ const sampleUsage = 'sample usage: frame -s screenshot.png -d \'Nexus 6P\'';
 const kFrameTestTmpDir = '/tmp/frame_test';
 const kRunMode = RunMode.normal;
 
-main(List<String> arguments) async {
+void main(List<String> arguments) async {
   late ArgResults argResults;
 
   const screenshotArg = 'screenshot';
@@ -37,7 +37,7 @@ main(List<String> arguments) async {
     _handleError(argParser, e.toString());
   }
   // show help
-  if (argResults[helpArg] ||
+  if (argResults[helpArg] as bool ||
       !(argResults.wasParsed(screenshotArg) &&
           argResults.wasParsed(deviceArg))) {
     _showUsage(argParser);
@@ -45,17 +45,18 @@ main(List<String> arguments) async {
   }
 
   // validate args
-  if (!await File(argResults[screenshotArg]).exists()) {
+  // ignore: avoid_slow_async_io
+  if (!await File(argResults[screenshotArg].toString()).exists()) {
     _handleError(argParser, 'File not found: ${argResults[screenshotArg]}');
   }
 
-  final screenshotPath = argResults[screenshotArg];
-  final deviceName = argResults[deviceArg];
+  final screenshotPath = argResults[screenshotArg].toString();
+  final deviceName = argResults[deviceArg].toString();
 
   await runFrame(screenshotPath, deviceName);
 }
 
-Future runFrame(String screenshotPath, String deviceName) async {
+Future<void> runFrame(String screenshotPath, String deviceName) async {
   final screens = Screens();
   await screens.init();
   final screen = screens.getScreen(deviceName);
@@ -75,7 +76,7 @@ Future runFrame(String screenshotPath, String deviceName) async {
   const framedScreenshotPath = '$kFrameTestTmpDir/framed_screenshot.png';
   await File(screenshotPath).copy(framedScreenshotPath);
 
-  final screenResources = screen['resources'];
+  final screenResources = screen['resources'] as Map<String, dynamic>;
   await unpackImages(screenResources, kFrameTestTmpDir);
 
   await runInContext<void>(() async {

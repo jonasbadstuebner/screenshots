@@ -39,7 +39,7 @@ class Screens {
     screens.forEach((devT, osScreens) {
       for (final osScreen in (osScreens as Map<String, dynamic>).values) {
         osScreen as Map<String, dynamic>;
-        if ((osScreen['devices']! as List<String>).contains(deviceName)) {
+        if ((osScreen['devices']! as List<dynamic>).contains(deviceName)) {
           deviceType = utils.getEnumFromString(DeviceType.values, devT);
         }
       }
