@@ -29,7 +29,7 @@ Future<void> screenshot(
     timeout: timeout,
   );
 
-  final fullFilePath = '$kTestScreenshotsDir/$name.$kImageExtension';
+  final fullFilePath = '$name.$kImageExtension';
 
   final client = http.Client();
   Exception? sendError;

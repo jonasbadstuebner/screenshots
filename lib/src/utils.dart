@@ -185,7 +185,16 @@ String? getIosSimulatorLocale(String udId) {
 
   // create file if missing (iOS 16)
   final globalPreferences = fs.file(globalPreferencesPath);
-  if (!globalPreferences.existsSync()) {
+
+  var globalPrefIsValid = true;
+  try {
+    cnv.jsonDecode(
+        cmd(['plutil', '-convert', 'json', '-o', '-', globalPreferencesPath]));
+  } catch (e) {
+    globalPrefIsValid = false;
+  }
+
+  if (globalPrefIsValid || !globalPreferences.existsSync()) {
     const contents = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

@@ -187,8 +187,7 @@ main() {
 
       // init
       final stagingDir = config.stagingDir;
-      await Directory('$stagingDir/$kTestScreenshotsDir')
-          .create(recursive: true);
+      await Directory(config.screenshotsDir).create(recursive: true);
       await resources.unpackScripts(stagingDir);
       await fastlane.clearFastlaneDirs(config, screens, RunMode.normal);
 

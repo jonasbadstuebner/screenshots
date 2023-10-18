@@ -46,7 +46,7 @@ class ImageProcessor {
     Archive? archive,
   ) async {
     final screenProps = _screens.getScreen(deviceName);
-    final screenshotsDir = '${_config.stagingDir}/$kTestScreenshotsDir';
+    final screenshotsDir = _config.screenshotsDir;
     final screenshotPaths = fs.directory(screenshotsDir).listSync();
     if (screenProps == null) {
       printStatus('Warning: \'$deviceName\' images will not be processed');
@@ -60,7 +60,7 @@ class ImageProcessor {
             timeout: const Duration(minutes: 4));
 
         // unpack images for screen from package to local tmpDir area
-        await resources.unpackImages(screenResources, _config.stagingDir);
+        await resources.unpackImages(screenResources, _config.screenshotsDir);
 
         // add status and nav bar and frame for each screenshot
         if (screenshotPaths.isEmpty) {
@@ -69,16 +69,16 @@ class ImageProcessor {
         for (final screenshotPath in screenshotPaths) {
           // add status bar for each screenshot
           await overlay(
-              _config.stagingDir, screenResources, screenshotPath.path);
+              _config.screenshotsDir, screenResources, screenshotPath.path);
 
           if (deviceType == DeviceType.android) {
             // add nav bar for each screenshot
             await append(
-                _config.stagingDir, screenResources, screenshotPath.path);
+                _config.screenshotsDir, screenResources, screenshotPath.path);
           }
           if (_config.isFrameRequired(deviceName, orientation)) {
-            await frame(_config.stagingDir, screenProps, screenshotPath.path,
-                deviceType, runMode);
+            await frame(_config.screenshotsDir, screenProps,
+                screenshotPath.path, deviceType, runMode);
           }
         }
         status.stop();

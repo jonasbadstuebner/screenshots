@@ -121,9 +121,7 @@ class Screenshots {
     }
 
     // init
-    await fs
-        .directory(path.join(config.stagingDir, kTestScreenshotsDir))
-        .create(recursive: true);
+    await fs.directory(config.screenshotsDir).create(recursive: true);
     if (!platform.isWindows) await resources.unpackScripts(config.stagingDir);
     if (config.archiveDir != null) {
       archive = Archive(config.archiveDir!);
@@ -425,7 +423,7 @@ class Screenshots {
       await request.forEach(bytes.addAll);
 
       final screenshotFile = io.File(
-        "${config.stagingDir}/${request.uri.pathSegments.join("/")}",
+        "${config.screenshotsDir}/${request.uri.pathSegments.join("/")}",
       );
 
       await screenshotFile.writeAsBytes(bytes);
