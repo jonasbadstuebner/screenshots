@@ -13,7 +13,7 @@ import 'package:tool_base_test/tool_base_test.dart';
 
 import 'src/mocks.dart';
 
-main() {
+void main() {
   const stagingDir = '/tmp/screenshots';
   const configAndroidDeviceName = 'Nexus 6P';
   const configIosDeviceName = 'iPhone X';
@@ -411,8 +411,7 @@ main() {
             'emulatorId': simulatorID,
           }
         ];
-        final daemonDevices =
-            devices.map(loadDaemonDevice).toList();
+        final daemonDevices = devices.map(loadDaemonDevice).toList();
 
         final devicesResponses = <List<DaemonDevice>>[
           [],

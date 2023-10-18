@@ -183,7 +183,7 @@ String? getIosSimulatorLocale(String udId) {
   final globalPreferencesPath =
       '${env['HOME']}/Library/Developer/CoreSimulator/Devices/$udId/data/Library/Preferences/.GlobalPreferences.plist';
 
-  // create file if missing (iOS 13)
+  // create file if missing (iOS 16)
   final globalPreferences = fs.file(globalPreferencesPath);
   if (!globalPreferences.existsSync()) {
     const contents = '''
@@ -191,57 +191,25 @@ String? getIosSimulatorLocale(String udId) {
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AKLastIDMSEnvironment</key>
-	<integer>0</integer>
-	<key>AddingEmojiKeybordHandled</key>
-	<true/>
-	<key>AppleITunesStoreItemKinds</key>
-	<array>
-		<string>itunes-u</string>
-		<string>movie</string>
-		<string>album</string>
-		<string>ringtone</string>
-		<string>software-update</string>
-		<string>booklet</string>
-		<string>tone</string>
-		<string>music-video</string>
-		<string>tv-episode</string>
-		<string>tv-season</string>
-		<string>song</string>
-		<string>podcast</string>
-		<string>software</string>
-		<string>audiobook</string>
-		<string>podcast-episode</string>
-		<string>wemix</string>
-		<string>eBook</string>
-		<string>mix</string>
-		<string>artist</string>
-		<string>document</string>
-	</array>
-	<key>AppleKeyboards</key>
-	<array>
-		<string>en_US@sw=QWERTY;hw=Automatic</string>
-		<string>emoji@sw=Emoji</string>
-		<string>en_US@sw=QWERTY;hw=Automatic</string>
-	</array>
-	<key>AppleKeyboardsExpanded</key>
-	<integer>1</integer>
-	<key>AppleLanguages</key>
-	<array>
-		<string>en</string>
-	</array>
-	<key>AppleLanguagesDidMigrate</key>
-	<string>15C107</string>
-	<key>AppleLocale</key>
-	<string>en_US</string>
-	<key>ApplePasscodeKeyboards</key>
-	<array>
-		<string>en_US@sw=QWERTY;hw=Automatic</string>
-		<string>emoji@sw=Emoji</string>
-		<string>en_US@sw=QWERTY;hw=Automatic</string>
-	</array>
-	<key>PKKeychainVersionKey</key>
-	<integer>4</integer>
+        <key>AKLastEmailListRequestDateKey</key>
+        <date>2023-10-18T07:29:59Z</date>
+        <key>AKLastIDMSEnvironment</key>
+        <integer>0</integer>
+        <key>AppleKeyboards</key>
+        <array>
+                <string>en_US@sw=QWERTY;hw=Automatic</string>
+                <string>emoji@sw=Emoji</string>
+        </array>
+        <key>AppleKeyboardsExpanded</key>
+        <integer>1</integer>
+        <key>AppleLanguages</key>
+        <array>
+                <string>en-US</string>
+        </array>
+        <key>AppleLocale</key>
+        <string>en_US</string>
+        <key>PKLogNotificationServiceResponsesKey</key>
+        <false/>
 </dict>
 </plist>
     ''';
