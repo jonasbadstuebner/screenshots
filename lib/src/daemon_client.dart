@@ -66,6 +66,7 @@ class DaemonClient {
     final command = <String, dynamic>{
       'method': 'emulator.launch',
       'params': <String, dynamic>{
+        'coldBoot': true,
         'emulatorId': emulatorId,
       },
     };
