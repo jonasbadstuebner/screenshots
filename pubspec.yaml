@@ -8,13 +8,13 @@ environment:
   sdk: ^3.0.0
 
 dependencies:
-  archive: "^3.3.0"
+  archive: "3.4.10"
   args: "^2.4.0"
-  file: "^6.1.0"
-  meta: "^1.8.0"
-  path: "^1.8.2"
-  platform: "^3.1.0"
-  process: "^4.2.0"
+  file: "7.0.0"
+  meta: "1.11.0"
+  path: "1.9.0"
+  platform: "3.1.4"
+  process: "5.0.2"
   resource_portable: "^3.0.0"
   # network_info_plus: "^3.0.3"
   tool_mobile:
