@@ -35,10 +35,12 @@ Future<void> screenshot(
   Exception? sendError;
   try {
     final response = await client.post(
-        Uri.http(
-            '${const String.fromEnvironment(kEnvImageSendHost)}:${const String.fromEnvironment(kEnvImageSendPort)}',
-            fullFilePath),
-        body: pixels);
+      Uri.http(
+        '${const String.fromEnvironment(kEnvImageSendHost)}:${const String.fromEnvironment(kEnvImageSendPort)}',
+        fullFilePath,
+      ),
+      body: pixels,
+    );
     print('screenshot-receiver: ${utf8.decode(response.bodyBytes)}');
   } catch (e) {
     print('screenshot-send-error: $e');
@@ -59,11 +61,12 @@ Future<void> screenshot(
 }
 
 Future<List<int>> takeScreenshot(
-    dynamic binding,
-    dynamic integrationTestChannel,
-    dynamic platformDispatcher,
-    String screenshotName,
-    {Duration? timeout}) async {
+  dynamic binding,
+  dynamic integrationTestChannel,
+  dynamic platformDispatcher,
+  String screenshotName, {
+  Duration? timeout,
+}) async {
   if (const bool.fromEnvironment('dart.library.js_util')) {
     throw Exception('web not yet implemented');
   } else if (Platform.isAndroid) {
@@ -71,9 +74,20 @@ Future<List<int>> takeScreenshot(
       'convertFlutterSurfaceToImage',
     );
   }
+
+  var isPatrolRun = false;
+  try {
+    final _ = binding.reportData;
+    // ignore: avoid_catching_errors
+  } on NoSuchMethodError {
+    isPatrolRun = true;
+  }
+
   await binding.pump();
-  binding.reportData ??= <String, dynamic>{};
-  binding.reportData!['screenshots'] ??= <dynamic>[];
+  if (!isPatrolRun) {
+    binding.reportData ??= <String, dynamic>{};
+    binding.reportData!['screenshots'] ??= <dynamic>[];
+  }
   integrationTestChannel.setMethodCallHandler((dynamic call) async {
     switch (call.method) {
       case 'scheduleFrame':
@@ -88,14 +102,18 @@ Future<List<int>> takeScreenshot(
   );
   if (rawBytes == null) {
     throw StateError(
-        'Expected a list of bytes, but instead captureScreenshot returned null');
+      'Expected a list of bytes, but instead captureScreenshot returned null',
+    );
   }
   final data = <String, dynamic>{
     'screenshotName': screenshotName,
     'bytes': rawBytes,
   };
   assert(data.containsKey('bytes'), 'Missing bytes key');
-  (binding.reportData!['screenshots'] as List<dynamic>).add(data);
+
+  if (!isPatrolRun) {
+    (binding.reportData!['screenshots'] as List<dynamic>).add(data);
+  }
 
   if (Platform.isAndroid) {
     await integrationTestChannel.invokeMethod<void>(
