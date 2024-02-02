@@ -12,7 +12,7 @@ dependencies:
   args: "^2.4.0"
   file: "7.0.0"
   meta: "1.11.0"
-  path: "1.8.3"
+  path: "1.9.0"
   platform: "3.1.4"
   process: "5.0.2"
   resource_portable: "^3.0.0"
