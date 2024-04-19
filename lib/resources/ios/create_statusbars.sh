@@ -1,5 +1,6 @@
 #!/bin/bash
-set -u
+set -euo pipefail
+
 PROGPATH=$(dirname "${BASH_SOURCE[0]}")
 
 BLACK_COLOR="#000000ee"
@@ -193,7 +194,7 @@ function createBar() {
   icons_padding="${6:-}"
 
   [[ -z "$out_path" ]] && echo "\$out_path is empty" && exit -1
-  [[ ! -d "$out_path" ]] && echo "\$out_path is not a directory" && exit -1
+  [[ ! -d "$out_path" ]] && echo "\$out_path '$out_path' is not a directory" && exit -1
 
   size="${width}x${bar_height}"
 

@@ -46,6 +46,8 @@ class ImageProcessor {
     Archive? archive,
   ) async {
     final screenProps = _screens.getScreen(deviceName);
+    final stagingDir = _config.stagingDir;
+
     final screenshotsDir = _config.screenshotsDir;
     final screenshotPaths = fs.directory(screenshotsDir).listSync();
     if (screenProps == null) {
@@ -56,11 +58,14 @@ class ImageProcessor {
         final screenResources =
             screenProps['resources'] as Map<String, dynamic>;
         final status = logger.startProgress(
-            'Processing screenshots from test...',
-            timeout: const Duration(minutes: 4));
+          'Processing screenshots from test...',
+          timeout: const Duration(
+            minutes: 4,
+          ),
+        );
 
         // unpack images for screen from package to local tmpDir area
-        await resources.unpackImages(screenResources, _config.screenshotsDir);
+        await resources.unpackImages(screenResources, stagingDir);
 
         // add status and nav bar and frame for each screenshot
         if (screenshotPaths.isEmpty) {
@@ -68,17 +73,20 @@ class ImageProcessor {
         }
         for (final screenshotPath in screenshotPaths) {
           // add status bar for each screenshot
-          await overlay(
-              _config.screenshotsDir, screenResources, screenshotPath.path);
+          await overlay(stagingDir, screenResources, screenshotPath.path);
 
           if (deviceType == DeviceType.android) {
             // add nav bar for each screenshot
-            await append(
-                _config.screenshotsDir, screenResources, screenshotPath.path);
+            await append(stagingDir, screenResources, screenshotPath.path);
           }
           if (_config.isFrameRequired(deviceName, orientation)) {
-            await frame(_config.screenshotsDir, screenProps,
-                screenshotPath.path, deviceType, runMode);
+            await frame(
+              stagingDir,
+              screenProps,
+              screenshotPath.path,
+              deviceType,
+              runMode,
+            );
           }
         }
         status.stop();

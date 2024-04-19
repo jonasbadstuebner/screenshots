@@ -42,7 +42,8 @@ function createBar() {
     "$out_path/homeindicator_white.png"
 }
 
-# list of folders that should contain home indicators;
+
+# list of folders that should contain navigation bars;
 # give:
 #  1) the output folder,
 #  2) the width of the resulting image,
@@ -51,7 +52,4 @@ function createBar() {
 #  5) bottom padding below the bar.
 # I got the information from closely inspecting
 # screenshots taken on simulators.
-createBar "$PROGPATH/6.7inch-1290x2796" 1290 462 15 24
-createBar "$PROGPATH/6.7inch-1284x2778" 1284 459 15 24
-createBar "$PROGPATH/1242" 1242 444 15 24
-createBar "$PROGPATH/1125" 1125 402 15 24
+createBar "$PROGPATH/1080" 1080 462 15 24
