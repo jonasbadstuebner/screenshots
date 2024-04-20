@@ -29,8 +29,20 @@ void moveFiles(String srcDir, String dstDir) {
   fs.directory(srcDir).listSync().forEach((file) {
     final dstFileName = '$dstDir/${p.basename(file.path)}';
     printStatus('Moving ${file.absolute.path} to $dstFileName');
-    file.renameSync(dstFileName);
+    moveFile(file.path, dstFileName);
   });
+}
+
+void moveFile(String sourcePath, String newPath) {
+  final sourceFile = fs.file(sourcePath);
+  try {
+    // prefer using rename as it is probably faster
+    sourceFile.renameSync(newPath);
+  } on FileSystemException catch (e) {
+    // if rename fails, copy the source file and then delete it
+    sourceFile.copySync(newPath);
+    sourceFile.deleteSync();
+  }
 }
 
 /// Creates a list of available iOS simulators.
