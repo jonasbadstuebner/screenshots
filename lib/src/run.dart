@@ -444,7 +444,13 @@ class Screenshots {
     };
 
     for (final testPath in config.tests) {
-      final command = (usePatrol ? ['patrol', 'test'] : ['flutter'])
+      final command = (usePatrol
+          ? [
+              'patrol',
+              ...(verbose ? <String>['-v'] : <String>[]),
+              'test'
+            ]
+          : ['flutter'])
         ..addAll(['-d', deviceId]);
       if (!usePatrol && deviceType == DeviceType.web) {
         command.addAll([
