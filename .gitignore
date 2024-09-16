@@ -29,3 +29,6 @@ example/android/fastlane
 
 # code coverage
 coverage/
+
+# FVM Version Cache
+.fvm/
