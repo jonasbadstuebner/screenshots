@@ -49,7 +49,10 @@ class ImageProcessor {
     final stagingDir = _config.stagingDir;
 
     final screenshotsDir = _config.screenshotsDir;
-    final screenshotPaths = fs.directory(screenshotsDir).listSync();
+    final screenshotPaths = fs
+        .directory(screenshotsDir)
+        .listSync()
+        .where((file) => fs.isFileSync(file.path));
     if (screenProps == null) {
       printStatus('Warning: \'$deviceName\' images will not be processed');
     } else {
