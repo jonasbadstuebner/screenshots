@@ -27,6 +27,9 @@ void moveFiles(String srcDir, String dstDir) {
     fs.directory(dstDir).createSync(recursive: true);
   }
   fs.directory(srcDir).listSync().forEach((file) {
+    if (!fs.isFileSync(file.path)) {
+      return;
+    }
     final dstFileName = '$dstDir/${p.basename(file.path)}';
     printStatus('Moving ${file.absolute.path} to $dstFileName');
     moveFile(file.path, dstFileName);
