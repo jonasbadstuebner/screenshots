@@ -88,10 +88,11 @@ class ScreenshotsConfig {
 
   String get stagingDir => _configInfo['staging'] as String;
 
-  String get screenshotsSubpath =>
-      (_configInfo.containsKey('runId') && _configInfo['runId'] != null)
-          ? "$kTestScreenshotsDir/${_configInfo['runId'] as String}"
-          : kTestScreenshotsDir;
+  String get screenshotsSubpath => (_configInfo.containsKey('runId') &&
+          _configInfo['runId'] != null &&
+          _configInfo['runId'].toString().isNotEmpty)
+      ? "$kTestScreenshotsDir/${_configInfo['runId'] as String}"
+      : kTestScreenshotsDir;
 
   String get screenshotsDir => '$stagingDir/$screenshotsSubpath';
 
