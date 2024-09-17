@@ -152,6 +152,10 @@ String getHighestIosVersion(Map<String, dynamic> iOSVersions) {
 Future<void> prefixFilesInDir(String dirPath, String prefix) async {
   await for (final file
       in fs.directory(dirPath).list(recursive: false, followLinks: false)) {
+    if (!fs.isFileSync(file.path)) {
+      continue;
+    }
+
     await file
         .rename('${p.dirname(file.path)}/$prefix${p.basename(file.path)}');
   }
