@@ -80,14 +80,27 @@ class DaemonClient {
     _processResponse(results[0], command);
     // process the event
     final event = results[1];
-    final eventInfo = jsonDecode(event);
-    if (eventInfo.length != 1 ||
-        eventInfo[0]['event'] != 'device.added' ||
-        eventInfo[0]['params']['emulator'] != true) {
-      throw 'Error: emulator $emulatorId not started: $event';
-    }
+    var eventCounter = 0;
+    do {
+      eventCounter++;
+      final eventInfo = jsonDecode(event);
+      final deviceId = eventInfo[0]['params']['id'];
+      if (deviceId != emulatorId) {
+        printStatus(
+          'received event for $deviceId, which is not what I am waiting for.'
+          ' (would be $emulatorId)',
+        );
+        continue;
+      }
+      if (eventInfo.length != 1 ||
+          eventInfo[0]['event'] != 'device.added' ||
+          eventInfo[0]['params']['emulator'] != true) {
+        throw 'Error: emulator $emulatorId not started: $event';
+      }
 
-    return Future.value(eventInfo[0]['params']['id'] as String);
+      return Future.value(eventInfo[0]['params']['id'] as String);
+    } while (eventCounter < 10);
+    throw 'Error: received too many events that do not match what I want.';
   }
 
   /// List running real devices and booted emulators/simulators.
