@@ -1,4 +1,3 @@
-
 export 'src/base/process_common.dart';
 export 'src/capture_screen.dart';
 export 'src/config.dart';
