@@ -1,7 +1,7 @@
 name: screenshots
 description: Auto-generation of screenshots for Apple and Play Stores using emulators, simulators and real devices. Includes support for multiple locales and framing. Compatible with fastlane.
 version: 2.3.0
-homepage: https://github.com/DrBu7cher/screenshots
+homepage: https://github.com/jonasbadstuebner/screenshots
 publish_to: none
 
 environment:
@@ -11,28 +11,28 @@ dependencies:
   archive: ^4.0.2
   args: "^2.4.0"
   file: ^7.0.1
-  http: any
+  http: ">=1.3.0"
   meta: ^1.15.0
   path: ^1.9.1
   platform: ^3.1.5
-  process: "5.0.2"
+  process: ^5.0.3
   resource_portable: "^3.0.0"
   # network_info_plus: "^3.0.3"
   tool_mobile:
-    git: https://github.com/DrBu7cher/tool_mobile.git
-    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_mobile/main
+    git: https://github.com/jonasbadstuebner/tool_mobile.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/jonasbadstuebner/tool_mobile/main
   yaml: "^3.1.0"
 
 dev_dependencies:
   fake_process_manager:
-    git: https://github.com/DrBu7cher/fake_process_manager.git
-    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/fake_process_manager/main
+    git: https://github.com/jonasbadstuebner/fake_process_manager.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/jonasbadstuebner/fake_process_manager/main
   flutter_lints: ^5.0.0
   mockito: ^5.4.0
   quiver: ^3.2.1
   tool_base_test:
-    git: https://github.com/DrBu7cher/tool_base_test.git
-    # path: /home/jbadstuebner/Dokumente/git/github.com/DrBu7cher/tool_base_test/main
+    git: https://github.com/jonasbadstuebner/tool_base_test.git
+    # path: /home/jbadstuebner/Dokumente/git/github.com/jonasbadstuebner/tool_base_test/main
 
 executables:
   screenshots: main
